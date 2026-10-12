@@ -1,0 +1,23 @@
+# Netlify deployment. The Next.js runtime (OpenNext adapter) is detected automatically and
+# turns server rendering, Server Actions, the proxy and "use cache" into Netlify Functions.
+# Env vars and secrets are set with `netlify env:set` (never committed); see README → Deploy.
+
+[build]
+  # Builds run on Netlify's Linux servers from the Git repo. Note: `netlify build` on Windows
+  # fails while bundling the Node proxy (path resolution in the edge bundler), so don't deploy
+  # with a local build from Windows.
+  command = "pnpm build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  # Turbopack + Next.js telemetry off in CI.
+  NEXT_TELEMETRY_DISABLED = "1"
+
+# Long-lived caching for hashed static assets is handled by the Next.js runtime.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "DENY"

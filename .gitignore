@@ -39,3 +39,21 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+!.env.example
+
+# claude code (personal)
+.claude/settings.local.json
+
+# playwright
+/test-results/
+/playwright-report/
+
+# firebase
+.firebase/
+
+# supabase
+supabase/.temp/
+supabase/.branches/
+
+# netlify
+.netlify/

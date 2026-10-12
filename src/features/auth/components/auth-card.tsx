@@ -1,0 +1,41 @@
+import Link from "next/link"
+import { LogoMark } from "@/components/brand/logo"
+
+/** Centered card shell shared by sign-in, sign-up and password pages. */
+export function AuthCard({
+  title,
+  subtitle,
+  children,
+  footer,
+}: {
+  title: string
+  subtitle?: string
+  children: React.ReactNode
+  footer?: React.ReactNode
+}) {
+  return (
+    <div className="mx-auto w-full max-w-md px-4 py-10 md:py-16">
+      <div className="rounded-2xl border bg-card p-6 shadow-raised sm:p-8">
+        <div className="mb-6 space-y-2 text-center">
+          <Link href="/" className="mx-auto inline-block rounded-md" aria-hidden tabIndex={-1}>
+            <LogoMark className="mx-auto size-12" />
+          </Link>
+          <h1 className="text-2xl font-extrabold tracking-tight">{title}</h1>
+          {subtitle ? <p className="text-sm text-muted-foreground">{subtitle}</p> : null}
+        </div>
+        {children}
+      </div>
+      {footer ? <div className="mt-6 text-center text-sm">{footer}</div> : null}
+    </div>
+  )
+}
+
+export function OrDivider({ label }: { label: string }) {
+  return (
+    <div className="my-5 flex items-center gap-3 text-xs text-muted-foreground uppercase">
+      <span className="h-px flex-1 bg-border" />
+      {label}
+      <span className="h-px flex-1 bg-border" />
+    </div>
+  )
+}

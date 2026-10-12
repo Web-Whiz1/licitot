@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ro">
+  <body
+    style="
+      margin: 0;
+      padding: 24px;
+      background: #e8f4fd;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #0f1b2d;
+    "
+  >
+    <table
+      role="presentation"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 12px"
+    >
+      <tr>
+        <td style="padding: 32px">
+          <p style="margin: 0 0 24px; font-size: 22px; font-weight: 800">
+            Lici<span style="color: #1d6fc2">Tot</span>
+          </p>
+          <h1 style="margin: 0 0 12px; font-size: 20px">Intră în cont cu un clic</h1>
+          <p style="margin: 0 0 24px; line-height: 1.5">
+            Apasă butonul de mai jos ca să intri în contul tău LiciTot. Linkul expiră într-o oră și
+            poate fi folosit o singură dată.
+          </p>
+          <p style="margin: 0 0 24px">
+            <a
+              href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=email&amp;next=/cont"
+              style="
+                display: inline-block;
+                background: #1d6fc2;
+                color: #ffffff;
+                text-decoration: none;
+                font-weight: 700;
+                padding: 12px 20px;
+                border-radius: 8px;
+              "
+              >Intră în cont</a
+            >
+          </p>
+          <p style="margin: 0; font-size: 13px; color: #52627a; line-height: 1.5">
+            Nu ai cerut acest link? Ignoră emailul — contul tău e în siguranță.
+          </p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

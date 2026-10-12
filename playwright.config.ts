@@ -1,0 +1,28 @@
+import { defineConfig, devices } from "@playwright/test"
+
+// E2E tests run against a production build (`pnpm build && pnpm start`) using the dev
+// Supabase project from .env.local. Run with `pnpm test:e2e`.
+const PORT = Number(process.env.E2E_PORT ?? 3100)
+
+export default defineConfig({
+  testDir: "tests/e2e",
+  timeout: 60_000,
+  fullyParallel: false,
+  workers: 1,
+  retries: process.env.CI ? 1 : 0,
+  use: {
+    baseURL: `http://localhost:${PORT}`,
+    locale: "ro-RO",
+    timezoneId: "Europe/Bucharest",
+    trace: "retain-on-failure",
+  },
+  projects: [
+    { name: "mobile", use: { ...devices["Pixel 7"] } },
+    { name: "desktop", use: { ...devices["Desktop Chrome"] } },
+  ],
+  webServer: {
+    command: `pnpm start -p ${PORT}`,
+    port: PORT,
+    reuseExistingServer: true,
+  },
+})

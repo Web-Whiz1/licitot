@@ -1,0 +1,127 @@
+@AGENTS.md
+
+# LiciTot — project conventions
+
+Romanian online auction marketplace. Every user can both sell and bid. The platform takes a 5% fee
+on completed auctions (Stripe Connect, **test mode only**). Built in phases; see the plan in
+`README.md#roadmap`. Stop after each phase for review.
+
+## Stack (versions verified Oct 2026)
+
+- Next.js 16.4 (App Router, Turbopack, **Cache Components + Partial Prefetching on**), React 19.3, TypeScript 5.9 strict
+- Tailwind CSS v4 (tokens in `src/app/globals.css`), shadcn/ui (`radix-nova` style, Radix primitives), lucide-react
+- next-intl 4 (single locale `ro`, no locale routing yet), Zod 4, React Hook Form
+- Supabase (hosted project, no Docker): Auth, Postgres + RLS, Realtime, pg_cron. `@supabase/ssr`
+- ImageKit (signed uploads), Stripe Connect Express (test mode)
+- pnpm 12, Vitest 5, Playwright, ESLint 9, Prettier
+- **Deploy: Netlify** (`netlify.toml`, OpenNext Next.js runtime), built from Git on Netlify. Free tier.
+
+## Next.js 16 specifics — read `node_modules/next/dist/docs/` before using an API
+
+- `middleware.ts` is now **`src/proxy.ts`**.
+- Cache Components: data is dynamic by default. Use `"use cache"` + `cacheLife`/`cacheTag` to cache.
+  `Date.now()`, `new Date()`, `Math.random()`, uncached file/network I/O in a prerendered tree must be
+  inside `"use cache"` or behind `await connection()` + `<Suspense>` (see `components/layout/footer.tsx`).
+- `params`, `searchParams`, `cookies()`, `headers()` are async.
+- Values returned from `"use cache"` must be plain serializable data (use base64 for binary; see `lib/brand/og.tsx`).
+
+## Folder structure
+
+```
+src/app/(site)/        public pages with header/footer/mobile nav
+src/app/(auth)/        auth pages (Phase 2)
+src/app/api/           route handlers: ImageKit auth, Stripe webhook only
+src/components/ui/     shadcn primitives (customized for brand — sizes ≥40px, solid hover colors)
+src/components/layout/ header, footer, mobile nav, theme toggle, demo banner
+src/components/brand/  <Logo/>, <LogoMark/>
+src/features/<domain>/ components/, actions.ts, queries.ts, schemas.ts, *.test.ts
+src/lib/               money, dates, phone, counties, site, supabase/*, brand/*
+messages/ro.json       ALL user-facing strings
+supabase/migrations/   SQL migrations — the only way the DB changes
+scripts/               gen-icons.ts, seed.ts
+```
+
+## Rules
+
+- **Money is integer bani** (`bigint` in Postgres, `number` safe-integer in TS). Never floats.
+  Use `formatRON`, `parseRONToBani`, `calcPlatformFee` from `src/lib/money.ts`.
+- **Dates**: store `timestamptz`; display via `src/lib/dates.ts` (always `Europe/Bucharest`, `ro-RO`).
+- **Strings**: every UI string lives in `messages/ro.json` (typed keys). Romanian with correct
+  diacritics: **ș ț with comma-below**, never ş ţ (cedilla). Informal "tu" tone (see BRAND.md).
+- **Validation**: Zod schema on every Server Action and route handler; share schemas with forms.
+- **Security**: RLS on every table with a comment explaining each policy. Bids/orders/status changes
+  only through Postgres functions (RPC) or the Stripe webhook. Service-role client is server-only.
+- **DB changes**: `pnpm sb migration new <name>` → edit SQL → `pnpm db:push` → `pnpm db:types`
+  → `pnpm test:db`. Never edit an applied migration (add a new one). Never change schema or auth
+  settings in the dashboard: auth config lives in `supabase/config.toml` → `pnpm db:config`.
+- **Supabase keys**: new-style keys only — `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (`sb_publishable_…`)
+  and server-only `SUPABASE_SECRET_KEY` (`sb_secret_…`). Clients in `src/lib/supabase/`:
+  `server.ts` (user session, RLS), `client.ts` (browser), `public.ts` (anon, for `"use cache"`),
+  `admin.ts` (secret key, bypasses RLS — trusted server code only), `proxy.ts` (session refresh).
+- **Auth on the server**: use `getCurrentUser()` / `requireUser()` (`features/auth/session.ts`),
+  which validate JWT claims via `getClaims()`. Never trust `getSession()` server-side.
+  Session reads make a subtree dynamic → wrap in `<Suspense>`.
+- **Profiles**: public data in `profiles` (readable by all), private data in `profiles_private`
+  (owner-only). Users may only update columns granted via column-level GRANT; role, ban, ratings
+  and Stripe flags change server-side only.
+- **Validation messages are dictionary keys** (`msg("validation.email")`), never literal text, so
+  the same Zod schema runs on client and server. Server Actions return `ActionResult`
+  (`lib/action-result.ts`); forms apply it with `applyActionResult()`.
+- **Rate limiting**: `rateLimit()` (`lib/rate-limit.ts`) on auth, uploads and (later) bidding.
+- **Images (ImageKit)**: store file _paths_ (`/licitot/auctions/<uid>/<uuid>.webp`), never URLs.
+  - Uploads: browser compresses to WebP and makes a ~20px blur data URL, then gets a signed token
+    from `/api/imagekit/auth`, which picks the folder per user, then uploads straight to ImageKit.
+  - On save, the server checks each file with the ImageKit API (`verifyUploadedImage`) and the
+    folder (`isOwnPath`). The DB also checks the path in CHECK constraints and RLS.
+  - Display: `next/image` with the global loader (`lib/imagekit-loader.ts`: `f-auto`, width).
+  - Removed or replaced files are deleted after the response, using `after()`.
+- **Auctions**: sellers write drafts directly (RLS + column grants); lifecycle changes only via
+  RPCs (`publish_auction`; `place_bid`/closing in Phase 5). RPC errors are `P0001` with a stable
+  code in the message, mapped to `sell.errors.<code>`.
+- **Feature flags**: `private.app_settings` (e.g. `require_connect_for_publish`, false until
+  Phase 6 turns on Stripe Connect gating). Change them only via migrations.
+- **Session code must be request-time**: `lib/supabase/server.ts` calls `connection()` first.
+- **Caching**: public listing data is cached in `features/auctions/listing.ts` with
+  `"use cache"`, `cacheLife("minutes")` and tag `auctions` (+ `auction:<id>`). It uses the anon
+  client from `lib/supabase/public.ts`. Mutations that change public listings call
+  `updateTag("auctions")`. Live prices on the detail page come from Realtime (Phase 5).
+- **Search**: Postgres FTS with config `ro_unaccent` (Romanian stemming + unaccent) on the
+  generated `auctions.search_tsv` column. Browse filters live in the URL, with Romanian param names
+  parsed by `features/search/params.ts`. Search pages are `noindex`; categories and auctions
+  are indexable.
+- **URLs**: auction pages are `/licitatie/<uuid>-<slug>`. Stale slugs 308-redirect to the
+  canonical URL.
+- **Components**: Server Components by default; `"use client"` only for interactive islands.
+  Realtime subscriptions only on the auction detail page.
+- **Colors**: use semantic tokens (`bg-primary`, `text-muted-foreground`, `bg-sky-soft`…), never raw
+  hex in components. Baby blue (`sky`) is decoration only — never text on white. Adding a token?
+  Update `src/lib/brand/tokens.ts` + `globals.css`; `pnpm test` checks sync and WCAG AA contrast.
+- **No `any`**. `noUncheckedIndexedAccess` is on.
+- **Editing files on Windows**: don't round-trip files through PowerShell `Get-Content`/`Set-Content`
+  (it mangles UTF-8 diacritics). Use the editor tools.
+- Demo/test mode must stay clearly labeled in the UI (`<DemoBanner/>`).
+
+## Commands
+
+```
+pnpm dev            # dev server (Turbopack)
+pnpm build          # production build — must pass before finishing a phase
+pnpm check          # lint + typecheck + unit tests
+pnpm test           # Vitest
+pnpm format         # Prettier (with Tailwind class sorting)
+pnpm icons          # regenerate logo SVGs, favicon, PWA icons from lib/brand/logo-geometry.ts
+pnpm test:db        # RLS/integration tests against the dev Supabase project (creates + deletes users)
+pnpm test:e2e       # Playwright (mobile + desktop) against `pnpm start` — run `pnpm build` first
+pnpm db:push        # apply new migrations to the hosted project
+pnpm db:types       # regenerate src/types/database.ts
+pnpm db:config      # push supabase/config.toml auth settings
+pnpm sb <args>      # any Supabase CLI command with .env.local loaded
+```
+
+## Known constraints
+
+- Supabase free tier + built-in email sender: custom email templates are rejected and email
+  delivery is limited (built-in SMTP only delivers to the project's team members, a few per
+  hour). Romanian templates are ready in `supabase/templates/`; enable them with custom SMTP
+  (Resend) in Phase 7.
+- Google sign-in is wired but disabled until OAuth credentials are set (see README).

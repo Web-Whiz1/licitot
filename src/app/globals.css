@@ -1,26 +1,163 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * LiciTot design tokens.
+ * Color values mirror src/lib/brand/tokens.ts (kept in sync by tokens.test.ts).
+ * Baby blue (--sky) is for surfaces only; it fails contrast as text on white.
+ */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-sky: var(--sky);
+  --color-sky-soft: var(--sky-soft);
+  --color-sky-foreground: var(--sky-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.333);
+  --radius-2xl: calc(var(--radius) * 1.667);
+  --radius-3xl: calc(var(--radius) * 2);
+  --radius-4xl: calc(var(--radius) * 2.667);
+
+  --shadow-card: var(--elevation-card);
+  --shadow-raised: var(--elevation-raised);
+  --shadow-overlay: var(--elevation-overlay);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@theme {
+  /* Type scale (see BRAND.md). Line heights tuned for Romanian diacritics above caps. */
+  --text-display: 2.5rem;
+  --text-display--line-height: 1.15;
+  --text-display--letter-spacing: -0.02em;
+  --text-display--font-weight: 800;
+}
+
+:root {
+  --radius: 0.75rem;
+
+  --background: #ffffff;
+  --foreground: #0f1b2d;
+  --card: #ffffff;
+  --card-foreground: #0f1b2d;
+  --popover: #ffffff;
+  --popover-foreground: #0f1b2d;
+  --primary: #1d6fc2;
+  --primary-foreground: #ffffff;
+  --primary-hover: #1a66b3;
+  --secondary: #e8f4fd;
+  --secondary-foreground: #0b4a85;
+  --muted: #f3f7fb;
+  --muted-foreground: #52627a;
+  --accent: #e8f4fd;
+  --accent-foreground: #0b3a66;
+  --sky: #8ec9f5;
+  --sky-soft: #e8f4fd;
+  --sky-foreground: #0b3a66;
+  --border: #dce5ef;
+  --input: #7c8da3;
+  --ring: #1d6fc2;
+  --destructive: #c2281d;
+  --destructive-soft: #fdecea;
+  --success: #157f3d;
+  --success-soft: #e7f6ec;
+  --warning: #a15c07;
+  --warning-soft: #fef4e2;
+
+  --elevation-card: 0 1px 2px rgb(15 27 45 / 0.05), 0 1px 3px rgb(15 27 45 / 0.07);
+  --elevation-raised: 0 4px 12px rgb(15 27 45 / 0.08), 0 2px 4px rgb(15 27 45 / 0.05);
+  --elevation-overlay: 0 16px 40px rgb(15 27 45 / 0.16), 0 4px 12px rgb(15 27 45 / 0.08);
+}
+
+.dark {
+  --background: #0b1320;
+  --foreground: #e6eef7;
+  --card: #111c2c;
+  --card-foreground: #e6eef7;
+  --popover: #111c2c;
+  --popover-foreground: #e6eef7;
+  --primary: #8ec9f5;
+  --primary-foreground: #0b1320;
+  --primary-hover: #a9d6f8;
+  --secondary: #16304d;
+  --secondary-foreground: #dcebfa;
+  --muted: #16233a;
+  --muted-foreground: #9db0c7;
+  --accent: #16304d;
+  --accent-foreground: #dcebfa;
+  --sky: #8ec9f5;
+  --sky-soft: #13283f;
+  --sky-foreground: #0b1320;
+  --border: #22324a;
+  --input: #5a6f8c;
+  --ring: #8ec9f5;
+  --destructive: #f87171;
+  --destructive-soft: #3a1518;
+  --success: #4ade80;
+  --success-soft: #0f2e1d;
+  --warning: #fbbf24;
+  --warning-soft: #33260a;
+
+  --elevation-card: 0 1px 2px rgb(0 0 0 / 0.3);
+  --elevation-raised: 0 4px 12px rgb(0 0 0 / 0.35);
+  --elevation-overlay: 0 16px 40px rgb(0 0 0 / 0.5);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  html {
+    @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+  /* Visible, consistent keyboard focus everywhere. */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
