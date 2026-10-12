@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(corepack enable pnpm)",
+      "PowerShell(pnpm -v)",
+      "PowerShell(pnpm dlx create-next-app@latest --help)"
+    ]
+  }
+}
