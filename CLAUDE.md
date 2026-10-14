@@ -12,7 +12,7 @@ on completed auctions (Stripe Connect, **test mode only**). Built in phases; see
 - Tailwind CSS v4 (tokens in `src/app/globals.css`), shadcn/ui (`radix-nova` style, Radix primitives), lucide-react
 - next-intl 4 (single locale `ro`, no locale routing yet), Zod 4, React Hook Form
 - Supabase (hosted project, no Docker): Auth, Postgres + RLS, Realtime, pg_cron. `@supabase/ssr`
-- ImageKit (signed uploads), Stripe Connect Express (test mode)
+- ImageKit (signed uploads), Stripe Connect Express (sandbox keys now; live keys later), stripe-node 22
 - pnpm 12, Vitest 5, Playwright, ESLint 9, Prettier
 - **Deploy: Netlify** (`netlify.toml`, OpenNext Next.js runtime), built from Git on Netlify. Free tier.
 
@@ -38,7 +38,7 @@ src/features/<domain>/ components/, actions.ts, queries.ts, schemas.ts, *.test.t
 src/lib/               money, dates, phone, counties, site, supabase/*, brand/*
 messages/ro.json       ALL user-facing strings
 supabase/migrations/   SQL migrations — the only way the DB changes
-scripts/               gen-icons.ts, seed.ts
+scripts/               gen-icons.ts (no seed/demo data: the DB holds only real users)
 ```
 
 ## Rules
@@ -78,8 +78,27 @@ scripts/               gen-icons.ts, seed.ts
 - **Auctions**: sellers write drafts directly (RLS + column grants); lifecycle changes only via
   RPCs (`publish_auction`; `place_bid`/closing in Phase 5). RPC errors are `P0001` with a stable
   code in the message, mapped to `sell.errors.<code>`.
-- **Feature flags**: `private.app_settings` (e.g. `require_connect_for_publish`, false until
-  Phase 6 turns on Stripe Connect gating). Change them only via migrations.
+- **Bidding**: proxy bids only through `place_bid(auction, max)` (locks the auction row). Maximums
+  live in `auto_bids` (owner-only); the public history comes from `get_auction_bids()` with masked
+  names. Bids in the last 2 minutes extend the end by 2 minutes. `buy_now` only before the first
+  bid; `cancel_auction` only before the first bid. pg_cron `licitot-close-auctions` closes ended
+  auctions every minute (sold if the reserve is met).
+- **Reserve price is secret**: `auctions` uses column-level SELECT grants (no `reserve_price`);
+  the public sees `has_reserve`/`reserve_met`, sellers read it via `get_auction_reserve()`.
+  Never `select("*")` on auctions; **a new auctions column must be added to that grant**.
+- **Payments (Stripe Connect Express)**: sellers onboard from `/cont/incasari`; publishing needs
+  `stripe_charges_enabled`. A sale (closing job or buy now) creates an `orders` row via trigger.
+  The buyer picks delivery and pays on Stripe Checkout (destination charge,
+  `application_fee_amount` = 5% of the item price; shipping is passed through). Payment is
+  confirmed idempotently by the webhook **and** on return from Checkout
+  (`fulfillCheckoutSession`, amount checked in `order_mark_paid`). Order/Stripe state changes
+  only through RPCs; the service-role ones (`order_mark_paid`, `sync_stripe_account`, …) are
+  called from `features/payments/server.ts` and the webhook. Minimum price is 2 RON (Stripe).
+  Contact details of the other party come from `get_order_contact()` only after payment.
+- **Legal pages** read the operator's details from `src/lib/legal.ts` (fictional "LiciTot"
+  until the real company exists; empty fields are hidden). Long texts are in `legal.*`.
+- **Feature flags**: `private.app_settings` (`require_connect_for_publish` is true since
+  Phase 6). Change them only via migrations.
 - **Session code must be request-time**: `lib/supabase/server.ts` calls `connection()` first.
 - **Caching**: public listing data is cached in `features/auctions/listing.ts` with
   `"use cache"`, `cacheLife("minutes")` and tag `auctions` (+ `auction:<id>`). It uses the anon
@@ -99,7 +118,8 @@ scripts/               gen-icons.ts, seed.ts
 - **No `any`**. `noUncheckedIndexedAccess` is on.
 - **Editing files on Windows**: don't round-trip files through PowerShell `Get-Content`/`Set-Content`
   (it mangles UTF-8 diacritics). Use the editor tools.
-- Demo/test mode must stay clearly labeled in the UI (`<DemoBanner/>`).
+- No demo/seed data. While Stripe uses sandbox keys (`pk_test_`), `<DemoBanner/>` labels it on every
+  page (`isPaymentsTestMode` in `lib/env.ts`); with live keys it disappears.
 
 ## Commands
 
@@ -115,6 +135,7 @@ pnpm test:e2e       # Playwright (mobile + desktop) against `pnpm start` — run
 pnpm db:push        # apply new migrations to the hosted project
 pnpm db:types       # regenerate src/types/database.ts
 pnpm db:config      # push supabase/config.toml auth settings
+pnpm stripe:webhooks https://<site>  # create the 2 Stripe webhook endpoints, print secrets
 pnpm sb <args>      # any Supabase CLI command with .env.local loaded
 ```
 

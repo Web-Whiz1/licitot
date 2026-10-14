@@ -6,7 +6,7 @@ import type { Database } from "@/types/database"
 
 /**
  * Service-role client: BYPASSES RLS. Only for trusted server code (rate limiting, Stripe
- * webhook, admin actions, seeding). Never pass user-controlled filters through unchecked.
+ * webhook, admin actions). Never pass user-controlled filters through unchecked.
  */
 export function createAdminClient() {
   return createSupabaseClient<Database>(

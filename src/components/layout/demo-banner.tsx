@@ -1,9 +1,11 @@
 import { FlaskConical } from "lucide-react"
 import { useTranslations } from "next-intl"
+import { isPaymentsTestMode } from "@/lib/env"
 
-/** Always-visible notice: Stripe runs in test mode, no real money moves. */
+/** Shown on every page while Stripe uses sandbox keys: no real money moves. Hidden in live mode. */
 export function DemoBanner() {
   const t = useTranslations("demo")
+  if (!isPaymentsTestMode) return null
 
   return (
     <div role="note" className="bg-warning-soft text-warning">

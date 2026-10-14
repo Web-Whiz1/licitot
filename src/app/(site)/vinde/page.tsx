@@ -6,6 +6,7 @@ import { AuctionForm } from "@/features/auctions/components/auction-form"
 import { SellPageShell, SellSkeleton } from "@/features/auctions/components/sell-page-shell"
 import { emptyAuctionForm } from "@/features/auctions/form-defaults"
 import { getCategoryTree } from "@/features/auctions/queries"
+import { PayoutsNotice } from "@/features/payments/components/payouts-notice"
 import { createClient } from "@/lib/supabase/server"
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -32,13 +33,16 @@ async function NewAuction() {
     supabase.from("profiles").select("county_code, city").eq("id", user.id).single(),
   ])
   return (
-    <AuctionForm
-      auctionId={null}
-      categories={categories}
-      defaults={emptyAuctionForm({
-        countyCode: profile?.county_code ?? null,
-        city: profile?.city ?? null,
-      })}
-    />
+    <>
+      <PayoutsNotice userId={user.id} />
+      <AuctionForm
+        auctionId={null}
+        categories={categories}
+        defaults={emptyAuctionForm({
+          countyCode: profile?.county_code ?? null,
+          city: profile?.city ?? null,
+        })}
+      />
+    </>
   )
 }

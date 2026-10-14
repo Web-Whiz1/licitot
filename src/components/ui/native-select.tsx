@@ -9,6 +9,9 @@ export function NativeSelect({ className, children, ...props }: React.ComponentP
         data-slot="native-select"
         className={cn(
           "h-10 w-full appearance-none rounded-lg border border-input bg-background py-1 pr-9 pl-3 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30",
+          // The open list is drawn by the OS: give options solid theme colors so they stay
+          // readable in dark mode (a translucent select background would leave them white).
+          "[&_optgroup]:bg-popover [&_optgroup]:text-popover-foreground [&_option]:bg-popover [&_option]:text-popover-foreground",
           className,
         )}
         {...props}

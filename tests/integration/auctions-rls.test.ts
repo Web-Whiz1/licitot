@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
-import { anon, createTestUser, deleteTestUsers, type TestUser } from "./helpers"
+import { anon, connectPayouts, createTestUser, deleteTestUsers, type TestUser } from "./helpers"
 
 let seller: TestUser
 let other: TestUser
@@ -26,7 +26,11 @@ const image = (owner: TestUser, n = 1) => ({
 })
 
 async function createDraft(user: TestUser) {
-  const { data, error } = await user.client.from("auctions").insert(draft()).select("*").single()
+  const { data, error } = await user.client
+    .from("auctions")
+    .insert(draft())
+    .select("id, seller_id, status, slug, current_price")
+    .single()
   if (error) throw error
   return data
 }
@@ -148,6 +152,18 @@ describe("images", () => {
 })
 
 describe("publish_auction", () => {
+  it("requires active Stripe payouts", async () => {
+    const a = await createDraft(seller)
+    await seller.client.rpc("replace_auction_images", {
+      p_auction_id: a.id,
+      p_images: [image(seller)],
+    })
+    const { error } = await seller.client.rpc("publish_auction", { p_auction_id: a.id })
+    expect(error?.message).toBe("connect_required")
+    // From here on the seller has finished Stripe onboarding (set by the webhook in real life).
+    await connectPayouts(seller)
+  })
+
   it("requires at least one photo", async () => {
     const a = await createDraft(seller)
     const { error } = await seller.client.rpc("publish_auction", { p_auction_id: a.id })

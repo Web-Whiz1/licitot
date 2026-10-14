@@ -2,13 +2,13 @@
 
 **Totul se licitează.** LiciTot is a Romanian online auction marketplace. Every account can both sell and bid, and the platform keeps a 5% fee on completed auctions.
 
-> ⚠️ Demo project. Payments run in **Stripe test mode** only, and legal texts are placeholders pending review by a lawyer.
+> ⚠️ Payments currently run on **Stripe sandbox** keys (the site shows a banner), and the operator in the legal pages is a placeholder (`src/lib/legal.ts`). Have a lawyer review the legal texts before a real launch.
 
 ## Stack
 
 - **App:** Next.js 16 (App Router, Cache Components), React 19, TypeScript and Tailwind CSS v4, with shadcn/ui components.
 - **Backend:** Supabase for Auth, Postgres with RLS, Realtime and pg_cron.
-- **Services:** ImageKit for images and Stripe Connect in test mode for payments.
+- **Services:** ImageKit for images and Stripe Connect (Express) for payments.
 - **Hosting:** Netlify (free tier).
 
 See [CLAUDE.md](CLAUDE.md) for conventions and [BRAND.md](BRAND.md) for the brand system.
@@ -31,16 +31,6 @@ pnpm dev                     # http://localhost:3000
 | `pnpm test`  | Vitest (money, dates, phone, brand contrast) |
 | `pnpm icons` | Regenerate logo files, favicon and PWA icons |
 
-### Demo data
-
-```bash
-pnpm db:seed   # 6 demo sellers + 35 auctions (active, ended, draft, cancelled) with photos
-```
-
-- **Idempotent:** it deletes the previous demo users and their ImageKit files first.
-- **Demo logins:** `demo.<name>@licitot.test` / `demo-licitot-1`, where `<name>` is one of `andrei`, `ioana`, `mihai`, `elena`, `radu`, `cristina`.
-- **Auction end times are relative to when you run it**, so re-run it to refresh the "ending soon" listings.
-
 ### External services (added in later phases)
 
 1. **Supabase (Phase 2):** create a free hosted project. Docker isn't needed, because migrations and auth settings are pushed with the CLI.
@@ -62,10 +52,14 @@ pnpm db:seed   # 6 demo sellers + 35 auctions (active, ended, draft, cancelled) 
 2. **ImageKit (Phase 3):** create an account and copy the URL endpoint, public key and private key from Developer options into `.env.local`.
    - Files go under `/licitot/auctions/<user id>/` and `/licitot/avatars/<user id>/`.
    - No dashboard configuration is needed. Automatic format (`f-auto`) is requested per URL.
-3. **Stripe (Phase 6):** use test-mode keys and enable Connect (Express). For local webhooks:
-   ```bash
-   stripe listen --forward-to localhost:3000/api/stripe/webhook
-   ```
+3. **Stripe (Phase 6):** put the sandbox keys (`pk_test_…`, `sk_test_…`) in `.env.local` and `.env.netlify`.
+   1. **Enable Connect** once: Stripe Dashboard (sandbox) → Connect → Get started → "Platform or marketplace", then complete the platform profile. Without it, sellers can't activate payouts.
+   2. **Locally**, no webhook is needed: payments are confirmed when the buyer returns from Checkout, and the seller's status when they return from onboarding.
+   3. **After deploying**, create the two webhook endpoints and copy the printed secrets into Netlify (`STRIPE_WEBHOOK_SECRET`, `STRIPE_CONNECT_WEBHOOK_SECRET`):
+      ```bash
+      pnpm stripe:webhooks https://licitot.netlify.app
+      ```
+   4. Test card: `4242 4242 4242 4242`, any future date and CVC. In seller onboarding (test mode), the phone code is `000 000`.
 4. **Netlify (deploy):** see [Deploy](#deploy-netlify-free) below.
 
 ## Deploy (Netlify, free)
@@ -95,7 +89,7 @@ Building for Netlify locally on Windows (`netlify build`) currently fails while 
 2. ✅ Supabase schema, migrations, RLS, auth, profiles
 3. ✅ Create auction flow with ImageKit uploads
 4. ✅ Listings, search, filters, detail page
-5. Bidding engine (RPC), realtime, anti-sniping, closing job
-6. Stripe Connect onboarding, checkout, 5% fee, webhooks
+5. ✅ Bidding engine (proxy bids via RPC), realtime, anti-sniping, closing job, watchlist
+6. ✅ Stripe Connect onboarding, checkout, 5% fee, webhooks, orders; legal + contact pages
 7. Notifications, reviews, watchlist, admin/reporting
 8. Legal pages, SEO, PWA, performance pass, E2E tests, deploy

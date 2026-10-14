@@ -2,7 +2,23 @@ import type { Database } from "@/types/database"
 import { DEFAULT_DURATION } from "./constants"
 import type { AuctionFormInput } from "./schemas"
 
-type Draft = Database["public"]["Tables"]["auctions"]["Row"] & {
+type Draft = Pick<
+  Database["public"]["Tables"]["auctions"]["Row"],
+  | "title"
+  | "description"
+  | "category_id"
+  | "condition"
+  | "starting_price"
+  | "min_increment"
+  | "reserve_price"
+  | "buy_now_price"
+  | "duration_days"
+  | "county_code"
+  | "city"
+  | "ship_pickup"
+  | "ship_courier"
+  | "courier_cost"
+> & {
   auction_images: {
     file_id: string
     path: string

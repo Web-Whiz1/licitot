@@ -1,20 +1,23 @@
-import { BadgeCheck, CalendarDays, Gavel, MapPin, Package, Star, Tag, Truck } from "lucide-react"
+import { BadgeCheck, CalendarDays, MapPin, Star, Tag, Truck } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound, permanentRedirect } from "next/navigation"
 import { getTranslations } from "next-intl/server"
 import { Suspense } from "react"
-import { Countdown } from "@/components/countdown"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { UserAvatar } from "@/components/user-avatar"
 import { AuctionGrid, auctionHref } from "@/features/auctions/components/auction-card"
 import { Gallery } from "@/features/auctions/components/gallery"
 import { AuctionStatusBadge } from "@/features/auctions/components/status-badge"
+import { BidBox } from "@/features/bids/components/bid-box"
+import type { LiveAuction } from "@/features/bids/live-store"
+import { ViewerBidBox } from "@/features/bids/components/viewer-bid-box"
+import { ViewerWatchButton } from "@/features/watchlist/viewer-watch-button"
+import { WatchButton } from "@/features/watchlist/watch-button"
 import { getPublicAuction, getSimilarAuctions } from "@/features/auctions/listing"
 import { getCategoryTree } from "@/features/auctions/queries"
-import { APP_LOCALE, APP_TIME_ZONE, formatDateTime } from "@/lib/dates"
+import { APP_LOCALE, APP_TIME_ZONE } from "@/lib/dates"
 import { publicEnv } from "@/lib/env"
 import { imagekitUrl } from "@/lib/imagekit"
 import { formatRON } from "@/lib/money"
@@ -90,9 +93,23 @@ async function AuctionDetail({ params }: Pick<PageProps<"/licitatie/[slug]">, "p
 
   const t = await getTranslations()
   const isActive = a.status === "active"
-  const hasBids = a.bid_count > 0
-  const nextBid = hasBids ? a.current_price + a.min_increment : a.starting_price
-  const reserveMet = a.reserve_price !== null && hasBids && a.current_price >= a.reserve_price
+  const live: LiveAuction = {
+    id: a.id,
+    seller_id: a.seller_id,
+    status: a.status,
+    starting_price: a.starting_price,
+    min_increment: a.min_increment,
+    buy_now_price: a.buy_now_price,
+    current_price: a.current_price,
+    bid_count: a.bid_count,
+    high_bidder_id: a.high_bidder_id,
+    ends_at: a.ends_at,
+    has_reserve: a.has_reserve,
+    reserve_met: a.reserve_met,
+    final_price: a.final_price,
+    winner_id: a.winner_id,
+    updated_at: a.updated_at,
+  }
   const seller = a.seller
   const category = a.category
   const parent = category?.parent_id
@@ -159,7 +176,7 @@ async function AuctionDetail({ params }: Pick<PageProps<"/licitatie/[slug]">, "p
       </nav>
 
       {/* Mobile order: photos → price/bid box → description. Desktop: sticky box on the right. */}
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem]">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:grid-rows-[auto_1fr]">
         <div className="min-w-0 lg:col-start-1 lg:row-start-1">
           <Gallery photos={a.auction_images} title={a.title} />
         </div>
@@ -167,64 +184,18 @@ async function AuctionDetail({ params }: Pick<PageProps<"/licitatie/[slug]">, "p
         <aside className="space-y-4 lg:sticky lg:top-24 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-start">
           <div className="space-y-4 rounded-2xl border bg-card p-5 shadow-card">
             <div className="space-y-2">
-              <AuctionStatusBadge status={a.status} />
+              <div className="flex items-start justify-between gap-3">
+                <AuctionStatusBadge status={a.status} />
+                <Suspense fallback={<WatchButton auctionId={a.id} watched={undefined} signedIn />}>
+                  <ViewerWatchButton auctionId={a.id} sellerId={a.seller_id} />
+                </Suspense>
+              </div>
               <h1 className="text-2xl font-extrabold tracking-tight break-words">{a.title}</h1>
             </div>
 
-            <div className="rounded-xl bg-sky-soft p-4">
-              <p className="text-sm text-secondary-foreground">
-                {hasBids ? t("detail.currentBid") : t("detail.startingPrice")}
-              </p>
-              <p className="text-3xl font-extrabold text-primary">{price(a.current_price)}</p>
-              <p className="mt-1 flex items-center gap-1.5 text-sm text-secondary-foreground">
-                <Gavel aria-hidden className="size-4" />
-                {hasBids ? t("auction.bids", { count: a.bid_count }) : t("detail.noBids")}
-              </p>
-              {a.reserve_price !== null && isActive ? (
-                <p className="mt-2">
-                  <Badge variant={reserveMet ? "success" : "warning"}>
-                    {reserveMet ? t("detail.reserveMet") : t("detail.reserveNotMet")}
-                  </Badge>
-                </p>
-              ) : null}
-            </div>
-
-            {isActive && a.ends_at ? (
-              <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">{t("detail.endsIn")}</p>
-                <Countdown endsAt={a.ends_at} className="text-xl font-bold" />
-                <p className="text-xs text-muted-foreground">
-                  {t("detail.endsOn", { date: formatDateTime(a.ends_at) })}
-                </p>
-              </div>
-            ) : (
-              <EndedNote status={a.status} finalPrice={a.final_price} endsAt={a.ends_at} />
-            )}
-
-            {isActive ? (
-              <div className="space-y-2">
-                <p className="text-sm">
-                  {t("detail.nextBid", { amount: price(nextBid) })}
-                  <span className="text-muted-foreground">
-                    {" · "}
-                    {t("detail.increment", { amount: price(a.min_increment) })}
-                  </span>
-                </p>
-                <Button size="lg" className="w-full" disabled>
-                  <Gavel data-icon="inline-start" />
-                  {t("detail.bid")}
-                </Button>
-                {a.buy_now_price !== null && !hasBids ? (
-                  <Button size="lg" variant="secondary" className="w-full" disabled>
-                    {t("detail.buyNowPrice", { price: price(a.buy_now_price) })}
-                  </Button>
-                ) : null}
-                <p className="text-center text-xs text-muted-foreground">
-                  {t("detail.biddingSoon")}
-                </p>
-              </div>
-            ) : null}
-            <p className="text-center text-xs text-muted-foreground">{t("detail.demo")}</p>
+            <Suspense fallback={<BidBox initial={live} viewer={undefined} />}>
+              <ViewerBidBox initial={live} />
+            </Suspense>
           </div>
 
           {seller ? (
@@ -318,55 +289,7 @@ async function AuctionDetail({ params }: Pick<PageProps<"/licitatie/[slug]">, "p
           <Similar categoryId={category.id} excludeId={a.id} title={t("detail.similar")} />
         </Suspense>
       ) : null}
-
-      {/* Mobile: sticky price + bid bar above the bottom navigation. */}
-      {isActive ? (
-        <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 border-t bg-background/95 px-4 py-2 backdrop-blur-md lg:hidden">
-          <div className="mx-auto flex max-w-xl items-center justify-between gap-3">
-            <div>
-              <p className="text-xs text-muted-foreground">
-                {hasBids ? t("detail.currentBid") : t("detail.startingPrice")}
-              </p>
-              <p className="text-lg leading-tight font-extrabold text-primary">
-                {price(a.current_price)}
-              </p>
-            </div>
-            <Button disabled>
-              <Gavel data-icon="inline-start" />
-              {t("detail.bid")}
-            </Button>
-          </div>
-        </div>
-      ) : null}
-      {isActive ? <div aria-hidden className="h-16 lg:hidden" /> : null}
     </>
-  )
-}
-
-async function EndedNote({
-  status,
-  finalPrice,
-  endsAt,
-}: {
-  status: string
-  finalPrice: number | null
-  endsAt: string | null
-}) {
-  const t = await getTranslations("detail")
-  return (
-    <div className="space-y-1 rounded-xl border p-4 text-sm">
-      <p className="flex items-center gap-2 font-semibold">
-        <Package aria-hidden className="size-4" />
-        {status === "ended_sold" && finalPrice !== null
-          ? t("soldFor", { price: formatRON(finalPrice, { compact: true }) })
-          : status === "cancelled"
-            ? t("cancelled")
-            : t("unsold")}
-      </p>
-      {endsAt && status !== "cancelled" ? (
-        <p className="text-muted-foreground">{t("endedOn", { date: formatDateTime(endsAt) })}</p>
-      ) : null}
-    </div>
   )
 }
 

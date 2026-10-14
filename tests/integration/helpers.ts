@@ -39,3 +39,20 @@ export async function createTestUser(displayName: string): Promise<TestUser> {
 export async function deleteTestUsers(users: TestUser[]) {
   await Promise.all(users.map((u) => admin().auth.admin.deleteUser(u.id)))
 }
+
+/** Marks the user as having finished Stripe Connect onboarding (normally the webhook does it). */
+export async function connectPayouts(
+  user: TestUser,
+  accountId = `acct_test_${user.id.slice(0, 8)}`,
+) {
+  const { error } = await admin()
+    .from("profiles_private")
+    .update({
+      stripe_account_id: accountId,
+      stripe_details_submitted: true,
+      stripe_charges_enabled: true,
+      stripe_payouts_enabled: true,
+    })
+    .eq("id", user.id)
+  if (error) throw error
+}

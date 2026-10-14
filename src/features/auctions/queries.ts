@@ -39,14 +39,22 @@ export async function getCategoryTree(): Promise<CategoryGroup[]> {
 export async function getOwnDraft(id: string) {
   if (!/^[0-9a-f-]{36}$/.test(id)) return null
   const supabase = await createClient()
-  const { data } = await supabase
-    .from("auctions")
-    .select("*, auction_images(file_id, path, width, height, blur_data_url, position)")
-    .eq("id", id)
-    .eq("status", "draft")
-    .order("position", { referencedTable: "auction_images" })
-    .maybeSingle()
-  return data
+  // reserve_price is not publicly selectable (it is secret); the seller reads it via RPC.
+  const [{ data }, { data: reserve }] = await Promise.all([
+    supabase
+      .from("auctions")
+      .select(
+        `id, title, description, category_id, condition, starting_price, min_increment,
+         buy_now_price, duration_days, county_code, city, ship_pickup, ship_courier, courier_cost,
+         auction_images(file_id, path, width, height, blur_data_url, position)`,
+      )
+      .eq("id", id)
+      .eq("status", "draft")
+      .order("position", { referencedTable: "auction_images" })
+      .maybeSingle(),
+    supabase.rpc("get_auction_reserve", { p_auction_id: id }),
+  ])
+  return data ? { ...data, reserve_price: reserve ?? null } : null
 }
 
 /** Seller dashboard list: every auction of the user, newest first, with the cover photo. */

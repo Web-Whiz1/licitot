@@ -14,8 +14,7 @@
     "home": "LiciTot — pagina principală"
   },
   "demo": {
-    "banner": "Mod demonstrativ — plățile sunt de test și nu se percep bani reali.",
-    "badge": "Demo"
+    "banner": "Plăți în modul de test (sandbox Stripe): nu se percep bani reali."
   },
   "nav": {
     "home": "Acasă",
@@ -134,7 +133,6 @@
     "publish": "Publică licitația",
     "draftSaved": "Ciorna a fost salvată.",
     "published": "Licitația ta e live! 🎉",
-    "demoNote": "Mod demonstrativ: plățile sunt de test.",
     "errors": {
       "auction_not_found": "Licitația nu există sau nu îți aparține.",
       "auction_not_draft": "Licitația a fost deja publicată.",
@@ -230,7 +228,6 @@
     "buyNow": "Cumpără acum",
     "buyNowPrice": "Cumpără acum la {price}",
     "bid": "Licitează",
-    "biddingSoon": "Licitarea live se activează în curând.",
     "yourAuction": "Aceasta este licitația ta.",
     "description": "Descriere",
     "details": "Detalii",
@@ -249,10 +246,70 @@
     "soldFor": "Vândut cu {price}",
     "unsold": "Încheiată fără câștigător",
     "cancelled": "Licitație anulată",
-    "demo": "Mod demonstrativ: plățile sunt de test.",
     "notFoundTitle": "Licitația nu există",
     "notFoundText": "Poate a fost ștearsă sau linkul e greșit.",
     "backToBrowse": "Vezi alte licitații"
+  },
+  "bid": {
+    "amountLabel": "Oferta ta maximă",
+    "raiseMax": "Noua ta ofertă maximă",
+    "maxHint": "Scrie suma maximă pe care ești dispus s-o plătești. Licităm automat pentru tine doar cât e nevoie ca să rămâi primul.",
+    "quickPick": "Sume rapide",
+    "placeBid": "Licitează",
+    "raiseMaxButton": "Mărește oferta maximă",
+    "signInToBid": "Intră în cont ca să licitezi",
+    "belowMin": "Oferta minimă acum este {amount}.",
+    "confirmTitle": "Confirmi oferta?",
+    "confirmText": "Oferta ta maximă: {amount}. Licităm pentru tine doar cât e nevoie. Dacă licitația se încheie cu tine pe primul loc, te angajezi să cumperi obiectul.",
+    "confirm": "Confirm oferta",
+    "back": "Înapoi",
+    "placedLeading": "Oferta a fost plasată. Ești pe primul loc!",
+    "placedOutbid": "Oferta a fost plasată, dar altcineva are o ofertă maximă mai mare.",
+    "extended": "Licitația a fost prelungită cu 2 minute.",
+    "leading": "Ești pe primul loc!",
+    "leadingMax": "Oferta ta maximă: {amount}",
+    "outbid": "Ai fost depășit. Mărește oferta ca să revii pe primul loc.",
+    "antiSnipeHint": "O ofertă în ultimele 2 minute prelungește licitația cu încă 2 minute.",
+    "closing": "Licitația se încheie acum…",
+    "finalPrice": "Preț final",
+    "history": "Istoric oferte",
+    "loadingHistory": "Se încarcă…",
+    "you": "Tu",
+    "auto": "(automat)",
+    "showAll": "Vezi toate ({count})",
+    "showLess": "Arată mai puțin",
+    "buyNowConfirmTitle": "Cumperi acum?",
+    "buyNowConfirmText": "Cumperi obiectul la {price}. Licitația se încheie imediat, iar tu te angajezi să-l plătești.",
+    "buyNowConfirm": "Da, cumpăr",
+    "bought": "Felicitări, obiectul e al tău!",
+    "cancelAuction": "Anulează licitația",
+    "cancelConfirmTitle": "Anulezi licitația?",
+    "cancelConfirmText": "Licitația se oprește imediat și nu mai poate fi reactivată. Poți anula doar înainte de prima ofertă.",
+    "cancelled": "Licitația a fost anulată.",
+    "won": "Ai câștigat licitația!",
+    "wonHint": "Vezi detaliile în Contul meu → Câștigate.",
+    "errors": {
+      "invalid": "Verifică suma introdusă.",
+      "not_authenticated": "Intră în cont ca să licitezi.",
+      "auction_not_found": "Licitația nu există.",
+      "auction_ended": "Licitația s-a încheiat.",
+      "own_auction": "Nu poți licita la propria licitație.",
+      "user_banned": "Contul tău este suspendat.",
+      "bid_too_low": "Oferta e sub minimul acceptat. Prețul tocmai s-a schimbat, așa că verifică oferta minimă.",
+      "bid_too_high": "Suma depășește limita de 10.000.000 RON.",
+      "max_not_higher": "Noua ofertă maximă trebuie să fie mai mare decât cea actuală.",
+      "buy_now_unavailable": "„Cumpără acum” nu mai este disponibil.",
+      "has_bids": "Licitația are deja oferte și nu mai poate fi anulată.",
+      "rate_limited": "Prea multe oferte într-un timp scurt. Așteaptă un minut."
+    }
+  },
+  "watchlist": {
+    "add": "Adaugă la favorite",
+    "remove": "Scoate din favorite",
+    "added": "Am adăugat licitația la favorite.",
+    "removed": "Am scos licitația din favorite.",
+    "full": "Ai deja 500 de licitații la favorite. Scoate câteva ca să adaugi altele.",
+    "error": "Nu am putut actualiza favoritele. Încearcă din nou."
   },
   "countdown": {
     "days": "{n}z",
@@ -328,7 +385,8 @@
       "won": "Câștigate",
       "sold": "Vândute",
       "favorites": "Favorite",
-      "settings": "Setări"
+      "settings": "Setări",
+      "payouts": "Încasări"
     },
     "empty": {
       "listings": "Încă n-ai pus nimic la licitație.",
@@ -337,11 +395,39 @@
       "sold": "Obiectele vândute apar aici.",
       "favorites": "Apasă pe inimioară la o licitație ca s-o urmărești aici."
     },
-    "comingInPhase": "Disponibil în curând.",
     "menu": {
       "profile": "Profilul meu",
       "dashboard": "Contul meu",
       "settings": "Setări"
+    },
+    "browse": "Vezi licitațiile active",
+    "myBids": {
+      "leading": "Pe primul loc",
+      "outbid": "Depășit",
+      "won": "Câștigată",
+      "lost": "Pierdută",
+      "ended": "Încheiată",
+      "yourMax": "Maximul tău: {amount}",
+      "current": "Oferta curentă: {amount}",
+      "raise": "Mărește oferta"
+    },
+    "won": {
+      "price": "Câștigată cu {price}",
+      "seller": "Vânzător: {name}",
+      "on": "pe {date}",
+      "shipping": "Livrare: {options}",
+      "pickup": "predare personală în {city}",
+      "courier": "curier",
+      "viewSeller": "Profilul vânzătorului",
+      "pay": "Plătește",
+      "details": "Detalii comandă"
+    },
+    "sold": {
+      "price": "Vândută cu {price}",
+      "buyer": "Cumpărător: {name}",
+      "on": "pe {date}",
+      "viewBuyer": "Profilul cumpărătorului",
+      "details": "Detalii comandă"
     }
   },
   "settings": {
@@ -386,10 +472,7 @@
     "submit": "Caută"
   },
   "theme": {
-    "toggle": "Schimbă tema",
-    "light": "Luminoasă",
-    "dark": "Întunecată",
-    "system": "Ca sistemul"
+    "toggle": "Comută între tema luminoasă și cea întunecată"
   },
   "home": {
     "heroTitle": "Totul se licitează.",
@@ -400,7 +483,9 @@
     "newlyListed": "Adăugate recent",
     "featured": "Recomandate",
     "categories": "Categorii",
-    "seeAll": "Vezi toate"
+    "seeAll": "Vezi toate",
+    "emptyTitle": "Încă nu sunt licitații active.",
+    "emptyHint": "Fii primul care pune ceva la licitație: durează două minute."
   },
   "footer": {
     "about": "LiciTot e locul unde orice lucru își găsește un nou proprietar — prin licitație, la prețul corect.",
@@ -414,11 +499,10 @@
     "terms": "Termeni și condiții",
     "privacy": "Politica de confidențialitate",
     "cookies": "Politica de cookies",
-    "anpc": "ANPC",
-    "anpcFull": "Autoritatea Națională pentru Protecția Consumatorilor",
-    "sal": "Soluționarea alternativă a litigiilor (SAL)",
-    "rights": "© {year} LiciTot. Proiect demonstrativ.",
-    "madeIn": "Făcut în România"
+    "sal": "Soluționarea alternativă a litigiilor",
+    "rights": "© {year} LiciTot.",
+    "madeIn": "Făcut în România",
+    "sol": "Soluționarea online a litigiilor"
   },
   "brand": {
     "title": "Identitatea vizuală LiciTot",
@@ -433,19 +517,46 @@
     "lightTheme": "Tema luminoasă",
     "darkTheme": "Tema întunecată",
     "swatches": {
-      "background": { "name": "Alb", "usage": "Fundalul principal" },
+      "background": {
+        "name": "Alb",
+        "usage": "Fundalul principal"
+      },
       "sky": {
         "name": "Bleu bebe",
         "usage": "Suprafețe, evidențieri, ilustrații — niciodată text"
       },
-      "sky-soft": { "name": "Bleu pal", "usage": "Fundaluri de secțiuni și carduri evidențiate" },
-      "primary": { "name": "Albastru LiciTot", "usage": "Butoane, linkuri, text pe alb" },
-      "foreground": { "name": "Bleumarin", "usage": "Text principal" },
-      "muted-foreground": { "name": "Gri ardezie", "usage": "Text secundar, metadate" },
-      "border": { "name": "Gri linie", "usage": "Borduri, separatoare" },
-      "success": { "name": "Verde", "usage": "Licitație câștigată, plată reușită" },
-      "warning": { "name": "Chihlimbar", "usage": "Se termină curând, preț de rezervă neatins" },
-      "destructive": { "name": "Roșu", "usage": "Erori, ai fost depășit, anulare" }
+      "sky-soft": {
+        "name": "Bleu pal",
+        "usage": "Fundaluri de secțiuni și carduri evidențiate"
+      },
+      "primary": {
+        "name": "Albastru LiciTot",
+        "usage": "Butoane, linkuri, text pe alb"
+      },
+      "foreground": {
+        "name": "Bleumarin",
+        "usage": "Text principal"
+      },
+      "muted-foreground": {
+        "name": "Gri ardezie",
+        "usage": "Text secundar, metadate"
+      },
+      "border": {
+        "name": "Gri linie",
+        "usage": "Borduri, separatoare"
+      },
+      "success": {
+        "name": "Verde",
+        "usage": "Licitație câștigată, plată reușită"
+      },
+      "warning": {
+        "name": "Chihlimbar",
+        "usage": "Se termină curând, preț de rezervă neatins"
+      },
+      "destructive": {
+        "name": "Roșu",
+        "usage": "Erori, ai fost depășit, anulare"
+      }
     },
     "typography": "Tipografie",
     "typographyIntro": "Plus Jakarta Sans — modernă, rotunjită, cu suport complet pentru ă, â, î, ș, ț (cu virgulă, nu cu sedilă).",
@@ -511,5 +622,251 @@
     "inputLabel": "Prețul de pornire",
     "inputHint": "Vei primi aproximativ {payout} după comisionul de 5%.",
     "inputError": "Prețul trebuie să fie de cel puțin 1 RON."
+  },
+  "info": {
+    "howTitle": "Cum funcționează LiciTot",
+    "howIntro": "Pe LiciTot oricine poate vinde și cumpăra. Prețul îl stabilesc licitanții, iar tu decizi doar cât ești dispus să dai.",
+    "buyersTitle": "Dacă vrei să cumperi",
+    "buyers": {
+      "s1t": "Găsește ce-ți place",
+      "s1": "Caută după cuvinte, categorie, județ sau preț. Poți căuta și fără diacritice: „masina” găsește „mașină”.",
+      "s2t": "Spune-ne oferta ta maximă",
+      "s2": "Scrii suma maximă pe care ești dispus s-o plătești. Licităm automat pentru tine, câte un pas, doar cât e nevoie ca să rămâi primul. Nimeni nu-ți vede maximul.",
+      "s3t": "Fără licitări de ultimă secundă",
+      "s3": "Dacă cineva licitează în ultimele 2 minute, licitația se prelungește cu încă 2 minute. Toată lumea are timp să răspundă.",
+      "s4t": "Câștigi la final",
+      "s4": "Când timpul expiră, câștigă oferta cea mai mare, dacă a atins prețul de rezervă al vânzătorului. Găsești licitațiile câștigate în Contul meu → Câștigate."
+    },
+    "sellersTitle": "Dacă vrei să vinzi",
+    "sellers": {
+      "s1t": "Pune obiectul la licitație",
+      "s1": "Adaugă până la 10 fotografii, o descriere cinstită, prețul de pornire și durata (1–10 zile). Listarea e gratuită.",
+      "s2t": "Alege opțiunile",
+      "s2": "Prețul de rezervă e minimul sub care nu vinzi; licitanții văd doar dacă a fost atins. Prețul „Cumpără acum” permite cumpărarea imediată, cât timp nu există oferte.",
+      "s3t": "Urmărește ofertele live",
+      "s3": "Prețul și istoricul ofertelor se actualizează în timp real. Poți anula licitația doar înainte de prima ofertă.",
+      "s4t": "Plătești doar dacă vinzi",
+      "s4": "Comisionul LiciTot este de {percent}% din prețul final și se reține doar când obiectul se vinde."
+    },
+    "feesTitle": "Comisioane",
+    "feesIntro": "Simplu: listarea e gratuită, iar cumpărătorii nu plătesc niciun comision.",
+    "feeRows": {
+      "listing": "Listare licitație",
+      "listingValue": "Gratuit",
+      "buyer": "Comision pentru cumpărător",
+      "buyerValue": "0 RON",
+      "sale": "Comision la vânzare",
+      "saleValue": "{percent}% din prețul final",
+      "unsold": "Licitație fără câștigător",
+      "unsoldValue": "Gratuit"
+    },
+    "exampleTitle": "Exemplu",
+    "example": "Vinzi o bicicletă cu {price}. Comisionul este {fee}, iar tu primești {payout}.",
+    "shippingNote": "Costul de livrare stabilit de tine se adaugă la preț și nu intră în calculul comisionului.",
+    "ctaSell": "Pune ceva la licitație",
+    "ctaBrowse": "Vezi licitațiile active"
+  },
+  "orders": {
+    "title": "Comanda",
+    "status": {
+      "pending_payment": "Așteaptă plata",
+      "paid": "Plătită",
+      "shipped": "Expediată",
+      "completed": "Finalizată",
+      "cancelled": "Anulată"
+    },
+    "item": "Produs",
+    "shipping": "Livrare",
+    "shippingFree": "Gratuit",
+    "total": "Total",
+    "fee": "Comision LiciTot ({percent}%)",
+    "payout": "Primești",
+    "buyer": "Cumpărător",
+    "seller": "Vânzător",
+    "delivery": {
+      "pickup": "Predare personală în {city}",
+      "courier": "Curier"
+    },
+    "chooseDelivery": "Alege livrarea",
+    "courierCost": "Curier: {price}",
+    "pay": "Plătește {amount}",
+    "payHint": "Plata se face prin Stripe, cu cardul. LiciTot nu vede datele cardului.",
+    "payDue": "Plătește până pe {date}.",
+    "waitingPayment": "Așteptăm plata cumpărătorului până pe {date}.",
+    "overdue": "Termenul de plată a expirat.",
+    "cancelUnpaid": "Anulează comanda neplătită",
+    "cancelUnpaidConfirm": "Anulezi comanda? Cumpărătorul nu a plătit la timp, iar comanda nu mai poate fi reactivată.",
+    "sellerNotReady": "Vânzătorul încă nu poate primi plăți. Încearcă din nou mai târziu.",
+    "paidOn": "Plătită pe {date}.",
+    "contactTitle": "Date de contact",
+    "contactHint": "Stabiliți împreună predarea sau livrarea.",
+    "email": "Email",
+    "phone": "Telefon",
+    "noPhone": "Nu a adăugat un număr de telefon.",
+    "markShipped": "Am expediat / predat produsul",
+    "markShippedConfirm": "Confirmi că ai expediat sau ai predat produsul?",
+    "shippedOn": "Expediată pe {date}.",
+    "confirmReceived": "Am primit produsul",
+    "confirmReceivedConfirm": "Confirmi că ai primit produsul și că totul e în regulă?",
+    "completedOn": "Finalizată pe {date}. Mulțumim!",
+    "cancelledOn": "Anulată pe {date}.",
+    "shippedDone": "Am marcat comanda ca expediată.",
+    "receivedDone": "Comanda e finalizată. Mulțumim!",
+    "cancelledDone": "Comanda a fost anulată.",
+    "paymentCancelled": "Plata a fost anulată. Poți încerca din nou oricând până la termen.",
+    "paymentDone": "Plata a fost confirmată. Mulțumim!",
+    "paymentProcessing": "Plata se procesează. Pagina se actualizează în câteva momente.",
+    "details": "Detalii comandă",
+    "confirm": "Confirm",
+    "back": "Înapoi",
+    "viewAuction": "Vezi licitația",
+    "notFoundTitle": "Comanda nu există",
+    "errors": {
+      "not_authenticated": "Intră în cont ca să continui.",
+      "rate_limited": "Prea multe încercări într-un timp scurt. Mai încearcă peste câteva minute.",
+      "order_not_found": "Comanda nu există.",
+      "order_not_pending": "Comanda nu mai așteaptă plata.",
+      "order_not_paid": "Comanda nu a fost plătită încă.",
+      "delivery_unavailable": "Metoda de livrare aleasă nu e disponibilă.",
+      "delivery_required": "Alege metoda de livrare.",
+      "payment_not_overdue": "Termenul de plată nu a expirat încă.",
+      "seller_not_ready": "Vânzătorul încă nu poate primi plăți. Încearcă din nou mai târziu.",
+      "stripe_unavailable": "Serviciul de plăți nu răspunde acum. Încearcă din nou.",
+      "connect_missing": "Mai întâi activează-ți încasările."
+    }
+  },
+  "payouts": {
+    "title": "Încasări",
+    "intro": "Ca să vinzi pe LiciTot, banii din vânzări ajung direct în contul tău bancar, prin Stripe. Verificarea durează câteva minute.",
+    "feeNote": "LiciTot reține automat comisionul de {percent}% din prețul final. Restul ajunge la tine.",
+    "statusNone": "Încasările nu sunt activate.",
+    "statusIncomplete": "Ai început configurarea, dar mai sunt date de completat.",
+    "statusPending": "Stripe îți verifică datele. De obicei durează câteva minute.",
+    "statusActive": "Încasările sunt active. Poți publica licitații.",
+    "payoutsActive": "Transferurile în contul bancar sunt active.",
+    "payoutsPending": "Transferurile în contul bancar se activează după verificare.",
+    "start": "Activează încasările",
+    "continue": "Continuă configurarea",
+    "update": "Actualizează datele",
+    "dashboard": "Deschide panoul Stripe",
+    "returned": "Am actualizat starea contului tău Stripe.",
+    "testNote": "Mod de test: în formularul Stripe poți folosi datele de test sugerate (de ex. codul 000 000 la telefon).",
+    "sellNotice": "Înainte să publici, activează-ți încasările.",
+    "sellNoticeLink": "Activează încasările"
+  },
+  "legal": {
+    "updated": "Ultima actualizare: {date}",
+    "operatorTitle": "Operatorul platformei",
+    "operatorName": "Denumire",
+    "operatorTaxId": "CUI",
+    "operatorRegister": "Nr. Registrul Comerțului",
+    "operatorAddress": "Adresă",
+    "operatorEmail": "Email",
+    "terms": {
+      "title": "Termeni și condiții",
+      "intro": "Acești termeni se aplică tuturor celor care folosesc {operator}. Creând un cont sau licitând, îi accepți.",
+      "sections": {
+        "s1": {
+          "title": "1. Ce este {operator}",
+          "body": "{operator} este o platformă online de licitații unde utilizatorii vând și cumpără obiecte unii de la alții. {operator} pune la dispoziție platforma și procesarea plăților, dar nu este vânzătorul obiectelor și nu este parte în contractul de vânzare dintre cumpărător și vânzător."
+        },
+        "s2": {
+          "title": "2. Contul tău",
+          "body": "Ca să licitezi sau să vinzi, ai nevoie de un cont. Trebuie să ai cel puțin 18 ani și să folosești date reale. Răspunzi de tot ce se face din contul tău, așa că păstrează-ți parola în siguranță. Fiecare persoană poate avea un singur cont."
+        },
+        "s3": {
+          "title": "3. Cum funcționează licitațiile",
+          "body": "O ofertă este un angajament ferm: dacă licitația se încheie cu tine pe primul loc, te obligi să cumperi obiectul la prețul final.\n\nCând licitezi, introduci suma maximă pe care ești dispus s-o plătești. Platforma licitează automat pentru tine, câte un pas, doar cât e nevoie ca să rămâi primul. Maximul tău nu este afișat nimănui.\n\nO ofertă plasată în ultimele 2 minute prelungește licitația cu încă 2 minute. Dacă vânzătorul a stabilit un preț de rezervă, obiectul se vinde doar dacă oferta finală îl atinge. Opțiunea „Cumpără acum” încheie imediat licitația și este disponibilă doar până la prima ofertă. Vânzătorul poate anula o licitație doar înainte de prima ofertă."
+        },
+        "s4": {
+          "title": "4. Plăți și comisioane",
+          "body": "Plata se face online, cu cardul, prin Stripe. {operator} nu stochează datele cardului. Cumpărătorul plătește prețul final plus, dacă a ales curierul, costul de livrare stabilit de vânzător. Cumpărătorul nu plătește niciun comision.\n\nPentru fiecare obiect vândut, {operator} reține un comision de {percent}% din prețul final (fără livrare); restul sumei ajunge în contul vânzătorului prin Stripe. Listarea este gratuită, iar licitațiile fără câștigător nu costă nimic.\n\nCâștigătorul are la dispoziție 3 zile să plătească. După acest termen, vânzătorul poate anula comanda."
+        },
+        "s5": {
+          "title": "5. Obligațiile vânzătorului",
+          "body": "Ca să publici licitații, îți activezi încasările prin Stripe și treci prin verificarea lor de identitate. Descrii obiectul corect și complet, inclusiv defectele, și folosești fotografii reale ale obiectului. După plată, predai sau expediezi obiectul conform opțiunii alese de cumpărător și marchezi comanda ca expediată. Dacă vinzi în calitate de profesionist (comerciant), respecți și obligațiile legale ale comercianților față de consumatori."
+        },
+        "s6": {
+          "title": "6. Obiecte interzise",
+          "body": "Nu poți vinde: obiecte furate sau contrafăcute; arme, muniție și explozivi; droguri, medicamente cu prescripție și substanțe periculoase; alcool și tutun; animale vii; documente oficiale și date personale; conținut ilegal sau care încalcă drepturile altora; servicii, bani sau titluri de valoare. Ne rezervăm dreptul de a ascunde orice licitație care încalcă aceste reguli."
+        },
+        "s7": {
+          "title": "7. Livrare, retur și garanție",
+          "body": "Livrarea se face direct între vânzător și cumpărător: prin predare personală sau prin curier, conform opțiunilor din anunț. După plată, fiecare vede datele de contact ale celuilalt.\n\nDacă vânzătorul este profesionist, ca și consumator ai drepturile prevăzute de lege, inclusiv dreptul de retragere de 14 zile pentru contractele la distanță (OUG 34/2014) și garanția de conformitate. Între persoane fizice, aceste drepturi nu se aplică; de aceea, citește cu atenție descrierea înainte de a licita."
+        },
+        "s8": {
+          "title": "8. Răspundere",
+          "body": "Facem tot posibilul ca platforma să funcționeze corect și în siguranță, dar nu putem garanta că funcționează fără întreruperi. {operator} nu răspunde pentru calitatea, siguranța sau legalitatea obiectelor listate, nici pentru exactitatea descrierilor, care aparțin vânzătorilor."
+        },
+        "s9": {
+          "title": "9. Suspendarea contului",
+          "body": "Putem suspenda sau închide conturile care încalcă acești termeni, care încearcă să fraudeze alți utilizatori sau care manipulează licitațiile (de exemplu, licitând pe propriile obiecte prin alte conturi)."
+        },
+        "s10": {
+          "title": "10. Reclamații și litigii",
+          "body": "Pentru orice problemă, scrie-ne la {email}. Ca și consumator, te poți adresa și Autorității Naționale pentru Protecția Consumatorilor (ANPC), inclusiv prin procedura de soluționare alternativă a litigiilor (SAL). Litigiile care nu se rezolvă pe cale amiabilă sunt de competența instanțelor din România. Se aplică legea română."
+        },
+        "s11": {
+          "title": "11. Modificări",
+          "body": "Putem actualiza acești termeni. Data ultimei actualizări apare la începutul paginii. Licitațiile aflate în desfășurare continuă după regulile valabile când au fost publicate."
+        }
+      }
+    },
+    "privacy": {
+      "title": "Politica de confidențialitate",
+      "intro": "Aici afli ce date personale prelucrăm când folosești {operator}, de ce și ce drepturi ai, conform Regulamentului (UE) 2016/679 (GDPR).",
+      "sections": {
+        "s1": {
+          "title": "1. Cine răspunde de datele tale",
+          "body": "Operatorul datelor este {operator} (datele de identificare sunt mai jos). Pentru orice întrebare despre datele tale, scrie-ne la {email}."
+        },
+        "s2": {
+          "title": "2. Ce date prelucrăm",
+          "body": "Date de cont: adresa de email, numele afișat, numele de utilizator și parola (stocată doar criptat).\n\nDate de profil, opționale: fotografie, județ, oraș, descriere și număr de telefon.\n\nActivitate pe platformă: licitațiile publicate, ofertele (inclusiv oferta maximă), favoritele și comenzile.\n\nPlăți: plățile și verificarea vânzătorilor se fac prin Stripe. Nu primim și nu stocăm datele cardului; primim doar starea plății și starea contului de încasări.\n\nDate tehnice: adresa IP, folosită temporar pentru protecția împotriva abuzurilor, și cookie-urile de sesiune necesare autentificării."
+        },
+        "s3": {
+          "title": "3. De ce le prelucrăm",
+          "body": "Pentru a-ți oferi serviciul (executarea contractului): cont, licitații, oferte, comenzi și plăți.\n\nPentru obligații legale: evidența tranzacțiilor și a comisioanelor.\n\nÎn interesul nostru legitim: securitatea platformei, prevenirea fraudelor și a abuzurilor."
+        },
+        "s4": {
+          "title": "4. Cine vede datele tale",
+          "body": "Public: numele afișat, numele de utilizator, fotografia, orașul, descrierea și licitațiile tale. În istoricul ofertelor, numele licitanților apare mascat (de exemplu „A***u”).\n\nDupă plata unei comenzi, cumpărătorul și vânzătorul văd reciproc numele, emailul și telefonul, ca să stabilească predarea.\n\nFurnizorii care ne ajută să funcționăm, doar cât e necesar: Supabase (bază de date și autentificare), ImageKit (stocarea fotografiilor), Stripe (plăți și verificarea vânzătorilor) și Netlify (găzduire). Când datele ajung în afara Spațiului Economic European, transferul se face cu garanțiile prevăzute de GDPR, de exemplu clauzele contractuale standard."
+        },
+        "s5": {
+          "title": "5. Cât timp le păstrăm",
+          "body": "Datele de cont le păstrăm cât timp ai cont. Datele despre tranzacții le păstrăm cât cere legislația financiar-contabilă. Datele tehnice pentru protecția împotriva abuzurilor se șterg automat după cel mult o zi."
+        },
+        "s6": {
+          "title": "6. Drepturile tale",
+          "body": "Ai dreptul să ceri acces la datele tale, rectificarea, ștergerea sau restricționarea lor, portabilitatea datelor și să te opui prelucrării. Pentru oricare dintre ele, scrie-ne la {email}. Dacă ești nemulțumit, poți depune plângere la Autoritatea Națională de Supraveghere a Prelucrării Datelor cu Caracter Personal (ANSPDCP)."
+        },
+        "s7": {
+          "title": "7. Securitate",
+          "body": "Folosim conexiuni criptate, parolele sunt stocate doar sub formă criptată, iar accesul la date este restricționat prin reguli în baza de date: fiecare utilizator vede doar ce are dreptul să vadă."
+        }
+      }
+    },
+    "cookies": {
+      "title": "Politica de cookies",
+      "intro": "{operator} folosește doar cookie-uri și stocare locală strict necesare funcționării site-ului. Nu folosim cookie-uri de analiză sau de publicitate, așa că nu îți cerem acordul pentru ele.",
+      "sections": {
+        "s1": {
+          "title": "Ce folosim",
+          "body": "Cookie-uri de autentificare (sb-…-auth-token): te țin conectat în cont. Se șterg când te deconectezi sau când expiră sesiunea.\n\nPreferința de temă (în stocarea locală a browserului, cheia „theme”): reține dacă ai ales tema luminoasă sau întunecată.\n\nPlăți: pagina de plată este a Stripe, care își folosește propriile cookie-uri pentru securitatea plăților și prevenirea fraudelor."
+        },
+        "s2": {
+          "title": "Cum le controlezi",
+          "body": "Poți șterge sau bloca cookie-urile din setările browserului. Fără cookie-urile de autentificare nu poți intra în cont."
+        }
+      }
+    },
+    "contact": {
+      "title": "Contact",
+      "intro": "Ai o întrebare, o problemă cu o comandă sau vrei să raportezi o licitație? Scrie-ne și îți răspundem în cel mult 2 zile lucrătoare.",
+      "emailLabel": "Scrie-ne la",
+      "orderHint": "Dacă e vorba de o comandă, include linkul licitației sau al comenzii.",
+      "disputesTitle": "Reclamații",
+      "disputes": "Ca și consumator, te poți adresa și ANPC, inclusiv prin procedura de soluționare alternativă a litigiilor (SAL), sau platformei europene de soluționare online a litigiilor (SOL). Linkurile sunt în partea de jos a paginii."
+    }
   }
 }

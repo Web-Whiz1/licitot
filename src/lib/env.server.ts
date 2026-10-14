@@ -5,6 +5,15 @@ import { z } from "zod"
 const serverSchema = z.object({
   SUPABASE_SECRET_KEY: z.string().startsWith("sb_secret_"),
   IMAGEKIT_PRIVATE_KEY: z.string().startsWith("private_"),
+  // Optional so a missing Stripe key only disables payments, not the whole server.
+  STRIPE_SECRET_KEY: z
+    .string()
+    .regex(/^sk_(test|live)_/)
+    .optional(),
+  // Signing secrets of the two webhook endpoints (platform events, Connect account events).
+  // Optional: payments are also confirmed when the buyer returns from Checkout.
+  STRIPE_WEBHOOK_SECRET: z.string().startsWith("whsec_").optional(),
+  STRIPE_CONNECT_WEBHOOK_SECRET: z.string().startsWith("whsec_").optional(),
 })
 
 let cached: z.infer<typeof serverSchema> | undefined
@@ -13,6 +22,9 @@ export function serverEnv() {
   cached ??= serverSchema.parse({
     SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
     IMAGEKIT_PRIVATE_KEY: process.env.IMAGEKIT_PRIVATE_KEY,
+    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || undefined,
+    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || undefined,
+    STRIPE_CONNECT_WEBHOOK_SECRET: process.env.STRIPE_CONNECT_WEBHOOK_SECRET || undefined,
   })
   return cached
 }

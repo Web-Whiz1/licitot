@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, Gavel } from "lucide-react"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
 import { Suspense } from "react"
@@ -9,6 +9,7 @@ import { AuctionGridSkeleton } from "@/features/auctions/components/card-skeleto
 import { CategoryIcon } from "@/features/auctions/components/category-icon"
 import { getHomeSections } from "@/features/auctions/listing"
 import { getCategoryTree } from "@/features/auctions/queries"
+import { EmptyState } from "@/features/profiles/components/empty-state"
 
 export default async function HomePage() {
   const t = await getTranslations()
@@ -81,24 +82,50 @@ async function Categories() {
 
 async function Sections() {
   const [t, sections] = await Promise.all([getTranslations("home"), getHomeSections()])
+  const featured = sections.featured.filter((a) => a.bid_count > 0)
+  if (sections.endingSoon.length === 0) {
+    return (
+      <section className="mx-auto max-w-7xl px-4 pt-12 md:px-6">
+        <EmptyState
+          icon={Gavel}
+          title={t("emptyTitle")}
+          hint={t("emptyHint")}
+          action={
+            <Button asChild>
+              <Link href="/vinde">{t("heroCtaSell")}</Link>
+            </Button>
+          }
+        />
+      </section>
+    )
+  }
+  // With few live auctions every section would list the same items: show each only once.
+  const showNewest = sections.endingSoon.length >= 8
   return (
     <>
-      {sections.featured.length ? (
+      {featured.length >= 4 ? (
         <Section
           id="recomandate"
           title={t("featured")}
           href="/cauta?ordine=oferte"
           seeAll={t("seeAll")}
         >
-          <AuctionGrid auctions={sections.featured} priorityCount={2} />
+          <AuctionGrid auctions={featured} priorityCount={2} />
         </Section>
       ) : null}
       <Section id="se-termina" title={t("endingSoon")} href="/cauta" seeAll={t("seeAll")}>
-        <AuctionGrid auctions={sections.endingSoon} />
+        <AuctionGrid auctions={sections.endingSoon} priorityCount={featured.length >= 4 ? 0 : 2} />
       </Section>
-      <Section id="recente" title={t("newlyListed")} href="/cauta?ordine=noi" seeAll={t("seeAll")}>
-        <AuctionGrid auctions={sections.newest} />
-      </Section>
+      {showNewest ? (
+        <Section
+          id="recente"
+          title={t("newlyListed")}
+          href="/cauta?ordine=noi"
+          seeAll={t("seeAll")}
+        >
+          <AuctionGrid auctions={sections.newest} />
+        </Section>
+      ) : null}
     </>
   )
 }

@@ -1,6 +1,12 @@
 import path from "node:path"
 import { expect, test } from "@playwright/test"
-import { cleanupUser, createConfirmedUser, signIn, type E2EUser } from "./helpers"
+import {
+  cleanupUser,
+  createConfirmedUser,
+  markPayoutsActive,
+  signIn,
+  type E2EUser,
+} from "./helpers"
 
 // Phase 3: create an auction with real ImageKit uploads, publish it, and manage drafts.
 
@@ -9,6 +15,7 @@ let user: E2EUser | undefined
 
 test.beforeEach(async () => {
   user = await createConfirmedUser("Ion Vânzătorul")
+  await markPayoutsActive(user)
 })
 
 test.afterEach(async () => {

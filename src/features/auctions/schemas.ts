@@ -15,7 +15,7 @@ import {
 
 // The form works with strings (what the user types, e.g. "1.250,50"); the schema outputs bani.
 
-const money = (min: number, max: number) =>
+export const money = (min: number, max: number) =>
   z
     .string()
     .trim()

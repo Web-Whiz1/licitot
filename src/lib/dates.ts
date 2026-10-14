@@ -31,6 +31,11 @@ type DateInput = Date | string | number
 
 const toDate = (d: DateInput) => (d instanceof Date ? d : new Date(d))
 
+/** True when the moment has passed (request-time code only). */
+export function isPast(d: DateInput): boolean {
+  return toDate(d).getTime() < Date.now()
+}
+
 /** "12 octombrie 2026" */
 export function formatDate(d: DateInput): string {
   return dateFormatter.format(toDate(d))

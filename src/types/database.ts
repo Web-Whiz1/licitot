@@ -73,6 +73,7 @@ export type Database = {
           duration_days: number
           ends_at: string | null
           final_price: number | null
+          has_reserve: boolean | null
           hidden_reason: string | null
           high_bidder_id: string | null
           id: string
@@ -80,6 +81,7 @@ export type Database = {
           min_increment: number
           original_ends_at: string | null
           published_at: string | null
+          reserve_met: boolean | null
           reserve_price: number | null
           search_tsv: unknown
           seller_id: string
@@ -107,6 +109,7 @@ export type Database = {
           duration_days: number
           ends_at?: string | null
           final_price?: number | null
+          has_reserve?: boolean | null
           hidden_reason?: string | null
           high_bidder_id?: string | null
           id?: string
@@ -114,6 +117,7 @@ export type Database = {
           min_increment: number
           original_ends_at?: string | null
           published_at?: string | null
+          reserve_met?: boolean | null
           reserve_price?: number | null
           search_tsv?: unknown
           seller_id?: string
@@ -141,6 +145,7 @@ export type Database = {
           duration_days?: number
           ends_at?: string | null
           final_price?: number | null
+          has_reserve?: boolean | null
           hidden_reason?: string | null
           high_bidder_id?: string | null
           id?: string
@@ -148,6 +153,7 @@ export type Database = {
           min_increment?: number
           original_ends_at?: string | null
           published_at?: string | null
+          reserve_met?: boolean | null
           reserve_price?: number | null
           search_tsv?: unknown
           seller_id?: string
@@ -193,6 +199,87 @@ export type Database = {
           {
             foreignKeyName: "auctions_winner_id_fkey"
             columns: ["winner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      auto_bids: {
+        Row: {
+          auction_id: string
+          bidder_id: string
+          created_at: string
+          max_amount: number
+          updated_at: string
+        }
+        Insert: {
+          auction_id: string
+          bidder_id: string
+          created_at?: string
+          max_amount: number
+          updated_at?: string
+        }
+        Update: {
+          auction_id?: string
+          bidder_id?: string
+          created_at?: string
+          max_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auto_bids_auction_id_fkey"
+            columns: ["auction_id"]
+            isOneToOne: false
+            referencedRelation: "auctions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "auto_bids_bidder_id_fkey"
+            columns: ["bidder_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bids: {
+        Row: {
+          amount: number
+          auction_id: string
+          bidder_id: string
+          created_at: string
+          id: number
+          is_auto: boolean
+        }
+        Insert: {
+          amount: number
+          auction_id: string
+          bidder_id: string
+          created_at?: string
+          id?: never
+          is_auto?: boolean
+        }
+        Update: {
+          amount?: number
+          auction_id?: string
+          bidder_id?: string
+          created_at?: string
+          id?: never
+          is_auto?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bids_auction_id_fkey"
+            columns: ["auction_id"]
+            isOneToOne: false
+            referencedRelation: "auctions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bids_bidder_id_fkey"
+            columns: ["bidder_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -251,6 +338,98 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      orders: {
+        Row: {
+          auction_id: string
+          buyer_id: string
+          cancelled_at: string | null
+          completed_at: string | null
+          created_at: string
+          delivery_method: Database["public"]["Enums"]["delivery_method"] | null
+          id: string
+          item_price: number
+          paid_at: string | null
+          payment_due_at: string
+          platform_fee: number
+          seller_id: string
+          shipped_at: string | null
+          shipping_cost: number
+          status: Database["public"]["Enums"]["order_status"]
+          stripe_checkout_session_id: string | null
+          stripe_payment_intent_id: string | null
+          total: number | null
+          updated_at: string
+        }
+        Insert: {
+          auction_id: string
+          buyer_id: string
+          cancelled_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          delivery_method?:
+            | Database["public"]["Enums"]["delivery_method"]
+            | null
+          id?: string
+          item_price: number
+          paid_at?: string | null
+          payment_due_at: string
+          platform_fee: number
+          seller_id: string
+          shipped_at?: string | null
+          shipping_cost?: number
+          status?: Database["public"]["Enums"]["order_status"]
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+          total?: number | null
+          updated_at?: string
+        }
+        Update: {
+          auction_id?: string
+          buyer_id?: string
+          cancelled_at?: string | null
+          completed_at?: string | null
+          created_at?: string
+          delivery_method?:
+            | Database["public"]["Enums"]["delivery_method"]
+            | null
+          id?: string
+          item_price?: number
+          paid_at?: string | null
+          payment_due_at?: string
+          platform_fee?: number
+          seller_id?: string
+          shipped_at?: string | null
+          shipping_cost?: number
+          status?: Database["public"]["Enums"]["order_status"]
+          stripe_checkout_session_id?: string | null
+          stripe_payment_intent_id?: string | null
+          total?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_auction_id_fkey"
+            columns: ["auction_id"]
+            isOneToOne: true
+            referencedRelation: "auctions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -355,12 +534,124 @@ export type Database = {
           },
         ]
       }
+      watchlist: {
+        Row: {
+          auction_id: string
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          auction_id: string
+          created_at?: string
+          user_id?: string
+        }
+        Update: {
+          auction_id?: string
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "watchlist_auction_id_fkey"
+            columns: ["auction_id"]
+            isOneToOne: false
+            referencedRelation: "auctions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "watchlist_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      buy_now: { Args: { p_auction_id: string }; Returns: Json }
+      cancel_auction: { Args: { p_auction_id: string }; Returns: undefined }
+      cancel_unpaid_order: { Args: { p_order_id: string }; Returns: undefined }
+      choose_delivery: {
+        Args: {
+          p_method: Database["public"]["Enums"]["delivery_method"]
+          p_order_id: string
+        }
+        Returns: {
+          auction_id: string
+          buyer_id: string
+          cancelled_at: string | null
+          completed_at: string | null
+          created_at: string
+          delivery_method: Database["public"]["Enums"]["delivery_method"] | null
+          id: string
+          item_price: number
+          paid_at: string | null
+          payment_due_at: string
+          platform_fee: number
+          seller_id: string
+          shipped_at: string | null
+          shipping_cost: number
+          status: Database["public"]["Enums"]["order_status"]
+          stripe_checkout_session_id: string | null
+          stripe_payment_intent_id: string | null
+          total: number | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "orders"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      confirm_order_received: {
+        Args: { p_order_id: string }
+        Returns: undefined
+      }
+      get_auction_bids: {
+        Args: { p_auction_id: string; p_limit?: number }
+        Returns: {
+          amount: number
+          bidder: string
+          created_at: string
+          id: number
+          is_auto: boolean
+          is_mine: boolean
+        }[]
+      }
+      get_auction_reserve: { Args: { p_auction_id: string }; Returns: number }
+      get_order_contact: {
+        Args: { p_order_id: string }
+        Returns: {
+          display_name: string
+          email: string
+          phone: string
+          username: string
+        }[]
+      }
       is_admin: { Args: never; Returns: boolean }
+      mark_order_shipped: { Args: { p_order_id: string }; Returns: undefined }
+      order_attach_checkout: {
+        Args: { p_order_id: string; p_session_id: string }
+        Returns: undefined
+      }
+      order_mark_paid: {
+        Args: {
+          p_amount: number
+          p_order_id: string
+          p_payment_intent_id: string
+          p_session_id: string
+        }
+        Returns: boolean
+      }
+      place_bid: {
+        Args: { p_auction_id: string; p_max_amount: number }
+        Returns: Json
+      }
       publish_auction: {
         Args: { p_auction_id: string }
         Returns: {
@@ -377,6 +668,7 @@ export type Database = {
           duration_days: number
           ends_at: string | null
           final_price: number | null
+          has_reserve: boolean | null
           hidden_reason: string | null
           high_bidder_id: string | null
           id: string
@@ -384,6 +676,7 @@ export type Database = {
           min_increment: number
           original_ends_at: string | null
           published_at: string | null
+          reserve_met: boolean | null
           reserve_price: number | null
           search_tsv: unknown
           seller_id: string
@@ -412,6 +705,24 @@ export type Database = {
         Args: { p_auction_id: string; p_images: Json }
         Returns: undefined
       }
+      set_stripe_account: {
+        Args: { p_account_id: string; p_user_id: string }
+        Returns: string
+      }
+      stripe_event_once: {
+        Args: { p_event_id: string; p_type: string }
+        Returns: boolean
+      }
+      stripe_event_release: { Args: { p_event_id: string }; Returns: undefined }
+      sync_stripe_account: {
+        Args: {
+          p_account_id: string
+          p_charges_enabled: boolean
+          p_details_submitted: boolean
+          p_payouts_enabled: boolean
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       auction_status:
@@ -420,7 +731,14 @@ export type Database = {
         | "ended_sold"
         | "ended_unsold"
         | "cancelled"
+      delivery_method: "pickup" | "courier"
       item_condition: "nou" | "ca_nou" | "folosit" | "pentru_piese"
+      order_status:
+        | "pending_payment"
+        | "paid"
+        | "shipped"
+        | "completed"
+        | "cancelled"
       user_role: "user" | "admin"
     }
     CompositeTypes: {
@@ -556,7 +874,15 @@ export const Constants = {
         "ended_unsold",
         "cancelled",
       ],
+      delivery_method: ["pickup", "courier"],
       item_condition: ["nou", "ca_nou", "folosit", "pentru_piese"],
+      order_status: [
+        "pending_payment",
+        "paid",
+        "shipped",
+        "completed",
+        "cancelled",
+      ],
       user_role: ["user", "admin"],
     },
   },

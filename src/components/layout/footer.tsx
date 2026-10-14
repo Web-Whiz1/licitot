@@ -1,16 +1,16 @@
-import { Scale } from "lucide-react"
 import { cacheLife } from "next/cache"
+import Image from "next/image"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
 import { Logo } from "@/components/brand/logo"
 
-// Official consumer-protection links required for Romanian online commerce.
-// Since ANPC Order 270/2026 the SOL (EU ODR) pictogram is no longer required: the EU platform
-// was discontinued. The SAL pictogram must link to ANPC's integrated SAL complaints platform.
-// TODO(legal): replace the styled SAL badge with the official 250×50 pictogram from anpc.ro
-// and have a lawyer confirm the current requirements before launch.
-const ANPC_URL = "https://anpc.ro/"
-const ANPC_SAL_URL = "https://reclamatiisal.anpc.ro/"
+// Consumer-protection pictograms (ANPC): SAL → ANPC's page on alternative dispute resolution,
+// SOL → the EU online dispute resolution page. Official artwork, pre-rendered to 500px WebP
+// (2× for sharp screens) because the source SAL SVG embeds a 285 KB bitmap.
+const DISPUTE_BADGES = [
+  { href: "https://anpc.ro/ce-este-sal/", src: "/legal/anpc-sal.webp", key: "sal" },
+  { href: "https://ec.europa.eu/consumers/odr", src: "/legal/anpc-sol.webp", key: "sol" },
+] as const
 
 async function currentYear() {
   "use cache"
@@ -74,29 +74,25 @@ export async function Footer() {
 
       <div className="border-t">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 md:flex-row md:items-center md:justify-between md:px-6">
-          <div className="flex flex-wrap items-center gap-3">
-            <a
-              href={ANPC_SAL_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-[50px] w-[250px] items-center gap-3 rounded-md border-2 border-foreground/80 bg-background px-3 text-left"
-            >
-              <Scale aria-hidden className="size-6 shrink-0 text-primary" />
-              <span className="text-[0.6875rem] leading-tight font-semibold">
-                <span className="block text-xs font-extrabold tracking-wide">ANPC</span>
-                {t("sal")}
-              </span>
-            </a>
-            <a
-              href={ANPC_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
-            >
-              <abbr title={t("anpcFull")} className="no-underline">
-                {t("anpc")}
-              </abbr>
-            </a>
+          <div className="flex flex-wrap items-center gap-2">
+            {DISPUTE_BADGES.map((b) => (
+              <a
+                key={b.key}
+                href={b.href}
+                target="_blank"
+                rel="nofollow noopener noreferrer"
+                className="rounded-lg focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+              >
+                <Image
+                  src={b.src}
+                  alt={t(b.key)}
+                  width={250}
+                  height={62}
+                  unoptimized
+                  className="h-auto w-[250px] max-w-full"
+                />
+              </a>
+            ))}
           </div>
           <p className="text-sm text-muted-foreground">
             {t("rights", { year })} · {t("madeIn")}

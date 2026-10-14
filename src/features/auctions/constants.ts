@@ -18,8 +18,8 @@ export type AuctionStatus = (typeof AUCTION_STATUSES)[number]
 
 export const MAX_IMAGES = 10
 
-/** Price limits in bani: 1 RON … 10,000,000 RON. */
-export const MIN_PRICE = 100
+/** Price limits in bani: 2 RON (Stripe's minimum charge in RON) … 10,000,000 RON. */
+export const MIN_PRICE = 200
 export const MAX_PRICE = 1_000_000_000
 export const MIN_INCREMENT = 100
 export const MAX_INCREMENT = 100_000_000

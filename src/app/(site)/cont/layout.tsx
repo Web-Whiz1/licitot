@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
-import { AccountTabs } from "@/features/profiles/components/account-tabs"
+import { AccountTabs, AccountTabsNav } from "@/features/profiles/components/account-tabs"
 import { requireUser } from "@/features/auth/session"
 
 export default async function AccountLayout({ children }: LayoutProps<"/cont">) {
@@ -9,7 +9,9 @@ export default async function AccountLayout({ children }: LayoutProps<"/cont">) 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
       <h1 className="mb-6 text-3xl font-extrabold tracking-tight">{t("title")}</h1>
-      <AccountTabs />
+      <Suspense fallback={<AccountTabsNav pathname={null} />}>
+        <AccountTabs />
+      </Suspense>
       <div className="pt-8">
         <Suspense fallback={<AccountSkeleton />}>
           <SignedIn>{children}</SignedIn>

@@ -434,7 +434,6 @@ export function AuctionForm({ auctionId: initialId, categories, defaults }: Prop
             {t("saveDraft")}
           </Button>
         </div>
-        <p className="text-center text-xs text-muted-foreground">{t("demoNote")}</p>
       </aside>
     </form>
   )

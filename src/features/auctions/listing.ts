@@ -10,10 +10,10 @@ import { getCategoryTree } from "./queries"
 export const AUCTIONS_TAG = "auctions"
 export const auctionTag = (id: string) => `auction:${id}`
 
-const CARD_COLUMNS =
+export const CARD_COLUMNS =
   "id, slug, title, status, current_price, starting_price, bid_count, buy_now_price, ends_at, city, county_code, condition, auction_images(path, blur_data_url, position)"
 
-type CardRow = {
+export type CardRow = {
   id: string
   slug: string
   title: string
@@ -33,7 +33,7 @@ export type AuctionCardData = Omit<CardRow, "auction_images"> & {
   cover: { path: string; blurDataUrl: string | null } | null
 }
 
-function toCard(row: CardRow): AuctionCardData {
+export function toCard(row: CardRow): AuctionCardData {
   const { auction_images, ...rest } = row
   const cover = [...auction_images].sort((a, b) => a.position - b.position)[0]
   return { ...rest, cover: cover ? { path: cover.path, blurDataUrl: cover.blur_data_url } : null }
@@ -134,8 +134,8 @@ export async function getPublicAuction(id: string) {
   const { data, error } = await createPublicClient()
     .from("auctions")
     .select(
-      `id, slug, title, description, condition, status, starting_price, reserve_price, buy_now_price,
-       min_increment, current_price, bid_count, published_at, starts_at, ends_at, final_price,
+      `id, slug, title, description, condition, status, starting_price, has_reserve, reserve_met, buy_now_price,
+       min_increment, current_price, bid_count, published_at, starts_at, ends_at, final_price, high_bidder_id, winner_id, updated_at,
        county_code, city, ship_pickup, ship_courier, courier_cost, seller_id, category_id,
        county:counties(name),
        category:categories(id, slug, name, parent_id),

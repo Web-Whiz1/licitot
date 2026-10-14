@@ -7,6 +7,7 @@ import { AuctionForm } from "@/features/auctions/components/auction-form"
 import { SellPageShell, SellSkeleton } from "@/features/auctions/components/sell-page-shell"
 import { draftToForm } from "@/features/auctions/form-defaults"
 import { getCategoryTree, getOwnDraft } from "@/features/auctions/queries"
+import { PayoutsNotice } from "@/features/payments/components/payouts-notice"
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("sell")
@@ -26,16 +27,19 @@ export default async function EditDraftPage({ params }: PageProps<"/vinde/[id]">
 
 async function EditDraft({ params }: Pick<PageProps<"/vinde/[id]">, "params">) {
   const { id } = await params
-  await requireUser(`/vinde/${id}`)
+  const user = await requireUser(`/vinde/${id}`)
   const [categories, draft] = await Promise.all([getCategoryTree(), getOwnDraft(id)])
   // RLS returns only the user's own auction; anything not a draft can't be edited.
   if (!draft) notFound()
   return (
-    <AuctionForm
-      key={draft.id}
-      auctionId={draft.id}
-      categories={categories}
-      defaults={draftToForm(draft)}
-    />
+    <>
+      <PayoutsNotice userId={user.id} />
+      <AuctionForm
+        key={draft.id}
+        auctionId={draft.id}
+        categories={categories}
+        defaults={draftToForm(draft)}
+      />
+    </>
   )
 }

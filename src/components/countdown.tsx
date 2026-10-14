@@ -26,6 +26,11 @@ const getServerNow = () => null
 
 const HOUR = 3_600_000
 
+/** Current time (ms, whole seconds) from the shared clock; null during SSR and hydration. */
+export function useNow(): number | null {
+  return useSyncExternalStore(subscribe, getNow, getServerNow)
+}
+
 /**
  * Live countdown. SSR renders the end date in Romanian time; the client then ticks.
  * `compact` drops seconds when more than an hour remains (cards).
@@ -42,7 +47,7 @@ export function Countdown({
   showIcon?: boolean
 }) {
   const t = useTranslations("countdown")
-  const now = useSyncExternalStore(subscribe, getNow, getServerNow)
+  const now = useNow()
 
   if (now === null) {
     return (
