@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Info, Send } from "lucide-react"
+import { CircleAlert, Info, Send } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { useCallback, useState, useSyncExternalStore, useTransition } from "react"
@@ -98,34 +98,55 @@ export function AuctionForm({ auctionId: initialId, categories, defaults }: Prop
     [form],
   )
 
-  const submit = (intent: "draft" | "publish") =>
-    form.handleSubmit(() => {
-      setFormError(undefined)
-      if (uploading) {
-        setFormError("validation.imagesPending")
-        return
-      }
-      const values = form.getValues()
-      if (intent === "publish" && values.images.length === 0) {
-        form.setError("images", { message: "validation.imagesRequired" })
-        return
-      }
-      startTransition(async () => {
-        const action = intent === "draft" ? saveDraft : publishAuction
-        const result = await action(auctionId, values)
-        // A draft may exist even if publishing failed; keep editing that one.
-        const savedId = result.data?.id
-        if (savedId && savedId !== auctionId) {
-          setAuctionId(savedId)
-          router.replace(`/vinde/${savedId}`, { scroll: false })
-        }
-        setFormError(applyActionResult(form, result))
-        if (result.ok && result.message) {
-          toast.success(tAll(result.message))
-          form.reset(values)
-        }
-      })
+  /** Errors sit next to their fields, often far from the button: toast and scroll to the first. */
+  const revealErrors = (message: MessageKey) => {
+    toast.error(tAll(message))
+    requestAnimationFrame(() => {
+      document
+        .querySelector("[data-auction-form] [role=alert]")
+        ?.scrollIntoView({ behavior: "smooth", block: "center" })
     })
+  }
+
+  const showFormError = (message: MessageKey | undefined) => {
+    setFormError(message)
+    if (message) revealErrors(message)
+  }
+
+  const submit = (intent: "draft" | "publish") =>
+    form.handleSubmit(
+      () => {
+        setFormError(undefined)
+        if (uploading) {
+          showFormError("validation.imagesPending")
+          return
+        }
+        const values = form.getValues()
+        if (intent === "publish" && values.images.length === 0) {
+          form.setError("images", { message: "validation.imagesRequired" })
+          revealErrors("sell.fixErrors")
+          return
+        }
+        startTransition(async () => {
+          const action = intent === "draft" ? saveDraft : publishAuction
+          const result = await action(auctionId, values)
+          // A draft may exist even if publishing failed; keep editing that one.
+          const savedId = result.data?.id
+          if (savedId && savedId !== auctionId) {
+            setAuctionId(savedId)
+            router.replace(`/vinde/${savedId}`, { scroll: false })
+          }
+          const error = applyActionResult(form, result)
+          if (error) showFormError(error)
+          else if (!result.ok) revealErrors("sell.fixErrors")
+          if (result.ok && result.message) {
+            toast.success(tAll(result.message))
+            form.reset(values)
+          }
+        })
+      },
+      () => revealErrors("sell.fixErrors"),
+    )
 
   const aria = (name: FieldPath<AuctionFormInput>, hint?: string) => {
     const hasError = Boolean(form.getFieldState(name).error)
@@ -139,6 +160,7 @@ export function AuctionForm({ auctionId: initialId, categories, defaults }: Prop
   return (
     <form
       noValidate
+      data-auction-form
       onSubmit={submit("publish")}
       className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start"
     >
@@ -423,6 +445,12 @@ export function AuctionForm({ auctionId: initialId, categories, defaults }: Prop
         {now !== null && DURATIONS.some((d) => String(d) === durationDays) ? (
           <p className="text-sm">
             {t("endsAt", { date: formatDateTime(now + Number(durationDays) * 86_400_000) })}
+          </p>
+        ) : null}
+        {Object.keys(errors).length > 0 || formError ? (
+          <p role="status" className="flex gap-2 text-sm font-medium text-destructive">
+            <CircleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
+            {formError ? tAll(formError) : t("fixErrors")}
           </p>
         ) : null}
         <div className="flex flex-col gap-2">

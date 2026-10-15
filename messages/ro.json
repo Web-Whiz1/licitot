@@ -143,7 +143,8 @@
       "images_invalid": "Unele fotografii nu au putut fi verificate. Încarcă-le din nou.",
       "too_many_images": "Poți adăuga cel mult 10 fotografii.",
       "rate_limited": "Prea multe încărcări într-un timp scurt. Mai încearcă puțin mai târziu."
-    }
+    },
+    "fixErrors": "Verifică câmpurile marcate cu roșu."
   },
   "auction": {
     "status": {

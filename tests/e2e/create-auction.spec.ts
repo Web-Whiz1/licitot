@@ -69,6 +69,10 @@ test("validation errors, then save and delete a draft", async ({ page }) => {
   await page.getByRole("button", { name: "Publică licitația" }).click()
   await expect(page.getByText("Titlul trebuie să aibă între 5 și 80 de caractere.")).toBeVisible()
   await expect(page.getByText("Alege o categorie.")).toBeVisible()
+  // The summary next to the button says so too (errors may be far up the page).
+  await expect(
+    page.getByRole("status").filter({ hasText: "Verifică câmpurile marcate cu roșu." }),
+  ).toBeVisible()
 
   await page.getByLabel("Titlu").fill("Set de viniluri vechi")
   await page.getByLabel("Categorie").selectOption({ label: "Viniluri & CD-uri" })
