@@ -14,6 +14,7 @@ export async function UserMenu() {
         displayName={profile.display_name}
         username={profile.username}
         avatarPath={profile.avatar_path}
+        isAdmin={profile.role === "admin" && !profile.is_banned}
       />
     )
   }

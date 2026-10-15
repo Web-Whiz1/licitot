@@ -1,5 +1,13 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest"
-import { anon, connectPayouts, createTestUser, deleteTestUsers, type TestUser } from "./helpers"
+import {
+  anon,
+  connectPayouts,
+  createTestUser,
+  deleteTestUsers,
+  hashImages,
+  randomPhash,
+  type TestUser,
+} from "./helpers"
 
 let seller: TestUser
 let other: TestUser
@@ -182,6 +190,10 @@ describe("publish_auction", () => {
       p_auction_id: a.id,
       p_images: [image(seller)],
     })
+    // Photos must be fingerprinted by the server before publishing.
+    const unverified = await seller.client.rpc("publish_auction", { p_auction_id: a.id })
+    expect(unverified.error?.message).toBe("photos_unverified")
+    await hashImages(a.id, [{ file_id: image(seller).file_id, phash: randomPhash() }])
     const { data, error } = await seller.client.rpc("publish_auction", { p_auction_id: a.id })
     expect(error).toBeNull()
     expect(data).toMatchObject({ status: "active", current_price: 45_000, bid_count: 0 })

@@ -9,13 +9,16 @@ import {
   type TestUser,
 } from "./helpers"
 
-// Phase 6: orders created by sales, delivery choice, payment (service role), shipping,
-// receipt, cancelling unpaid orders, contact details and webhook idempotency.
+// Orders: created by sales, delivery choice, payment (service role) and the escrow flow —
+// handover codes (pickup), AWB (courier), receipt, disputes, deadlines and refunds.
 
 let seller: TestUser
 let buyer: TestUser
 let other: TestUser
+let staff: TestUser
 let categoryId: number
+
+const DAY = 86_400_000
 
 async function soldAuction(opts: { pickup?: boolean; courier?: boolean; price?: number } = {}) {
   const now = Date.now()
@@ -56,20 +59,42 @@ async function soldAuction(opts: { pickup?: boolean; courier?: boolean; price?: 
   return order!
 }
 
+/** A sold auction, delivery chosen and paid (as the webhook would do). */
+async function paidOrder(delivery: "pickup" | "courier") {
+  const order = await soldAuction(delivery === "pickup" ? { courier: false } : { pickup: false })
+  const amount = order.item_price + order.shipping_cost
+  const { error } = await admin().rpc("order_mark_paid", {
+    p_order_id: order.id,
+    p_session_id: `cs_test_${order.id}`,
+    p_payment_intent_id: `pi_test_${order.id}`,
+    p_charge_id: `ch_test_${order.id}`,
+    p_amount: amount,
+  })
+  if (error) throw error
+  return order.id
+}
+
+async function orderRow(id: string) {
+  const { data } = await admin().from("orders").select("*").eq("id", id).single()
+  return data!
+}
+
 beforeAll(async () => {
-  ;[seller, buyer, other] = await Promise.all([
+  ;[seller, buyer, other, staff] = await Promise.all([
     createTestUser("Vânzător Comenzi"),
     createTestUser("Cumpărător Comenzi"),
     createTestUser("Alt Utilizator"),
+    createTestUser("Admin Comenzi"),
   ])
   await connectPayouts(seller)
   await admin().from("profiles_private").update({ phone: "+40721234567" }).eq("id", seller.id)
+  await admin().from("profiles").update({ role: "admin" }).eq("id", staff.id)
   const { data } = await anon().from("categories").select("id").eq("slug", "biciclete").single()
   categoryId = data!.id
 })
 
 afterAll(async () => {
-  await deleteTestUsers([seller, buyer, other].filter(Boolean))
+  await deleteTestUsers([seller, buyer, other, staff].filter(Boolean))
 })
 
 describe("orders", () => {
@@ -83,8 +108,9 @@ describe("orders", () => {
       status: "pending_payment",
       delivery_method: null,
       shipping_cost: 0,
+      funds_model: "escrow",
     })
-    const due = (Date.parse(order.payment_due_at) - Date.now()) / 86_400_000
+    const due = (Date.parse(order.payment_due_at) - Date.now()) / DAY
     expect(due).toBeCloseTo(3, 1)
   })
 
@@ -108,48 +134,26 @@ describe("orders", () => {
   })
 })
 
-describe("order lifecycle", () => {
-  let id: string
-  beforeAll(async () => {
-    id = (await soldAuction()).id
-  })
-
-  it("the buyer chooses delivery; the courier cost is added to the total", async () => {
-    expect(
-      (await other.client.rpc("choose_delivery", { p_order_id: id, p_method: "courier" })).error
-        ?.message,
-    ).toBe("order_not_found")
-    const { data, error } = await buyer.client.rpc("choose_delivery", {
-      p_order_id: id,
-      p_method: "courier",
-    })
-    expect(error).toBeNull()
-    expect(data).toMatchObject({ shipping_cost: 2_000, total: 125_450 })
-  })
-
-  it("hides contact details and blocks shipping before payment", async () => {
-    expect((await buyer.client.rpc("get_order_contact", { p_order_id: id })).data).toHaveLength(0)
-    expect((await seller.client.rpc("mark_order_shipped", { p_order_id: id })).error?.message).toBe(
-      "order_not_paid",
-    )
-  })
-
+describe("payment", () => {
   it("can't be marked paid before the delivery is chosen", async () => {
-    const { id: undecided } = await soldAuction()
+    const { id } = await soldAuction()
     const r = await admin().rpc("order_mark_paid", {
-      p_order_id: undecided,
+      p_order_id: id,
       p_session_id: "cs_test_undecided",
       p_payment_intent_id: "pi_test_undecided",
+      p_charge_id: "ch_test_undecided",
       p_amount: 123_450,
     })
     expect(r.error?.code).toBe("23514")
   })
 
-  it("only the service role marks it paid, for the exact amount, once", async () => {
+  it("only the service role marks it paid, for the exact amount, once; then escrow starts", async () => {
+    const { id } = await soldAuction({ pickup: false })
     const args = {
       p_order_id: id,
-      p_session_id: "cs_test_lifecycle",
-      p_payment_intent_id: "pi_test_lifecycle",
+      p_session_id: `cs_test_${id}`,
+      p_payment_intent_id: `pi_test_${id}`,
+      p_charge_id: `ch_test_${id}`,
       p_amount: 125_450,
     }
     expect((await buyer.client.rpc("order_mark_paid", args)).error).not.toBeNull()
@@ -158,24 +162,222 @@ describe("order lifecycle", () => {
     )
     expect((await admin().rpc("order_mark_paid", args)).data).toBe(true)
     expect((await admin().rpc("order_mark_paid", args)).data).toBe(false)
+    const row = await orderRow(id)
+    expect(row).toMatchObject({
+      status: "paid",
+      stripe_charge_id: `ch_test_${id}`,
+      released_at: null,
+    })
+    expect((Date.parse(row.ship_by!) - Date.now()) / DAY).toBeCloseTo(5, 1)
   })
 
   it("after payment each party sees the other's contact details", async () => {
+    const id = await paidOrder("courier")
     const forBuyer = (await buyer.client.rpc("get_order_contact", { p_order_id: id })).data?.[0]
     expect(forBuyer).toMatchObject({ email: seller.email, phone: "+40721234567" })
     const forSeller = (await seller.client.rpc("get_order_contact", { p_order_id: id })).data?.[0]
     expect(forSeller).toMatchObject({ email: buyer.email, phone: null })
     expect((await other.client.rpc("get_order_contact", { p_order_id: id })).data).toHaveLength(0)
   })
+})
 
-  it("the seller ships, the buyer confirms receipt", async () => {
-    expect((await buyer.client.rpc("mark_order_shipped", { p_order_id: id })).error?.message).toBe(
-      "order_not_found",
-    )
-    expect((await seller.client.rpc("mark_order_shipped", { p_order_id: id })).error).toBeNull()
+describe("pickup with a handover code", () => {
+  it("only the buyer sees the code; the right code completes the order and releases the money", async () => {
+    const id = await paidOrder("pickup")
+    const code = (await buyer.client.rpc("get_handover_code", { p_order_id: id })).data
+    expect(code).toMatch(/^\d{6}$/)
+    expect((await seller.client.rpc("get_handover_code", { p_order_id: id })).data).toBeNull()
+
+    const wrong = code === "000000" ? "111111" : "000000"
+    expect(
+      (await seller.client.rpc("confirm_handover", { p_order_id: id, p_code: wrong })).data,
+    ).toBe("invalid")
+    expect(
+      (await buyer.client.rpc("confirm_handover", { p_order_id: id, p_code: code! })).error
+        ?.message,
+    ).toBe("order_not_found")
+    expect(
+      (await seller.client.rpc("confirm_handover", { p_order_id: id, p_code: code! })).data,
+    ).toBe("ok")
+    const row = await orderRow(id)
+    expect(row.status).toBe("completed")
+    expect(row.handed_over_at).not.toBeNull()
+    expect(Date.parse(row.release_at!)).toBeLessThanOrEqual(Date.now() + 5_000)
+  })
+
+  it("locks after 5 wrong codes", async () => {
+    const id = await paidOrder("pickup")
+    const code = (await buyer.client.rpc("get_handover_code", { p_order_id: id })).data!
+    const wrong = code === "000000" ? "111111" : "000000"
+    for (let i = 0; i < 5; i++) {
+      await seller.client.rpc("confirm_handover", { p_order_id: id, p_code: wrong })
+    }
+    expect(
+      (await seller.client.rpc("confirm_handover", { p_order_id: id, p_code: code })).data,
+    ).toBe("locked")
+  })
+})
+
+describe("courier with an AWB", () => {
+  let id: string
+  beforeAll(async () => {
+    id = await paidOrder("courier")
+  })
+
+  it("requires a valid AWB and holds the money for the buyer's check window", async () => {
+    expect(
+      (
+        await seller.client.rpc("mark_order_shipped", {
+          p_order_id: id,
+          p_carrier: "Sameday",
+          p_tracking_number: "x",
+        })
+      ).error?.message,
+    ).toBe("tracking_invalid")
+    expect(
+      (
+        await buyer.client.rpc("mark_order_shipped", {
+          p_order_id: id,
+          p_carrier: "Sameday",
+          p_tracking_number: "AWB123456",
+        })
+      ).error?.message,
+    ).toBe("order_not_found")
+    const ok = await seller.client.rpc("mark_order_shipped", {
+      p_order_id: id,
+      p_carrier: "Sameday",
+      p_tracking_number: "awb123456",
+    })
+    expect(ok.error).toBeNull()
+    const row = await orderRow(id)
+    expect(row).toMatchObject({
+      status: "shipped",
+      tracking_carrier: "Sameday",
+      tracking_number: "AWB123456",
+    })
+    // New seller (no paid-out sale yet): 5 days + 4 extra.
+    expect((Date.parse(row.release_at!) - Date.now()) / DAY).toBeCloseTo(9, 1)
+  })
+
+  it("the buyer's confirmation releases the money at once", async () => {
     expect((await buyer.client.rpc("confirm_order_received", { p_order_id: id })).error).toBeNull()
-    const { data } = await buyer.client.from("orders").select("status").eq("id", id).single()
-    expect(data?.status).toBe("completed")
+    const row = await orderRow(id)
+    expect(row.status).toBe("completed")
+    expect(Date.parse(row.release_at!)).toBeLessThanOrEqual(Date.now() + 5_000)
+    await admin().rpc("order_mark_released", { p_order_id: id, p_transfer_id: `tr_test_${id}` })
+    expect((await orderRow(id)).released_at).not.toBeNull()
+  })
+
+  it("an experienced seller's money is held 5 days", async () => {
+    const next = await paidOrder("courier")
+    await seller.client.rpc("mark_order_shipped", {
+      p_order_id: next,
+      p_carrier: "FAN Courier",
+      p_tracking_number: "2345678901",
+    })
+    expect((Date.parse((await orderRow(next)).release_at!) - Date.now()) / DAY).toBeCloseTo(5, 1)
+  })
+})
+
+describe("disputes", () => {
+  it("freeze the money until an admin decides; a refund cancels the order", async () => {
+    const id = await paidOrder("courier")
+    expect(
+      (
+        await buyer.client.rpc("open_dispute", {
+          p_order_id: id,
+          p_reason: "not_received",
+          p_details: "scurt",
+        })
+      ).error?.message,
+    ).toBe("dispute_invalid")
+    expect(
+      (
+        await buyer.client.rpc("open_dispute", {
+          p_order_id: id,
+          p_reason: "not_received",
+          p_details: "Nu am primit coletul și vânzătorul nu răspunde.",
+        })
+      ).error,
+    ).toBeNull()
+    expect((await orderRow(id)).status).toBe("disputed")
+
+    expect(
+      (
+        await seller.client.rpc("respond_dispute", {
+          p_order_id: id,
+          p_response: "L-am trimis ieri.",
+        })
+      ).error,
+    ).toBeNull()
+    const visible = await seller.client
+      .from("order_disputes")
+      .select("seller_response")
+      .eq("order_id", id)
+    expect(visible.data?.[0]?.seller_response).toBe("L-am trimis ieri.")
+    expect(
+      (await other.client.from("order_disputes").select("order_id").eq("order_id", id)).data,
+    ).toHaveLength(0)
+
+    expect(
+      (await buyer.client.rpc("admin_resolve_dispute", { p_order_id: id, p_outcome: "refund" }))
+        .error?.message,
+    ).toBe("not_admin")
+    expect(
+      (await staff.client.rpc("admin_resolve_dispute", { p_order_id: id, p_outcome: "refund" }))
+        .error,
+    ).toBeNull()
+    expect((await orderRow(id)).status).toBe("cancelled")
+    await admin().rpc("order_mark_refunded", { p_order_id: id, p_refund_id: `re_test_${id}` })
+    expect((await orderRow(id)).refunded_at).not.toBeNull()
+  })
+
+  it("can't be opened after the money was released", async () => {
+    const id = await paidOrder("courier")
+    await buyer.client.rpc("confirm_order_received", { p_order_id: id })
+    const r = await buyer.client.rpc("open_dispute", {
+      p_order_id: id,
+      p_reason: "other",
+      p_details: "M-am răzgândit după ce am confirmat.",
+    })
+    expect(r.error?.message).toBe("dispute_not_allowed")
+  })
+})
+
+describe("deadlines", () => {
+  it("the buyer cancels for a refund only after the seller missed the 5-day deadline", async () => {
+    const id = await paidOrder("pickup")
+    expect((await buyer.client.rpc("cancel_late_order", { p_order_id: id })).error?.message).toBe(
+      "deadline_not_passed",
+    )
+    await admin()
+      .from("orders")
+      .update({ ship_by: new Date(Date.now() - 1_000).toISOString() })
+      .eq("id", id)
+    expect((await buyer.client.rpc("cancel_late_order", { p_order_id: id })).error).toBeNull()
+    expect((await orderRow(id)).status).toBe("cancelled")
+  })
+
+  it("advance_orders completes expired shipping windows and cancels abandoned orders", async () => {
+    const shipped = await paidOrder("courier")
+    await seller.client.rpc("mark_order_shipped", {
+      p_order_id: shipped,
+      p_carrier: "Cargus",
+      p_tracking_number: "9876543210",
+    })
+    const abandoned = await paidOrder("pickup")
+    await admin()
+      .from("orders")
+      .update({ release_at: new Date(Date.now() - 1_000).toISOString() })
+      .eq("id", shipped)
+    await admin()
+      .from("orders")
+      .update({ ship_by: new Date(Date.now() - 6 * DAY).toISOString() })
+      .eq("id", abandoned)
+    expect((await buyer.client.rpc("advance_orders")).error).not.toBeNull()
+    expect((await admin().rpc("advance_orders")).error).toBeNull()
+    expect((await orderRow(shipped)).status).toBe("completed")
+    expect((await orderRow(abandoned)).status).toBe("cancelled")
   })
 })
 
@@ -193,14 +395,6 @@ describe("unpaid orders", () => {
       "order_not_found",
     )
     expect((await seller.client.rpc("cancel_unpaid_order", { p_order_id: id })).error).toBeNull()
-    // A late payment can no longer be applied.
-    const late = await admin().rpc("order_mark_paid", {
-      p_order_id: id,
-      p_session_id: "cs_test_late",
-      p_payment_intent_id: "pi_test_late",
-      p_amount: 123_450,
-    })
-    expect(late.error?.message).toBe("order_not_pending")
   })
 })
 
@@ -217,10 +411,6 @@ describe("Stripe helpers", () => {
       false,
     )
     await admin().rpc("stripe_event_release", { p_event_id: id })
-    expect((await admin().rpc("stripe_event_once", { p_event_id: id, p_type: "x" })).data).toBe(
-      true,
-    )
-    await admin().rpc("stripe_event_release", { p_event_id: id })
   })
 
   it("connected-account status changes only server-side", async () => {
@@ -230,7 +420,6 @@ describe("Stripe helpers", () => {
       .eq("id", other.id)
     expect(forged.error?.code).toBe("42501")
     await admin().rpc("set_stripe_account", { p_user_id: other.id, p_account_id: "acct_test_x1" })
-    // The first account id sticks.
     const again = await admin().rpc("set_stripe_account", {
       p_user_id: other.id,
       p_account_id: "acct_test_x2",

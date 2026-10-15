@@ -56,3 +56,18 @@ export async function connectPayouts(
     .eq("id", user.id)
   if (error) throw error
 }
+
+/** Random 64-bit perceptual hash (16 hex chars), as ImageKit would report for a photo. */
+export const randomPhash = () =>
+  [...crypto.getRandomValues(new Uint8Array(8))]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+
+/** Stores photo hashes for a draft, as the server does at publish time. */
+export async function hashImages(auctionId: string, hashes: { file_id: string; phash: string }[]) {
+  const { error } = await admin().rpc("set_auction_image_hashes", {
+    p_auction_id: auctionId,
+    p_hashes: hashes,
+  })
+  if (error) throw error
+}

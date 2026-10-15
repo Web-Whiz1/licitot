@@ -23,6 +23,7 @@ export type Database = {
           height: number | null
           id: string
           path: string
+          phash: unknown
           position: number
           width: number | null
         }
@@ -34,6 +35,7 @@ export type Database = {
           height?: number | null
           id?: string
           path: string
+          phash?: unknown
           position: number
           width?: number | null
         }
@@ -45,6 +47,7 @@ export type Database = {
           height?: number | null
           id?: string
           path?: string
+          phash?: unknown
           position?: number
           width?: number | null
         }
@@ -339,6 +342,60 @@ export type Database = {
         }
         Relationships: []
       }
+      order_disputes: {
+        Row: {
+          details: string
+          opened_at: string
+          order_id: string
+          reason: string
+          resolution: string | null
+          resolution_note: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          responded_at: string | null
+          seller_response: string | null
+        }
+        Insert: {
+          details: string
+          opened_at?: string
+          order_id: string
+          reason: string
+          resolution?: string | null
+          resolution_note?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          responded_at?: string | null
+          seller_response?: string | null
+        }
+        Update: {
+          details?: string
+          opened_at?: string
+          order_id?: string
+          reason?: string
+          resolution?: string | null
+          resolution_note?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          responded_at?: string | null
+          seller_response?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_disputes_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_disputes_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           auction_id: string
@@ -347,18 +404,29 @@ export type Database = {
           completed_at: string | null
           created_at: string
           delivery_method: Database["public"]["Enums"]["delivery_method"] | null
+          funds_model: string
+          handed_over_at: string | null
           id: string
           item_price: number
           paid_at: string | null
           payment_due_at: string
           platform_fee: number
+          refunded_at: string | null
+          release_at: string | null
+          released_at: string | null
           seller_id: string
+          ship_by: string | null
           shipped_at: string | null
           shipping_cost: number
           status: Database["public"]["Enums"]["order_status"]
+          stripe_charge_id: string | null
           stripe_checkout_session_id: string | null
           stripe_payment_intent_id: string | null
+          stripe_refund_id: string | null
+          stripe_transfer_id: string | null
           total: number | null
+          tracking_carrier: string | null
+          tracking_number: string | null
           updated_at: string
         }
         Insert: {
@@ -370,18 +438,29 @@ export type Database = {
           delivery_method?:
             | Database["public"]["Enums"]["delivery_method"]
             | null
+          funds_model?: string
+          handed_over_at?: string | null
           id?: string
           item_price: number
           paid_at?: string | null
           payment_due_at: string
           platform_fee: number
+          refunded_at?: string | null
+          release_at?: string | null
+          released_at?: string | null
           seller_id: string
+          ship_by?: string | null
           shipped_at?: string | null
           shipping_cost?: number
           status?: Database["public"]["Enums"]["order_status"]
+          stripe_charge_id?: string | null
           stripe_checkout_session_id?: string | null
           stripe_payment_intent_id?: string | null
+          stripe_refund_id?: string | null
+          stripe_transfer_id?: string | null
           total?: number | null
+          tracking_carrier?: string | null
+          tracking_number?: string | null
           updated_at?: string
         }
         Update: {
@@ -393,18 +472,29 @@ export type Database = {
           delivery_method?:
             | Database["public"]["Enums"]["delivery_method"]
             | null
+          funds_model?: string
+          handed_over_at?: string | null
           id?: string
           item_price?: number
           paid_at?: string | null
           payment_due_at?: string
           platform_fee?: number
+          refunded_at?: string | null
+          release_at?: string | null
+          released_at?: string | null
           seller_id?: string
+          ship_by?: string | null
           shipped_at?: string | null
           shipping_cost?: number
           status?: Database["public"]["Enums"]["order_status"]
+          stripe_charge_id?: string | null
           stripe_checkout_session_id?: string | null
           stripe_payment_intent_id?: string | null
+          stripe_refund_id?: string | null
+          stripe_transfer_id?: string | null
           total?: number | null
+          tracking_carrier?: string | null
+          tracking_number?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -572,8 +662,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_resolve_dispute: {
+        Args: { p_note?: string; p_order_id: string; p_outcome: string }
+        Returns: undefined
+      }
+      advance_orders: { Args: never; Returns: Json }
       buy_now: { Args: { p_auction_id: string }; Returns: Json }
       cancel_auction: { Args: { p_auction_id: string }; Returns: undefined }
+      cancel_late_order: { Args: { p_order_id: string }; Returns: undefined }
       cancel_unpaid_order: { Args: { p_order_id: string }; Returns: undefined }
       choose_delivery: {
         Args: {
@@ -587,18 +683,29 @@ export type Database = {
           completed_at: string | null
           created_at: string
           delivery_method: Database["public"]["Enums"]["delivery_method"] | null
+          funds_model: string
+          handed_over_at: string | null
           id: string
           item_price: number
           paid_at: string | null
           payment_due_at: string
           platform_fee: number
+          refunded_at: string | null
+          release_at: string | null
+          released_at: string | null
           seller_id: string
+          ship_by: string | null
           shipped_at: string | null
           shipping_cost: number
           status: Database["public"]["Enums"]["order_status"]
+          stripe_charge_id: string | null
           stripe_checkout_session_id: string | null
           stripe_payment_intent_id: string | null
+          stripe_refund_id: string | null
+          stripe_transfer_id: string | null
           total: number | null
+          tracking_carrier: string | null
+          tracking_number: string | null
           updated_at: string
         }
         SetofOptions: {
@@ -607,6 +714,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      confirm_handover: {
+        Args: { p_code: string; p_order_id: string }
+        Returns: string
       }
       confirm_order_received: {
         Args: { p_order_id: string }
@@ -624,6 +735,7 @@ export type Database = {
         }[]
       }
       get_auction_reserve: { Args: { p_auction_id: string }; Returns: number }
+      get_handover_code: { Args: { p_order_id: string }; Returns: string }
       get_order_contact: {
         Args: { p_order_id: string }
         Returns: {
@@ -634,7 +746,18 @@ export type Database = {
         }[]
       }
       is_admin: { Args: never; Returns: boolean }
-      mark_order_shipped: { Args: { p_order_id: string }; Returns: undefined }
+      mark_order_shipped: {
+        Args: {
+          p_carrier: string
+          p_order_id: string
+          p_tracking_number: string
+        }
+        Returns: undefined
+      }
+      open_dispute: {
+        Args: { p_details: string; p_order_id: string; p_reason: string }
+        Returns: undefined
+      }
       order_attach_checkout: {
         Args: { p_order_id: string; p_session_id: string }
         Returns: undefined
@@ -642,11 +765,20 @@ export type Database = {
       order_mark_paid: {
         Args: {
           p_amount: number
+          p_charge_id: string
           p_order_id: string
           p_payment_intent_id: string
           p_session_id: string
         }
         Returns: boolean
+      }
+      order_mark_refunded: {
+        Args: { p_order_id: string; p_refund_id: string }
+        Returns: undefined
+      }
+      order_mark_released: {
+        Args: { p_order_id: string; p_transfer_id: string }
+        Returns: undefined
       }
       place_bid: {
         Args: { p_auction_id: string; p_max_amount: number }
@@ -705,6 +837,14 @@ export type Database = {
         Args: { p_auction_id: string; p_images: Json }
         Returns: undefined
       }
+      respond_dispute: {
+        Args: { p_order_id: string; p_response: string }
+        Returns: undefined
+      }
+      set_auction_image_hashes: {
+        Args: { p_auction_id: string; p_hashes: Json }
+        Returns: undefined
+      }
       set_stripe_account: {
         Args: { p_account_id: string; p_user_id: string }
         Returns: string
@@ -737,6 +877,7 @@ export type Database = {
         | "pending_payment"
         | "paid"
         | "shipped"
+        | "disputed"
         | "completed"
         | "cancelled"
       user_role: "user" | "admin"
@@ -880,6 +1021,7 @@ export const Constants = {
         "pending_payment",
         "paid",
         "shipped",
+        "disputed",
         "completed",
         "cancelled",
       ],

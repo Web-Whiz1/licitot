@@ -1,6 +1,6 @@
 "use client"
 
-import { Gavel, LogOut, Settings, UserRound } from "lucide-react"
+import { Gavel, LogOut, Scale, Settings, UserRound } from "lucide-react"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { UserAvatar } from "@/components/user-avatar"
@@ -19,10 +19,12 @@ export function UserMenuDropdown({
   displayName,
   username,
   avatarPath,
+  isAdmin = false,
 }: {
   displayName: string
   username: string
   avatarPath: string | null
+  isAdmin?: boolean
 }) {
   const t = useTranslations()
 
@@ -54,6 +56,13 @@ export function UserMenuDropdown({
             <Settings /> {t("account.menu.settings")}
           </Link>
         </DropdownMenuItem>
+        {isAdmin ? (
+          <DropdownMenuItem asChild>
+            <Link href="/admin">
+              <Scale /> {t("account.menu.admin")}
+            </Link>
+          </DropdownMenuItem>
+        ) : null}
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive" onSelect={() => void signOut()}>
           <LogOut /> {t("auth.signOut")}

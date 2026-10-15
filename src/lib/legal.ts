@@ -14,4 +14,4 @@ export const OPERATOR = {
 } as const
 
 /** Date of the current version of the terms, privacy and cookie policies (ISO). */
-export const LEGAL_UPDATED_AT = "2026-10-13"
+export const LEGAL_UPDATED_AT = "2026-10-15"

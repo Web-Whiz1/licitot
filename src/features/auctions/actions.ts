@@ -6,7 +6,8 @@ import { redirect } from "next/navigation"
 import { fail, zodFieldErrors, type ActionResult } from "@/lib/action-result"
 import type { MessageKey } from "@/i18n/keys"
 import { isOwnPath } from "@/lib/imagekit"
-import { deleteFile, verifyUploadedImage } from "@/lib/imagekit.server"
+import { deleteFile, getImagePhash, verifyUploadedImage } from "@/lib/imagekit.server"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
 import type { Database } from "@/types/database"
 import { AUCTIONS_TAG } from "./listing"
@@ -23,6 +24,9 @@ const RPC_ERRORS = new Set([
   "connect_required",
   "images_required",
   "too_many_images",
+  "photos_unverified",
+  "duplicate_photo",
+  "new_seller_limit",
 ])
 
 function rpcErrorKey(message: string | undefined): MessageKey {
@@ -148,6 +152,26 @@ export async function publishAuction(
   }
   const saved = await persistDraft(id, input)
   if (!saved.ok || !saved.data) return saved
+
+  // Photo fingerprints from ImageKit, stored server-side: publish_auction refuses photos without
+  // one and photos already used in another seller's listing.
+  const hashes = await Promise.all(
+    input.images.map(async (img) => ({
+      file_id: img.fileId,
+      phash: await getImagePhash(img.fileId),
+    })),
+  )
+  if (hashes.some((h) => !h.phash)) {
+    return { ok: false, error: "sell.errors.photos_unverified", data: saved.data }
+  }
+  const { error: hashError } = await createAdminClient().rpc("set_auction_image_hashes", {
+    p_auction_id: saved.data.id,
+    p_hashes: hashes,
+  })
+  if (hashError) {
+    console.error("[auctions.hashes]", hashError.message)
+    return { ok: false, error: "auth.errors.generic", data: saved.data }
+  }
 
   const supabase = await createClient()
   const { error } = await supabase.rpc("publish_auction", { p_auction_id: saved.data.id })

@@ -142,7 +142,10 @@
       "images_required": "Adaugă cel puțin o fotografie.",
       "images_invalid": "Unele fotografii nu au putut fi verificate. Încarcă-le din nou.",
       "too_many_images": "Poți adăuga cel mult 10 fotografii.",
-      "rate_limited": "Prea multe încărcări într-un timp scurt. Mai încearcă puțin mai târziu."
+      "rate_limited": "Prea multe încărcări într-un timp scurt. Mai încearcă puțin mai târziu.",
+      "photos_unverified": "Nu am putut verifica fotografiile. Încearcă din nou peste câteva secunde.",
+      "duplicate_photo": "Una dintre fotografii apare deja în anunțul altui utilizator. Folosește fotografii făcute de tine produsului pe care îl vinzi.",
+      "new_seller_limit": "Ca vânzător nou, poți avea cel mult 3 licitații active până la prima vânzare finalizată."
     },
     "fixErrors": "Verifică câmpurile marcate cu roșu."
   },
@@ -399,7 +402,8 @@
     "menu": {
       "profile": "Profilul meu",
       "dashboard": "Contul meu",
-      "settings": "Setări"
+      "settings": "Setări",
+      "admin": "Administrare"
     },
     "browse": "Vezi licitațiile active",
     "myBids": {
@@ -635,8 +639,8 @@
       "s2": "Scrii suma maximă pe care ești dispus s-o plătești. Licităm automat pentru tine, câte un pas, doar cât e nevoie ca să rămâi primul. Nimeni nu-ți vede maximul.",
       "s3t": "Fără licitări de ultimă secundă",
       "s3": "Dacă cineva licitează în ultimele 2 minute, licitația se prelungește cu încă 2 minute. Toată lumea are timp să răspundă.",
-      "s4t": "Câștigi la final",
-      "s4": "Când timpul expiră, câștigă oferta cea mai mare, dacă a atins prețul de rezervă al vânzătorului. Găsești licitațiile câștigate în Contul meu → Câștigate."
+      "s4t": "Plată sigură",
+      "s4": "Plătești cu cardul prin LiciTot, iar banii stau în siguranță până primești produsul. La predarea personală îi spui vânzătorului codul tău doar după ce ai verificat produsul. Dacă ceva nu e în regulă, raportezi problema și banii rămân blocați până la decizie."
     },
     "sellersTitle": "Dacă vrei să vinzi",
     "sellers": {
@@ -646,8 +650,8 @@
       "s2": "Prețul de rezervă e minimul sub care nu vinzi; licitanții văd doar dacă a fost atins. Prețul „Cumpără acum” permite cumpărarea imediată, cât timp nu există oferte.",
       "s3t": "Urmărește ofertele live",
       "s3": "Prețul și istoricul ofertelor se actualizează în timp real. Poți anula licitația doar înainte de prima ofertă.",
-      "s4t": "Plătești doar dacă vinzi",
-      "s4": "Comisionul LiciTot este de {percent}% din prețul final și se reține doar când obiectul se vinde."
+      "s4t": "Primești banii la predare",
+      "s4": "Plata e confirmată înainte să predai produsul. Primești banii după ce introduci codul cumpărătorului la predare sau, la curier, după confirmarea primirii (automat la 3 zile după livrare). Comisionul de {percent}% se reține doar când obiectul se vinde."
     },
     "feesTitle": "Comisioane",
     "feesIntro": "Simplu: listarea e gratuită, iar cumpărătorii nu plătesc niciun comision.",
@@ -674,7 +678,8 @@
       "paid": "Plătită",
       "shipped": "Expediată",
       "completed": "Finalizată",
-      "cancelled": "Anulată"
+      "cancelled": "Anulată",
+      "disputed": "În dispută"
     },
     "item": "Produs",
     "shipping": "Livrare",
@@ -708,7 +713,7 @@
     "markShippedConfirm": "Confirmi că ai expediat sau ai predat produsul?",
     "shippedOn": "Expediată pe {date}.",
     "confirmReceived": "Am primit produsul",
-    "confirmReceivedConfirm": "Confirmi că ai primit produsul și că totul e în regulă?",
+    "confirmReceivedConfirm": "Confirmi că ai primit produsul și că e în regulă? Banii ajung imediat la vânzător.",
     "completedOn": "Finalizată pe {date}. Mulțumim!",
     "cancelledOn": "Anulată pe {date}.",
     "shippedDone": "Am marcat comanda ca expediată.",
@@ -733,8 +738,77 @@
       "payment_not_overdue": "Termenul de plată nu a expirat încă.",
       "seller_not_ready": "Vânzătorul încă nu poate primi plăți. Încearcă din nou mai târziu.",
       "stripe_unavailable": "Serviciul de plăți nu răspunde acum. Încearcă din nou.",
-      "connect_missing": "Mai întâi activează-ți încasările."
-    }
+      "connect_missing": "Mai întâi activează-ți încasările.",
+      "handover_invalid": "Codul nu e corect. Verifică cele 6 cifre.",
+      "handover_locked": "Prea multe coduri greșite. Mai încearcă peste 30 de minute.",
+      "order_not_handover": "Comanda nu e pentru predare personală sau a fost deja predată.",
+      "order_not_shippable": "Comanda nu poate fi marcată ca expediată.",
+      "tracking_invalid": "Numărul AWB nu pare corect (doar litere, cifre și cratimă).",
+      "carrier_required": "Alege firma de curierat.",
+      "dispute_not_allowed": "Nu mai poți deschide o sesizare pentru această comandă.",
+      "dispute_invalid": "Verifică datele sesizării.",
+      "dispute_reason": "Alege motivul.",
+      "dispute_details": "Descrie problema în cel puțin 10 caractere.",
+      "deadline_not_passed": "Vânzătorul mai are timp să predea produsul.",
+      "not_admin": "Nu ai acces la această acțiune."
+    },
+    "heldBuyer": "Banii tăi sunt în siguranță: vânzătorul îi primește doar după ce ai primit produsul.",
+    "heldSeller": "Plata e confirmată. Păstrăm banii în siguranță și îi primești după predare.",
+    "releasedBuyer": "Banii au ajuns la vânzător pe {date}.",
+    "releasedSeller": "Ai primit {amount} în contul tău Stripe pe {date}.",
+    "releasePendingBuyer": "Transferăm banii către vânzător.",
+    "releasePendingSeller": "Transferăm {amount} în contul tău Stripe. Durează câteva minute.",
+    "refundedBuyer": "Ți-am returnat {amount} pe card pe {date}.",
+    "refundedSeller": "Comanda a fost anulată, iar cumpărătorul a primit banii înapoi.",
+    "refundPending": "Rambursarea e în curs. Banii ajung pe card în câteva zile lucrătoare.",
+    "handoverTitle": "Codul tău de predare",
+    "handoverHint": "Spune-i codul vânzătorului doar după ce ai văzut și verificat produsul. Cu el, vânzătorul confirmă predarea și primește banii.",
+    "handoverWarning": "Nu trimite codul prin mesaj sau telefon înainte de întâlnire.",
+    "handoverEnterTitle": "Confirmă predarea",
+    "handoverEnterHint": "La întâlnire, după ce cumpărătorul verifică produsul, îți spune codul de 6 cifre din comanda lui. Introdu-l aici și primești banii.",
+    "handoverCodeLabel": "Codul cumpărătorului",
+    "handoverSubmit": "Confirmă predarea",
+    "handoverDone": "Predare confirmată. Transferăm banii în contul tău.",
+    "shipTitle": "Expediază produsul",
+    "shipHint": "Trimite coletul și introdu numărul AWB. Primești banii când cumpărătorul confirmă primirea sau automat la 3 zile după livrare, dacă nu raportează nicio problemă.",
+    "carrier": "Firma de curierat",
+    "carrierPlaceholder": "Alege firma",
+    "awb": "Număr AWB",
+    "shipSubmit": "Confirmă expedierea",
+    "shipBySeller": "Termen de predare sau expediere: {date}.",
+    "shipByBuyer": "Vânzătorul are timp să predea sau să expedieze produsul până pe {date}.",
+    "lateBuyer": "Vânzătorul a depășit termenul. Poți anula comanda și primești banii înapoi integral.",
+    "lateSeller": "Ai depășit termenul. Cumpărătorul poate anula comanda oricând.",
+    "cancelLate": "Anulează și primește banii înapoi",
+    "cancelLateConfirm": "Comanda se anulează, iar {amount} îți revin integral pe card.",
+    "refundDone": "Comanda a fost anulată. Banii revin pe card în câteva zile lucrătoare.",
+    "releaseDone": "Banii au fost eliberați către vânzător.",
+    "shippedInfo": "Expediat cu {carrier}, AWB {awb}.",
+    "autoRelease": "Dacă nu raportezi nicio problemă, banii ajung la vânzător pe {date}.",
+    "autoReleaseSeller": "Primești banii pe {date} sau mai devreme, când cumpărătorul confirmă primirea.",
+    "problem": "Am o problemă cu comanda",
+    "disputeTitle": "Raportează o problemă",
+    "disputeHint": "Banii rămân blocați până analizăm situația. Vânzătorul își poate spune și el punctul de vedere.",
+    "reasonLabel": "Ce s-a întâmplat?",
+    "reasons": {
+      "not_received": "Nu am primit produsul",
+      "not_as_described": "Produsul nu corespunde descrierii",
+      "other": "Altceva"
+    },
+    "detailsLabel": "Descrie problema",
+    "detailsPlaceholder": "Ce ai primit, ce lipsește, ce ați vorbit cu vânzătorul…",
+    "disputeSubmit": "Trimite sesizarea",
+    "disputeOpened": "Am primit sesizarea. Banii rămân blocați până la decizie.",
+    "disputeOpenBuyer": "Ai raportat o problemă pe {date}. O analizăm și îți răspundem în cel mult 2 zile lucrătoare.",
+    "disputeOpenSeller": "Cumpărătorul a raportat o problemă pe {date}. Banii rămân blocați până la decizie.",
+    "disputeReason": "Motiv: {reason}",
+    "sellerResponseTitle": "Răspunsul vânzătorului",
+    "sellerResponseLabel": "Răspunsul tău",
+    "respondSubmit": "Trimite răspunsul",
+    "disputeResponded": "Am salvat răspunsul tău.",
+    "noResponseYet": "Vânzătorul nu a răspuns încă.",
+    "disputeResolvedRefund": "Decizie: cumpărătorul primește banii înapoi.",
+    "disputeResolvedRelease": "Decizie: vânzătorul primește banii."
   },
   "payouts": {
     "title": "Încasări",
@@ -781,19 +855,19 @@
         },
         "s4": {
           "title": "4. Plăți și comisioane",
-          "body": "Plata se face online, cu cardul, prin Stripe. {operator} nu stochează datele cardului. Cumpărătorul plătește prețul final plus, dacă a ales curierul, costul de livrare stabilit de vânzător. Cumpărătorul nu plătește niciun comision.\n\nPentru fiecare obiect vândut, {operator} reține un comision de {percent}% din prețul final (fără livrare); restul sumei ajunge în contul vânzătorului prin Stripe. Listarea este gratuită, iar licitațiile fără câștigător nu costă nimic.\n\nCâștigătorul are la dispoziție 3 zile să plătească. După acest termen, vânzătorul poate anula comanda."
+          "body": "Plata se face online, cu cardul, prin Stripe. {operator} nu stochează datele cardului. Cumpărătorul plătește prețul final plus, dacă a ales curierul, costul de livrare stabilit de vânzător. Cumpărătorul nu plătește niciun comision.\n\nBanii sunt păstrați în siguranță (prin Stripe) până la finalizarea comenzii și abia apoi sunt transferați vânzătorului, după reținerea comisionului {operator} de {percent}% din prețul final (fără livrare). Listarea este gratuită, iar licitațiile fără câștigător nu costă nimic.\n\nCâștigătorul are la dispoziție 3 zile să plătească. După acest termen, vânzătorul poate anula comanda."
         },
         "s5": {
           "title": "5. Obligațiile vânzătorului",
-          "body": "Ca să publici licitații, îți activezi încasările prin Stripe și treci prin verificarea lor de identitate. Descrii obiectul corect și complet, inclusiv defectele, și folosești fotografii reale ale obiectului. După plată, predai sau expediezi obiectul conform opțiunii alese de cumpărător și marchezi comanda ca expediată. Dacă vinzi în calitate de profesionist (comerciant), respecți și obligațiile legale ale comercianților față de consumatori."
+          "body": "Ca să publici licitații, îți activezi încasările prin Stripe și treci prin verificarea lor de identitate. Descrii obiectul corect și complet, inclusiv defectele, și folosești fotografii reale, făcute de tine, ale obiectului; fotografiile folosite deja în anunțurile altor utilizatori sunt respinse. Până la prima vânzare finalizată poți avea cel mult 3 licitații active. După plată, predai sau expediezi obiectul în 5 zile. Dacă vinzi în calitate de profesionist (comerciant), respecți și obligațiile legale ale comercianților față de consumatori."
         },
         "s6": {
           "title": "6. Obiecte interzise",
           "body": "Nu poți vinde: obiecte furate sau contrafăcute; arme, muniție și explozivi; droguri, medicamente cu prescripție și substanțe periculoase; alcool și tutun; animale vii; documente oficiale și date personale; conținut ilegal sau care încalcă drepturile altora; servicii, bani sau titluri de valoare. Ne rezervăm dreptul de a ascunde orice licitație care încalcă aceste reguli."
         },
         "s7": {
-          "title": "7. Livrare, retur și garanție",
-          "body": "Livrarea se face direct între vânzător și cumpărător: prin predare personală sau prin curier, conform opțiunilor din anunț. După plată, fiecare vede datele de contact ale celuilalt.\n\nDacă vânzătorul este profesionist, ca și consumator ai drepturile prevăzute de lege, inclusiv dreptul de retragere de 14 zile pentru contractele la distanță (OUG 34/2014) și garanția de conformitate. Între persoane fizice, aceste drepturi nu se aplică; de aceea, citește cu atenție descrierea înainte de a licita."
+          "title": "7. Predare, livrare și protecția cumpărătorului",
+          "body": "Vânzătorul are 5 zile de la plată să predea sau să expedieze produsul. Dacă nu o face, cumpărătorul poate anula comanda și primește banii înapoi integral; după 10 zile, comanda se anulează automat.\n\nLa predarea personală, cumpărătorul primește un cod de 6 cifre pe care i-l spune vânzătorului doar după ce a verificat produsul; introducerea codului confirmă predarea, iar banii ajung la vânzător. La livrarea prin curier, vânzătorul introduce numărul AWB; banii ajung la vânzător când cumpărătorul confirmă primirea sau automat la 3 zile după livrare, dacă nu a raportat nicio problemă.\n\nDacă produsul nu a ajuns sau nu corespunde descrierii, cumpărătorul poate raporta problema înainte de eliberarea banilor. Banii rămân blocați, ambele părți își pot prezenta punctul de vedere, iar {operator} decide rambursarea cumpărătorului sau plata vânzătorului.\n\nDacă vânzătorul este profesionist, ca și consumator ai și drepturile prevăzute de lege, inclusiv dreptul de retragere de 14 zile pentru contractele la distanță (OUG 34/2014) și garanția de conformitate."
         },
         "s8": {
           "title": "8. Răspundere",
@@ -869,5 +943,26 @@
       "disputesTitle": "Reclamații",
       "disputes": "Ca și consumator, te poți adresa și ANPC, inclusiv prin procedura de soluționare alternativă a litigiilor (SAL), sau platformei europene de soluționare online a litigiilor (SOL). Linkurile sunt în partea de jos a paginii."
     }
+  },
+  "admin": {
+    "title": "Administrare",
+    "disputesTitle": "Dispute deschise",
+    "empty": "Nicio dispută deschisă.",
+    "buyer": "Cumpărător",
+    "seller": "Vânzător",
+    "amount": "Sumă",
+    "delivery": "Livrare",
+    "opened": "Deschisă pe {date}",
+    "details": "Ce spune cumpărătorul",
+    "sellerResponse": "Ce spune vânzătorul",
+    "noResponse": "Fără răspuns de la vânzător.",
+    "refund": "Rambursează cumpărătorul",
+    "release": "Plătește vânzătorul",
+    "refundConfirm": "Cumpărătorul primește înapoi {amount}, iar comanda se anulează.",
+    "releaseConfirm": "Vânzătorul primește banii, iar comanda se finalizează.",
+    "confirm": "Confirm",
+    "back": "Înapoi",
+    "viewOrder": "Vezi comanda",
+    "pickup": "Predare personală"
   }
 }

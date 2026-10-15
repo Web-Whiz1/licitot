@@ -80,3 +80,18 @@ export async function verifyUploadedImage(fileId: string, path: string) {
   if (details.size > MAX_UPLOAD_BYTES) return null
   return { width: details.width ?? null, height: details.height ?? null }
 }
+
+/**
+ * 64-bit perceptual hash (16 hex chars) computed by ImageKit. Near-identical for the same
+ * photo even after re-compression; used to spot photos reused across sellers' listings.
+ */
+export async function getImagePhash(fileId: string): Promise<string | null> {
+  if (!/^[A-Za-z0-9_-]{1,64}$/.test(fileId)) return null
+  const res = await fetch(`${API}/files/${fileId}/metadata`, {
+    headers: { Authorization: authHeader() },
+    cache: "no-store",
+  })
+  if (!res.ok) return null
+  const { pHash } = (await res.json()) as { pHash?: string }
+  return pHash && /^[0-9a-f]{1,16}$/i.test(pHash) ? pHash : null
+}

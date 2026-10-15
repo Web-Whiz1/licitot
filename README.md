@@ -91,5 +91,6 @@ Building for Netlify locally on Windows (`netlify build`) currently fails while 
 4. ✅ Listings, search, filters, detail page
 5. ✅ Bidding engine (proxy bids via RPC), realtime, anti-sniping, closing job, watchlist
 6. ✅ Stripe Connect onboarding, checkout, 5% fee, webhooks, orders; legal + contact pages
+   - ✅ Safe payments (escrow): handover codes, AWB, deadlines, refunds, disputes (/admin); duplicate-photo check and new-seller limits
 7. Notifications, reviews, watchlist, admin/reporting
 8. Legal pages, SEO, PWA, performance pass, E2E tests, deploy

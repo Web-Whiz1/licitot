@@ -9,8 +9,8 @@ import {
   type E2EUser,
 } from "./helpers"
 
-// Phase 6: buy now → pay with a Stripe test card on the real (sandbox) Checkout page →
-// order paid (5% application fee) → seller marks it shipped. Needs Stripe Connect enabled on
+// Buy now → pay with a Stripe test card on the real (sandbox) Checkout page → money held
+// (escrow) → seller ships with an AWB → buyer confirms → transfer to the seller minus 5%. Needs Stripe Connect enabled on
 // the sandbox account; otherwise the test is skipped with the reason.
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
@@ -125,26 +125,48 @@ test("buy now, pay on Stripe Checkout, ship", async ({ page, browser }, info) =>
   await expect(page.getByText("Plătită", { exact: true })).toBeVisible()
   await expect(page.getByText(seller.email)).toBeVisible()
 
-  // The platform kept 5% of the item price (shipping excluded).
+  // Escrow: the platform collected the payment; nothing has gone to the seller yet.
   const orderId = page.url().match(/comanda\/([0-9a-f-]{36})/)![1]!
+  await expect(page.getByText(/Banii tăi sunt în siguranță/)).toBeVisible()
   const { data: order } = await admin
     .from("orders")
-    .select("stripe_payment_intent_id, total")
+    .select("stripe_payment_intent_id, total, platform_fee")
     .eq("id", orderId)
     .single()
-  expect(order?.total).toBe(32_500)
+  expect(order).toMatchObject({ total: 32_500, platform_fee: 1_500 })
   const pi = await stripe.paymentIntents.retrieve(order!.stripe_payment_intent_id!)
-  expect(pi.application_fee_amount).toBe(1_500)
   expect(pi.amount).toBe(32_500)
+  expect(pi.transfer_data).toBeNull()
+  expect(pi.transfer_group).toBe(orderId)
 
-  // Seller marks it shipped.
+  // Seller ships with an AWB.
   const sellerContext = await browser.newContext({ ...info.project.use })
   const sellerPage = await sellerContext.newPage()
   await signIn(sellerPage, seller, `/cont/comanda/${orderId}`)
   await sellerPage.goto(`/cont/comanda/${orderId}`)
-  await expect(sellerPage.getByText("Primești")).toBeVisible()
-  await sellerPage.getByRole("button", { name: "Am expediat / predat produsul" }).click()
-  await sellerPage.getByRole("button", { name: "Confirm" }).click()
+  await expect(sellerPage.getByText("Primești", { exact: true })).toBeVisible()
+  await sellerPage.getByLabel("Firma de curierat").selectOption("Sameday")
+  await sellerPage.getByLabel("Număr AWB").fill("1ONB24123456789")
+  await sellerPage.getByRole("button", { name: "Confirmă expedierea" }).click()
   await expect(sellerPage.getByText("Expediată", { exact: true })).toBeVisible()
+  await expect(sellerPage.getByText(/Expediat cu Sameday, AWB 1ONB24123456789/)).toBeVisible()
+
+  // Buyer confirms receipt → the seller is paid: 325 RON − 15 RON fee = 310 RON.
+  await page.reload()
+  await page.getByRole("button", { name: "Am primit produsul" }).click()
+  await page.getByRole("button", { name: "Confirm" }).click()
+  await expect(page.getByText("Finalizată", { exact: true })).toBeVisible()
+  const { data: done } = await admin
+    .from("orders")
+    .select("status, released_at, stripe_transfer_id")
+    .eq("id", orderId)
+    .single()
+  expect(done).toMatchObject({ status: "completed" })
+  expect(done?.stripe_transfer_id).toMatch(/^tr_/)
+  const transfer = await stripe.transfers.retrieve(done!.stripe_transfer_id!)
+  expect(transfer).toMatchObject({ amount: 31_000, destination: accountId })
+
+  await sellerPage.reload()
+  await expect(sellerPage.getByText(/Ai primit 310\sRON în contul tău Stripe/)).toBeVisible()
   await sellerContext.close()
 })

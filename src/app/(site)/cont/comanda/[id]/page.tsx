@@ -1,4 +1,14 @@
-import { CircleCheck, CircleX, Clock, Mail, Phone } from "lucide-react"
+import {
+  CircleCheck,
+  CircleX,
+  Clock,
+  KeyRound,
+  Mail,
+  Phone,
+  ShieldCheck,
+  Truck,
+  TriangleAlert,
+} from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -9,13 +19,24 @@ import { Badge } from "@/components/ui/badge"
 import { auctionHref } from "@/features/auctions/components/auction-card"
 import { requireUser } from "@/features/auth/session"
 import {
+  cancelLateOrder,
   cancelUnpaidOrder,
   confirmOrderReceived,
-  markOrderShipped,
 } from "@/features/payments/actions"
 import { CheckoutForm } from "@/features/payments/components/checkout-form"
-import { getOrder, getOrderContact, type OrderView } from "@/features/payments/queries"
-import { fulfillCheckoutSession } from "@/features/payments/server"
+import {
+  DisputeForm,
+  DisputeResponseForm,
+  HandoverForm,
+  ShipForm,
+} from "@/features/payments/components/order-forms"
+import {
+  getHandoverCode,
+  getOrder,
+  getOrderContact,
+  type OrderView,
+} from "@/features/payments/queries"
+import { fulfillCheckoutSession, settleOrders } from "@/features/payments/server"
 import { formatDateTime, isPast } from "@/lib/dates"
 import { PLATFORM_FEE_PERCENT, formatRON } from "@/lib/money"
 import { formatRoPhone } from "@/lib/phone"
@@ -30,11 +51,24 @@ const STATUS_VARIANT = {
   pending_payment: "warning",
   paid: "sky",
   shipped: "sky",
+  disputed: "warning",
   completed: "success",
   cancelled: "secondary",
 } as const
 
 const price = (bani: number) => formatRON(bani, { compact: true })
+
+/** Money still has to move at Stripe (payout, refund) or a time limit has passed. */
+function needsSettling(o: OrderView): boolean {
+  if (o.status === "completed") return o.funds_model === "escrow" && !o.released_at
+  if (o.status === "cancelled") return Boolean(o.paid_at) && !o.refunded_at
+  if (o.status === "shipped") return Boolean(o.release_at) && isPast(o.release_at!)
+  if (o.status === "paid") return Boolean(o.ship_by) && isPast(addDays(o.ship_by!, 5))
+  return false
+}
+
+const addDays = (iso: string, days: number) =>
+  new Date(new Date(iso).getTime() + days * 86_400_000).toISOString()
 
 export default async function OrderPage({ params, searchParams }: PageProps<"/cont/comanda/[id]">) {
   const { id } = await params
@@ -62,13 +96,26 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/co
     note = "cancelled"
   }
 
+  // Catch up on payouts/refunds/deadlines for this order (the scheduled job does it too).
+  if (needsSettling(order)) {
+    try {
+      await settleOrders(order.id)
+      order = (await getOrder(id)) ?? order
+    } catch (e) {
+      console.error("[order.settle]", e)
+    }
+  }
+
   const total = order.item_price + order.shipping_cost
   const isBuyer = order.buyer_id === user.id
   const isSeller = order.seller_id === user.id
   const other = isBuyer ? order.seller : order.buyer
-  const paid = ["paid", "shipped", "completed"].includes(order.status)
-  const contact = paid ? await getOrderContact(order.id) : null
-  const overdue = isPast(order.payment_due_at)
+  const afterPayment = ["paid", "shipped", "disputed", "completed"].includes(order.status)
+  const contact = afterPayment ? await getOrderContact(order.id) : null
+  const handoverCode =
+    isBuyer && order.status === "paid" && order.delivery_method === "pickup"
+      ? await getHandoverCode(order.id)
+      : null
   const a = order.auction
   const deliveryOptions = [
     ...(a.ship_pickup ? (["pickup"] as const) : []),
@@ -113,36 +160,39 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/co
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <dl className="h-fit divide-y rounded-2xl border bg-card text-sm">
-          <Row label={t("orders.item")} value={price(order.item_price)} />
-          <Row
-            label={t("orders.shipping")}
-            value={
-              order.delivery_method === "courier"
-                ? `${t("orders.delivery.courier")} · ${order.shipping_cost ? price(order.shipping_cost) : t("orders.shippingFree")}`
-                : order.delivery_method === "pickup"
-                  ? t("orders.delivery.pickup", { city: a.city })
-                  : "—"
-            }
-          />
-          <Row label={t("orders.total")} value={price(total)} strong />
-          {isSeller ? (
-            <>
-              <Row
-                label={t("orders.fee", { percent: PLATFORM_FEE_PERCENT })}
-                value={`− ${price(order.platform_fee)}`}
-              />
-              <Row label={t("orders.payout")} value={price(total - order.platform_fee)} strong />
-            </>
-          ) : null}
-        </dl>
+        <div className="space-y-4">
+          <dl className="divide-y rounded-2xl border bg-card text-sm">
+            <Row label={t("orders.item")} value={price(order.item_price)} />
+            <Row
+              label={t("orders.shipping")}
+              value={
+                order.delivery_method === "courier"
+                  ? `${t("orders.delivery.courier")} · ${order.shipping_cost ? price(order.shipping_cost) : t("orders.shippingFree")}`
+                  : order.delivery_method === "pickup"
+                    ? t("orders.delivery.pickup", { city: a.city })
+                    : "—"
+              }
+            />
+            <Row label={t("orders.total")} value={price(total)} strong />
+            {isSeller ? (
+              <>
+                <Row
+                  label={t("orders.fee", { percent: PLATFORM_FEE_PERCENT })}
+                  value={`− ${price(order.platform_fee)}`}
+                />
+                <Row label={t("orders.payout")} value={price(total - order.platform_fee)} strong />
+              </>
+            ) : null}
+          </dl>
+          <FundsNote order={order} isBuyer={isBuyer} payout={total - order.platform_fee} />
+        </div>
 
         <div className="space-y-4">
           <StatusPanel
             order={order}
             isBuyer={isBuyer}
             isSeller={isSeller}
-            overdue={overdue}
+            handoverCode={handoverCode}
             deliveryOptions={[...deliveryOptions]}
           />
 
@@ -181,31 +231,83 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/co
   )
 }
 
+/** Where the money is right now, in plain words. */
+async function FundsNote({
+  order,
+  isBuyer,
+  payout,
+}: {
+  order: OrderView
+  isBuyer: boolean
+  payout: number
+}) {
+  const t = await getTranslations("orders")
+  const total = order.item_price + order.shipping_cost
+  let text: string | null = null
+  let tone: "success" | "muted" | "sky" = "sky"
+
+  if (order.status === "cancelled" && order.paid_at) {
+    tone = "muted"
+    text = order.refunded_at
+      ? isBuyer
+        ? t("refundedBuyer", { amount: price(total), date: formatDateTime(order.refunded_at) })
+        : t("refundedSeller")
+      : t("refundPending")
+  } else if (order.released_at) {
+    tone = "success"
+    text = isBuyer
+      ? t("releasedBuyer", { date: formatDateTime(order.released_at) })
+      : t("releasedSeller", { amount: price(payout), date: formatDateTime(order.released_at) })
+  } else if (order.status === "completed") {
+    text = isBuyer ? t("releasePendingBuyer") : t("releasePendingSeller", { amount: price(payout) })
+  } else if (["paid", "shipped", "disputed"].includes(order.status)) {
+    text = isBuyer ? t("heldBuyer") : t("heldSeller")
+  }
+  if (!text) return null
+
+  return (
+    <p
+      className={cn(
+        "flex items-start gap-2 rounded-2xl p-4 text-sm font-medium",
+        tone === "success" && "bg-success-soft text-success",
+        tone === "sky" && "bg-sky-soft text-secondary-foreground",
+        tone === "muted" && "bg-muted",
+      )}
+    >
+      <ShieldCheck aria-hidden className="mt-0.5 size-4 shrink-0" />
+      {text}
+    </p>
+  )
+}
+
 async function StatusPanel({
   order,
   isBuyer,
   isSeller,
-  overdue,
+  handoverCode,
   deliveryOptions,
 }: {
   order: OrderView
   isBuyer: boolean
   isSeller: boolean
-  overdue: boolean
+  handoverCode: string | null
   deliveryOptions: ("pickup" | "courier")[]
 }) {
   const t = await getTranslations("orders")
-  const confirm = (title: string) => ({
+  const confirm = (title: string, text?: string) => ({
     title,
+    text,
     confirmLabel: t("confirm"),
     cancelLabel: t("back"),
   })
+  const total = order.item_price + order.shipping_cost
 
   switch (order.status) {
-    case "pending_payment":
+    case "pending_payment": {
+      const overdue = isPast(order.payment_due_at)
       if (isBuyer) {
         return (
-          <div className="space-y-3 rounded-2xl border bg-card p-5">
+          <Card>
             <p className={cn("text-sm", overdue && "font-semibold text-destructive")}>
               {overdue ? t("overdue") : t("payDue", { date: formatDateTime(order.payment_due_at) })}
             </p>
@@ -217,12 +319,12 @@ async function StatusPanel({
               courierCost={order.auction.courier_cost ?? 0}
               initial={order.delivery_method}
             />
-          </div>
+          </Card>
         )
       }
       return (
-        <div className="space-y-3 rounded-2xl border bg-card p-5 text-sm">
-          <p>
+        <Card>
+          <p className="text-sm">
             {overdue
               ? t("overdue")
               : t("waitingPayment", { date: formatDateTime(order.payment_due_at) })}
@@ -231,55 +333,171 @@ async function StatusPanel({
             <ActionButton
               action={cancelUnpaidOrder.bind(null, order.id)}
               variant="destructive"
-              confirm={{ ...confirm(t("cancelUnpaid")), text: t("cancelUnpaidConfirm") }}
+              confirm={confirm(t("cancelUnpaid"), t("cancelUnpaidConfirm"))}
             >
               {t("cancelUnpaid")}
             </ActionButton>
           ) : null}
-        </div>
+        </Card>
       )
-    case "paid":
+    }
+
+    case "paid": {
+      const late = Boolean(order.ship_by) && isPast(order.ship_by!)
+      const deadline = order.ship_by ? formatDateTime(order.ship_by) : ""
+      if (isBuyer) {
+        return (
+          <>
+            {handoverCode ? (
+              <Card>
+                <h3 className="flex items-center gap-2 font-semibold">
+                  <KeyRound aria-hidden className="size-4 text-primary" />
+                  {t("handoverTitle")}
+                </h3>
+                <p
+                  className="text-center font-mono text-4xl font-extrabold tracking-[0.3em] text-primary"
+                  aria-label={handoverCode.split("").join(" ")}
+                >
+                  {handoverCode}
+                </p>
+                <p className="text-sm">{t("handoverHint")}</p>
+                <p className="flex items-start gap-2 text-xs text-warning">
+                  <TriangleAlert aria-hidden className="mt-0.5 size-3.5 shrink-0" />
+                  {t("handoverWarning")}
+                </p>
+              </Card>
+            ) : null}
+            <Card>
+              <p className={cn("text-sm", late && "font-semibold text-destructive")}>
+                {late ? t("lateBuyer") : t("shipByBuyer", { date: deadline })}
+              </p>
+              {late ? (
+                <ActionButton
+                  action={cancelLateOrder.bind(null, order.id)}
+                  variant="destructive"
+                  className="w-full"
+                  confirm={confirm(
+                    t("cancelLate"),
+                    t("cancelLateConfirm", { amount: price(total) }),
+                  )}
+                >
+                  {t("cancelLate")}
+                </ActionButton>
+              ) : null}
+              <ActionButton
+                action={confirmOrderReceived.bind(null, order.id)}
+                variant="outline"
+                className="w-full"
+                confirm={confirm(t("confirmReceived"), t("confirmReceivedConfirm"))}
+              >
+                {t("confirmReceived")}
+              </ActionButton>
+              <DisputeForm orderId={order.id} />
+            </Card>
+          </>
+        )
+      }
       return (
-        <div className="space-y-3 rounded-2xl border bg-card p-5 text-sm">
-          {order.paid_at ? <p>{t("paidOn", { date: formatDateTime(order.paid_at) })}</p> : null}
-          {isSeller ? (
-            <ActionButton
-              action={markOrderShipped.bind(null, order.id)}
-              className="w-full"
-              confirm={confirm(t("markShippedConfirm"))}
-            >
-              {t("markShipped")}
-            </ActionButton>
-          ) : null}
-          {isBuyer ? (
-            <ActionButton
-              action={confirmOrderReceived.bind(null, order.id)}
-              variant="outline"
-              className="w-full"
-              confirm={confirm(t("confirmReceivedConfirm"))}
-            >
-              {t("confirmReceived")}
-            </ActionButton>
-          ) : null}
-        </div>
+        <Card>
+          <p className={cn("text-sm", late && "font-semibold text-destructive")}>
+            {late ? t("lateSeller") : t("shipBySeller", { date: deadline })}
+          </p>
+          {order.delivery_method === "pickup" ? (
+            <>
+              <h3 className="flex items-center gap-2 font-semibold">
+                <KeyRound aria-hidden className="size-4 text-primary" />
+                {t("handoverEnterTitle")}
+              </h3>
+              <p className="text-sm text-muted-foreground">{t("handoverEnterHint")}</p>
+              <HandoverForm orderId={order.id} />
+            </>
+          ) : (
+            <>
+              <h3 className="flex items-center gap-2 font-semibold">
+                <Truck aria-hidden className="size-4 text-primary" />
+                {t("shipTitle")}
+              </h3>
+              <p className="text-sm text-muted-foreground">{t("shipHint")}</p>
+              <ShipForm orderId={order.id} />
+            </>
+          )}
+        </Card>
       )
-    case "shipped":
+    }
+
+    case "shipped": {
+      const shipped = t("shippedInfo", {
+        carrier: order.tracking_carrier ?? "",
+        awb: order.tracking_number ?? "",
+      })
+      const releaseDate = order.release_at ? formatDateTime(order.release_at) : ""
       return (
-        <div className="space-y-3 rounded-2xl border bg-card p-5 text-sm">
-          {order.shipped_at ? (
-            <p>{t("shippedOn", { date: formatDateTime(order.shipped_at) })}</p>
-          ) : null}
+        <Card>
+          <p className="flex items-start gap-2 text-sm font-medium">
+            <Truck aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
+            {shipped}
+          </p>
           {isBuyer ? (
-            <ActionButton
-              action={confirmOrderReceived.bind(null, order.id)}
-              className="w-full"
-              confirm={confirm(t("confirmReceivedConfirm"))}
-            >
-              {t("confirmReceived")}
-            </ActionButton>
-          ) : null}
-        </div>
+            <>
+              <p className="text-sm text-muted-foreground">
+                {t("autoRelease", { date: releaseDate })}
+              </p>
+              <ActionButton
+                action={confirmOrderReceived.bind(null, order.id)}
+                className="w-full"
+                confirm={confirm(t("confirmReceived"), t("confirmReceivedConfirm"))}
+              >
+                {t("confirmReceived")}
+              </ActionButton>
+              <DisputeForm orderId={order.id} />
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {t("autoReleaseSeller", { date: releaseDate })}
+            </p>
+          )}
+        </Card>
       )
+    }
+
+    case "disputed": {
+      const d = order.dispute
+      return (
+        <Card tone="warning">
+          <p className="flex items-start gap-2 text-sm font-semibold">
+            <TriangleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
+            {d
+              ? isBuyer
+                ? t("disputeOpenBuyer", { date: formatDateTime(d.opened_at) })
+                : t("disputeOpenSeller", { date: formatDateTime(d.opened_at) })
+              : null}
+          </p>
+          {d ? (
+            <>
+              <p className="text-sm">
+                {t("disputeReason", {
+                  reason: t(`reasons.${d.reason as "not_received" | "not_as_described" | "other"}`),
+                })}
+              </p>
+              <p className="rounded-lg bg-background p-3 text-sm whitespace-pre-line">
+                {d.details}
+              </p>
+              {isSeller ? (
+                <DisputeResponseForm orderId={order.id} initial={d.seller_response} />
+              ) : (
+                <div className="space-y-1 text-sm">
+                  <p className="font-medium">{t("sellerResponseTitle")}</p>
+                  <p className="whitespace-pre-line text-muted-foreground">
+                    {d.seller_response ?? t("noResponseYet")}
+                  </p>
+                </div>
+              )}
+            </>
+          ) : null}
+        </Card>
+      )
+    }
+
     case "completed":
       return (
         <Notice
@@ -288,15 +506,40 @@ async function StatusPanel({
           text={t("completedOn", { date: formatDateTime(order.completed_at ?? order.created_at) })}
         />
       )
+
     case "cancelled":
       return (
-        <Notice
-          tone="muted"
-          icon={CircleX}
-          text={t("cancelledOn", { date: formatDateTime(order.cancelled_at ?? order.created_at) })}
-        />
+        <>
+          <Notice
+            tone="muted"
+            icon={CircleX}
+            text={t("cancelledOn", {
+              date: formatDateTime(order.cancelled_at ?? order.created_at),
+            })}
+          />
+          {order.dispute?.resolution ? (
+            <p className="text-sm text-muted-foreground">
+              {order.dispute.resolution === "refund"
+                ? t("disputeResolvedRefund")
+                : t("disputeResolvedRelease")}
+            </p>
+          ) : null}
+        </>
       )
   }
+}
+
+function Card({ children, tone }: { children: React.ReactNode; tone?: "warning" }) {
+  return (
+    <div
+      className={cn(
+        "space-y-3 rounded-2xl border bg-card p-5",
+        tone === "warning" && "border-warning/40 bg-warning-soft/40",
+      )}
+    >
+      {children}
+    </div>
+  )
 }
 
 function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {

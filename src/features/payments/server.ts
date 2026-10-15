@@ -52,15 +52,23 @@ export async function fulfillCheckoutSession(
   if (session.payment_status !== "paid") return "pending"
   if (session.currency !== "ron" || session.amount_total === null) return "failed"
 
-  const paymentIntent =
+  const paymentIntentId =
     typeof session.payment_intent === "string"
       ? session.payment_intent
       : (session.payment_intent?.id ?? null)
+  if (!paymentIntentId) return "failed"
+
+  // The charge is the source of the later transfer to the seller (escrow release).
+  const pi = await stripe().paymentIntents.retrieve(paymentIntentId)
+  const chargeId =
+    typeof pi.latest_charge === "string" ? pi.latest_charge : (pi.latest_charge?.id ?? null)
+  if (!chargeId) return "failed"
 
   const { data, error } = await createAdminClient().rpc("order_mark_paid", {
     p_order_id: orderId,
     p_session_id: session.id,
-    p_payment_intent_id: paymentIntent ?? session.id,
+    p_payment_intent_id: paymentIntentId,
+    p_charge_id: chargeId,
     p_amount: session.amount_total,
   })
   if (error) {
@@ -68,4 +76,99 @@ export async function fulfillCheckoutSession(
     return "failed"
   }
   return data ? "paid" : "already_paid"
+}
+
+export type SettleResult = { released: number; refunded: number; failed: number }
+
+/**
+ * Moves held money (idempotent; safe to run from several places at once):
+ * - completed orders not yet paid out → transfer item + shipping − 5% fee to the seller;
+ * - cancelled orders that were paid but not refunded → full refund to the buyer.
+ * Runs on the order page, after order actions, and from the scheduled job (/api/cron/orders).
+ */
+export async function settleOrders(orderId?: string): Promise<SettleResult> {
+  const db = createAdminClient()
+  const result: SettleResult = { released: 0, refunded: 0, failed: 0 }
+  // Time-based steps first (shipped past the window → completed; abandoned → cancelled).
+  await db.rpc("advance_orders")
+
+  let toRelease = db
+    .from("orders")
+    .select("id, seller_id, item_price, shipping_cost, platform_fee, stripe_charge_id, release_at")
+    .eq("status", "completed")
+    .eq("funds_model", "escrow")
+    .is("released_at", null)
+    .not("stripe_charge_id", "is", null)
+    .limit(50)
+  if (orderId) toRelease = toRelease.eq("id", orderId)
+  const { data: releases } = await toRelease
+
+  for (const o of releases ?? []) {
+    if (o.release_at && new Date(o.release_at).getTime() > Date.now()) continue
+    try {
+      const { data: seller } = await db
+        .from("profiles_private")
+        .select("stripe_account_id")
+        .eq("id", o.seller_id)
+        .single()
+      if (!seller?.stripe_account_id) throw new Error("seller has no Stripe account")
+      const transfer = await stripe().transfers.create(
+        {
+          amount: o.item_price + o.shipping_cost - o.platform_fee,
+          currency: "ron",
+          destination: seller.stripe_account_id,
+          source_transaction: o.stripe_charge_id!,
+          transfer_group: o.id,
+          metadata: { order_id: o.id },
+        },
+        { idempotencyKey: `release-${o.id}` },
+      )
+      const { error } = await db.rpc("order_mark_released", {
+        p_order_id: o.id,
+        p_transfer_id: transfer.id,
+      })
+      if (error) throw new Error(error.message)
+      result.released++
+    } catch (e) {
+      console.error("[settle.release]", o.id, e)
+      result.failed++
+    }
+  }
+
+  let toRefund = db
+    .from("orders")
+    .select("id, funds_model, stripe_payment_intent_id")
+    .eq("status", "cancelled")
+    .not("paid_at", "is", null)
+    .is("refunded_at", null)
+    .not("stripe_payment_intent_id", "is", null)
+    .limit(50)
+  if (orderId) toRefund = toRefund.eq("id", orderId)
+  const { data: refunds } = await toRefund
+
+  for (const o of refunds ?? []) {
+    try {
+      const refund = await stripe().refunds.create(
+        {
+          payment_intent: o.stripe_payment_intent_id!,
+          // Orders paid before escrow sent the money to the seller at once: take it back.
+          ...(o.funds_model === "direct"
+            ? { reverse_transfer: true, refund_application_fee: true }
+            : {}),
+          metadata: { order_id: o.id },
+        },
+        { idempotencyKey: `refund-${o.id}` },
+      )
+      const { error } = await db.rpc("order_mark_refunded", {
+        p_order_id: o.id,
+        p_refund_id: refund.id,
+      })
+      if (error) throw new Error(error.message)
+      result.refunded++
+    } catch (e) {
+      console.error("[settle.refund]", o.id, e)
+      result.failed++
+    }
+  }
+  return result
 }

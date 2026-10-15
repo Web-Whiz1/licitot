@@ -30,7 +30,8 @@ on completed auctions (Stripe Connect, **test mode only**). Built in phases; see
 ```
 src/app/(site)/        public pages with header/footer/mobile nav
 src/app/(auth)/        auth pages (Phase 2)
-src/app/api/           route handlers: ImageKit auth, Stripe webhook only
+src/app/api/           route handlers: ImageKit auth, Stripe webhook, cron (orders) only
+netlify/functions/     scheduled functions (orders-cron.mts)
 src/components/ui/     shadcn primitives (customized for brand — sizes ≥40px, solid hover colors)
 src/components/layout/ header, footer, mobile nav, theme toggle, demo banner
 src/components/brand/  <Logo/>, <LogoMark/>
@@ -86,15 +87,31 @@ scripts/               gen-icons.ts (no seed/demo data: the DB holds only real u
 - **Reserve price is secret**: `auctions` uses column-level SELECT grants (no `reserve_price`);
   the public sees `has_reserve`/`reserve_met`, sellers read it via `get_auction_reserve()`.
   Never `select("*")` on auctions; **a new auctions column must be added to that grant**.
-- **Payments (Stripe Connect Express)**: sellers onboard from `/cont/incasari`; publishing needs
-  `stripe_charges_enabled`. A sale (closing job or buy now) creates an `orders` row via trigger.
-  The buyer picks delivery and pays on Stripe Checkout (destination charge,
-  `application_fee_amount` = 5% of the item price; shipping is passed through). Payment is
-  confirmed idempotently by the webhook **and** on return from Checkout
-  (`fulfillCheckoutSession`, amount checked in `order_mark_paid`). Order/Stripe state changes
-  only through RPCs; the service-role ones (`order_mark_paid`, `sync_stripe_account`, …) are
-  called from `features/payments/server.ts` and the webhook. Minimum price is 2 RON (Stripe).
-  Contact details of the other party come from `get_order_contact()` only after payment.
+- **Payments (Stripe Connect Express, escrow)**: sellers onboard from `/cont/incasari`; publishing
+  needs `stripe_charges_enabled`. A sale (closing job or buy now) creates an `orders` row via
+  trigger. The buyer picks delivery and pays on Stripe Checkout as a **separate charge** on the
+  platform (`transfer_group` = order id): the money is held until the order completes, then
+  `settleOrders()` transfers item + shipping − 5% to the seller (`source_transaction` = charge).
+  Payment is confirmed idempotently by the webhook **and** on return from Checkout
+  (`fulfillCheckoutSession`, amount checked in `order_mark_paid`).
+  - Pickup: the buyer's 6-digit handover code (`get_handover_code`, buyer-only) is typed in by
+    the seller (`confirm_handover`, 5 wrong tries → 30 min lock) → completed, paid out now.
+  - Courier: the seller enters carrier + AWB (`mark_order_shipped`); paid out when the buyer
+    confirms or 5 days later (+4 for new sellers) unless disputed.
+  - Seller deadline 5 days (`ship_by`): then the buyer may cancel (full refund); auto-cancel at
+    10 days. Disputes (`open_dispute`) freeze the money; admins decide at `/admin`.
+  - Time-based steps: pg_cron `advance_orders()` every 5 min; Stripe transfers/refunds run in
+    `settleOrders()` from the order page, after order actions and from the Netlify scheduled
+    function `netlify/functions/orders-cron.mts` → `POST /api/cron/orders` (`CRON_SECRET`).
+  - Order/Stripe state changes only through RPCs; service-role ones are called from
+    `features/payments/server.ts`. Minimum price is 2 RON (Stripe). Contact details of the other
+    party come from `get_order_contact()` only after payment.
+  - Reads that must be fresh after a change in the same request use `.abortSignal(fresh())`
+    (`features/payments/queries.ts`): Next.js memoizes identical GET fetches during a render.
+- **Listing safety**: `publish_auction` requires every photo's ImageKit pHash (stored by the
+  server via `set_auction_image_hashes`), refuses photos within Hamming distance 6 of another
+  seller's listing (`duplicate_photo`) and limits sellers without a paid-out sale to 3 active
+  auctions (`new_seller_limit`).
 - **Legal pages** read the operator's details from `src/lib/legal.ts` (fictional "LiciTot"
   until the real company exists; empty fields are hidden). Long texts are in `legal.*`.
 - **Feature flags**: `private.app_settings` (`require_connect_for_publish` is true since

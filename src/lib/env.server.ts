@@ -14,6 +14,8 @@ const serverSchema = z.object({
   // Optional: payments are also confirmed when the buyer returns from Checkout.
   STRIPE_WEBHOOK_SECRET: z.string().startsWith("whsec_").optional(),
   STRIPE_CONNECT_WEBHOOK_SECRET: z.string().startsWith("whsec_").optional(),
+  // Shared secret of the scheduled job that settles orders (POST /api/cron/orders).
+  CRON_SECRET: z.string().min(32).optional(),
 })
 
 let cached: z.infer<typeof serverSchema> | undefined
@@ -25,6 +27,7 @@ export function serverEnv() {
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || undefined,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || undefined,
     STRIPE_CONNECT_WEBHOOK_SECRET: process.env.STRIPE_CONNECT_WEBHOOK_SECRET || undefined,
+    CRON_SECRET: process.env.CRON_SECRET || undefined,
   })
   return cached
 }

@@ -4,14 +4,15 @@ import { redirect, unstable_rethrow } from "next/navigation"
 import { z } from "zod"
 import { getCurrentUser } from "@/features/auth/session"
 import type { MessageKey } from "@/i18n/keys"
-import { fail, type ActionResult } from "@/lib/action-result"
+import { fail, zodFieldErrors, type ActionResult } from "@/lib/action-result"
 import { publicEnv } from "@/lib/env"
 import { imagekitUrl } from "@/lib/imagekit"
 import { rateLimit } from "@/lib/rate-limit"
 import { stripe } from "@/lib/stripe.server"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
-import { fulfillCheckoutSession, returnOrigin } from "./server"
+import { fulfillCheckoutSession, returnOrigin, settleOrders } from "./server"
+import { disputeSchema, disputeResponseSchema, handoverSchema, shipSchema } from "./schemas"
 
 /** Stable codes raised by the order RPCs (SQLSTATE P0001), mapped to orders.errors.*. */
 const RPC_ERRORS = new Set([
@@ -20,6 +21,13 @@ const RPC_ERRORS = new Set([
   "order_not_paid",
   "delivery_unavailable",
   "payment_not_overdue",
+  "order_not_handover",
+  "order_not_shippable",
+  "tracking_invalid",
+  "dispute_not_allowed",
+  "dispute_invalid",
+  "deadline_not_passed",
+  "not_admin",
 ])
 
 function rpcErrorKey(message: string | undefined): MessageKey {
@@ -215,10 +223,10 @@ export async function startCheckout(input: z.input<typeof checkoutSchema>): Prom
               ]
             : []),
         ],
-        // Destination charge: the seller receives the money minus LiciTot's 5% fee.
+        // Escrow: the platform collects the payment; the seller is paid (minus the 5% fee)
+        // only when the order is completed (settleOrders → transfer with this group).
         payment_intent_data: {
-          application_fee_amount: order.platform_fee,
-          transfer_data: { destination: seller.stripe_account_id },
+          transfer_group: order.id,
           metadata: { order_id: order.id, auction_id: order.auction.id },
           description: `LiciTot: ${order.auction.title}`.slice(0, 200),
         },
@@ -244,21 +252,121 @@ export async function startCheckout(input: z.input<typeof checkoutSchema>): Prom
 }
 
 // ─── Order steps ────────────────────────────────────────────────────────
+// Each step is a Postgres function that checks who may do what; settleOrders() then moves the
+// money at Stripe (payout to the seller, or refund to the buyer) when the step requires it.
 
-export async function markOrderShipped(orderId: string): Promise<ActionResult> {
-  if (!orderIdSchema.safeParse(orderId).success) return fail("orders.errors.order_not_found")
+async function settleQuietly(orderId: string) {
+  try {
+    await settleOrders(orderId)
+  } catch (e) {
+    // The scheduled job retries; the order itself is already in the right state.
+    console.error("[orders.settle]", orderId, e)
+  }
+}
+
+/** Seller, pickup: the buyer's 6-digit code proves the handover and releases the money. */
+export async function confirmHandover(
+  input: z.input<typeof handoverSchema>,
+): Promise<ActionResult> {
+  const parsed = handoverSchema.safeParse(input)
+  if (!parsed.success)
+    return fail("orders.errors.handover_invalid", { code: "orders.errors.handover_invalid" })
+  const user = await getCurrentUser()
+  if (!user) return fail("orders.errors.not_authenticated")
+  if (!(await rateLimit({ key: `handover:${user.id}`, limit: 20, windowSeconds: 600 }))) {
+    return fail("orders.errors.rate_limited")
+  }
   const supabase = await createClient()
-  const { error } = await supabase.rpc("mark_order_shipped", { p_order_id: orderId })
+  const { data, error } = await supabase.rpc("confirm_handover", {
+    p_order_id: parsed.data.orderId,
+    p_code: parsed.data.code,
+  })
+  if (error) return fail(rpcErrorKey(error.message))
+  if (data === "locked") return fail("orders.errors.handover_locked")
+  if (data !== "ok")
+    return fail("orders.errors.handover_invalid", { code: "orders.errors.handover_invalid" })
+  await settleQuietly(parsed.data.orderId)
+  return { ok: true, message: "orders.handoverDone" }
+}
+
+/** Seller, courier: AWB number required. */
+export async function markOrderShipped(input: z.input<typeof shipSchema>): Promise<ActionResult> {
+  const parsed = shipSchema.safeParse(input)
+  if (!parsed.success) return fail("orders.errors.tracking_invalid", zodFieldErrors(parsed.error))
+  const supabase = await createClient()
+  const { error } = await supabase.rpc("mark_order_shipped", {
+    p_order_id: parsed.data.orderId,
+    p_carrier: parsed.data.carrier,
+    p_tracking_number: parsed.data.trackingNumber,
+  })
   if (error) return fail(rpcErrorKey(error.message))
   return { ok: true, message: "orders.shippedDone" }
 }
 
+/** Buyer: received and happy → the seller is paid now. */
 export async function confirmOrderReceived(orderId: string): Promise<ActionResult> {
   if (!orderIdSchema.safeParse(orderId).success) return fail("orders.errors.order_not_found")
   const supabase = await createClient()
   const { error } = await supabase.rpc("confirm_order_received", { p_order_id: orderId })
   if (error) return fail(rpcErrorKey(error.message))
+  await settleQuietly(orderId)
   return { ok: true, message: "orders.receivedDone" }
+}
+
+/** Buyer: something is wrong → the money stays frozen until an admin decides. */
+export async function openDispute(input: z.input<typeof disputeSchema>): Promise<ActionResult> {
+  const parsed = disputeSchema.safeParse(input)
+  if (!parsed.success) return fail("orders.errors.dispute_invalid", zodFieldErrors(parsed.error))
+  const supabase = await createClient()
+  const { error } = await supabase.rpc("open_dispute", {
+    p_order_id: parsed.data.orderId,
+    p_reason: parsed.data.reason,
+    p_details: parsed.data.details,
+  })
+  if (error) return fail(rpcErrorKey(error.message))
+  return { ok: true, message: "orders.disputeOpened" }
+}
+
+/** Seller: their side of the story. */
+export async function respondDispute(
+  input: z.input<typeof disputeResponseSchema>,
+): Promise<ActionResult> {
+  const parsed = disputeResponseSchema.safeParse(input)
+  if (!parsed.success) return fail("orders.errors.dispute_invalid", zodFieldErrors(parsed.error))
+  const supabase = await createClient()
+  const { error } = await supabase.rpc("respond_dispute", {
+    p_order_id: parsed.data.orderId,
+    p_response: parsed.data.response,
+  })
+  if (error) return fail(rpcErrorKey(error.message))
+  return { ok: true, message: "orders.disputeResponded" }
+}
+
+/** Buyer: the seller missed the 5-day deadline → cancel and get a full refund. */
+export async function cancelLateOrder(orderId: string): Promise<ActionResult> {
+  if (!orderIdSchema.safeParse(orderId).success) return fail("orders.errors.order_not_found")
+  const supabase = await createClient()
+  const { error } = await supabase.rpc("cancel_late_order", { p_order_id: orderId })
+  if (error) return fail(rpcErrorKey(error.message))
+  await settleQuietly(orderId)
+  return { ok: true, message: "orders.refundDone" }
+}
+
+/** Admin: decide a dispute (refund the buyer, or pay the seller). */
+export async function resolveDispute(
+  orderId: string,
+  outcome: "refund" | "release",
+): Promise<ActionResult> {
+  if (!orderIdSchema.safeParse(orderId).success) return fail("orders.errors.order_not_found")
+  if (outcome !== "refund" && outcome !== "release") return fail("orders.errors.dispute_invalid")
+  const supabase = await createClient()
+  const { error } = await supabase.rpc("admin_resolve_dispute", {
+    p_order_id: orderId,
+    p_outcome: outcome,
+  })
+  if (error) return fail(rpcErrorKey(error.message))
+  await settleQuietly(orderId)
+  return { ok: true, message: outcome === "refund" ? "orders.refundDone" : "orders.releaseDone" }
 }
 
 /** Seller cancels an order that wasn't paid by the deadline. Closes any open Checkout first. */
