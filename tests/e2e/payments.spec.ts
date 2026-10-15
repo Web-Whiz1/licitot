@@ -35,7 +35,7 @@ async function createTestConnectedAccount(email: string) {
       last_name: "Vânzătorul",
       email,
       phone: "+40000000000",
-      dob: { day: 1, month: 1, year: 1990 },
+      dob: { day: 1, month: 1, year: 1901 }, // Stripe test DOB: passes verification
       address: { line1: "address_full_match", city: "Cluj-Napoca", postal_code: "400001" },
     },
     external_account: {
@@ -49,7 +49,7 @@ async function createTestConnectedAccount(email: string) {
 }
 
 test.beforeAll(async () => {
-  test.setTimeout(120_000)
+  test.setTimeout(180_000)
   seller = await createConfirmedUser("Vânzător Plăți")
   buyer = await createConfirmedUser("Cumpărător Plăți")
   try {
@@ -57,7 +57,7 @@ test.beforeAll(async () => {
     accountId = account.id
     // Verification of test data takes a moment.
     let a = account
-    for (let i = 0; i < 20 && !a.charges_enabled; i++) {
+    for (let i = 0; i < 45 && !a.charges_enabled; i++) {
       await new Promise((r) => setTimeout(r, 2_000))
       a = await stripe.accounts.retrieve(account.id)
     }
@@ -105,7 +105,14 @@ test("buy now, pay on Stripe Checkout, ship", async ({ page, browser }, info) =>
 
   // Stripe-hosted Checkout (test mode).
   await page.waitForURL(/checkout\.stripe\.com/, { timeout: 30_000 })
-  await page.locator("#cardNumber").fill("4242424242424242")
+  // With several payment methods enabled (e.g. Klarna), the card form sits in an accordion:
+  // click the visible "Card" row first.
+  const cardRow = page.getByText("Card", { exact: true })
+  const cardNumber = page.locator("#cardNumber")
+  await expect(cardRow.or(cardNumber).first()).toBeVisible({ timeout: 30_000 })
+  // The overlay button receives the click, as for a real user; force skips the overlap check.
+  if (!(await cardNumber.isVisible())) await cardRow.click({ force: true })
+  await cardNumber.fill("4242424242424242")
   await page.locator("#cardExpiry").fill("12 / 34")
   await page.locator("#cardCvc").fill("123")
   await page.locator("#billingName").fill("Cumpărător Plăți")
