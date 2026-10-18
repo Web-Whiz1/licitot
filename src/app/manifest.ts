@@ -4,7 +4,7 @@ import { colorTokens } from "@/lib/brand/tokens"
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: `${messages.meta.siteName} — ${messages.meta.tagline}`,
+    name: `${messages.meta.siteName} - ${messages.meta.tagline}`,
     short_name: messages.meta.siteName,
     description: messages.meta.ogSubtitle,
     lang: "ro",
