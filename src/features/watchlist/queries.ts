@@ -21,6 +21,9 @@ export async function getWatchlist(userId: string) {
     .select(`created_at, auction:auctions!inner(${CARD_COLUMNS})`)
     .eq("user_id", userId)
     .order("created_at", { ascending: false })
+    // Cards show only the cover photo.
+    .order("position", { referencedTable: "auction.auction_images" })
+    .limit(1, { referencedTable: "auction.auction_images" })
     .limit(200)
   if (error) throw error
   const cards = data.map((r) => toCard(r.auction as unknown as CardRow))

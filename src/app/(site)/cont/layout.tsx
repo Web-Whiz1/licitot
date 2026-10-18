@@ -1,8 +1,8 @@
 import { getTranslations } from "next-intl/server"
 import { Suspense } from "react"
-import { Skeleton } from "@/components/ui/skeleton"
 import { AccountTabs, AccountTabsNav } from "@/features/profiles/components/account-tabs"
 import { requireUser } from "@/features/auth/session"
+import { AccountSkeleton } from "@/features/profiles/components/account-skeleton"
 
 export default async function AccountLayout({ children }: LayoutProps<"/cont">) {
   const t = await getTranslations("account")
@@ -25,15 +25,4 @@ export default async function AccountLayout({ children }: LayoutProps<"/cont">) 
 async function SignedIn({ children }: { children: React.ReactNode }) {
   await requireUser("/cont")
   return children
-}
-
-function AccountSkeleton() {
-  return (
-    <div className="space-y-4" aria-hidden>
-      <Skeleton className="h-6 w-48" />
-      <Skeleton className="h-10 w-full max-w-md" />
-      <Skeleton className="h-10 w-full max-w-md" />
-      <Skeleton className="h-24 w-full" />
-    </div>
-  )
 }

@@ -59,8 +59,10 @@ export async function Footer() {
             <ul className="space-y-2 text-sm">
               {col.links.map((link) => (
                 <li key={link.href}>
+                  {/* Rarely used: no background prefetch on every page (fewer server calls). */}
                   <Link
                     href={link.href}
+                    prefetch={false}
                     className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
                   >
                     {link.label}

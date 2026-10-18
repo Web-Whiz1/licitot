@@ -21,6 +21,9 @@ export async function getMyBids(userId: string) {
     )
     .eq("bidder_id", userId)
     .order("updated_at", { ascending: false })
+    // Only the cover photo is shown: do not transfer every photo (and its blur preview).
+    .order("position", { referencedTable: "auction.auction_images" })
+    .limit(1, { referencedTable: "auction.auction_images" })
     .limit(100)
   if (error) throw error
   return data.map(({ auction, ...rest }) => {
@@ -43,6 +46,8 @@ export async function getWonAuctions(userId: string) {
     .eq("winner_id", userId)
     .eq("status", "ended_sold")
     .order("ends_at", { ascending: false })
+    .order("position", { referencedTable: "auction_images" })
+    .limit(1, { referencedTable: "auction_images" })
     .limit(100)
   if (error) throw error
   return data.map(({ auction_images, ...a }) => ({ ...a, cover: cover(auction_images) }))
@@ -62,6 +67,8 @@ export async function getSoldAuctions(userId: string) {
     .eq("seller_id", userId)
     .eq("status", "ended_sold")
     .order("ends_at", { ascending: false })
+    .order("position", { referencedTable: "auction_images" })
+    .limit(1, { referencedTable: "auction_images" })
     .limit(100)
   if (error) throw error
   return data.map(({ auction_images, ...a }) => ({ ...a, cover: cover(auction_images) }))

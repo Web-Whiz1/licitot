@@ -4,14 +4,18 @@ import { getTranslations } from "next-intl/server"
 import { Button } from "@/components/ui/button"
 import { NotificationBell } from "@/features/notifications/components/notification-bell"
 import { getNotificationSummary } from "@/features/notifications/queries"
-import { getCurrentProfile } from "../session"
+import { getCurrentProfile, getCurrentUser } from "../session"
 import { UserMenuDropdown } from "./user-menu-dropdown"
 
 /** Header account entry. Reads the session, so it's rendered inside <Suspense> in the header. */
 export async function UserMenu() {
-  const profile = await getCurrentProfile()
-  if (profile) {
-    const notifications = await getNotificationSummary(profile.id)
+  // The user id comes from the verified token (no round trip), so the profile and the
+  // notifications load in parallel instead of one after the other.
+  const user = await getCurrentUser()
+  const [profile, notifications] = user
+    ? await Promise.all([getCurrentProfile(), getNotificationSummary(user.id)])
+    : [null, null]
+  if (profile && notifications) {
     return (
       <>
         <NotificationBell

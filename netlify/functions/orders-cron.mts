@@ -1,4 +1,4 @@
-// Netlify Scheduled Function: every 10 minutes, ask the app to settle orders (pay sellers,
+// Netlify Scheduled Function: every 5 minutes, ask the app to settle orders (pay sellers,
 // refund buyers, apply deadlines). The work happens in /api/cron/orders.
 export default async function ordersCron() {
   const site = process.env.URL
@@ -14,4 +14,4 @@ export default async function ordersCron() {
   console.log("[orders-cron]", res.status, await res.text())
 }
 
-export const config = { schedule: "*/10 * * * *" }
+export const config = { schedule: "*/5 * * * *" }

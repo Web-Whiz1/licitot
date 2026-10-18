@@ -114,12 +114,14 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/co
   const isSeller = order.seller_id === user.id
   const other = isBuyer ? order.seller : order.buyer
   const afterPayment = ["paid", "shipped", "disputed", "completed"].includes(order.status)
-  const contact = afterPayment ? await getOrderContact(order.id) : null
-  const handoverCode =
+  // Independent reads: fetch them in parallel (each is a round trip to the database).
+  const [contact, handoverCode, myReview] = await Promise.all([
+    afterPayment ? getOrderContact(order.id) : null,
     isBuyer && order.status === "paid" && order.delivery_method === "pickup"
-      ? await getHandoverCode(order.id)
-      : null
-  const myReview = order.status === "completed" ? await getMyReview(order.id, user.id) : null
+      ? getHandoverCode(order.id)
+      : null,
+    order.status === "completed" ? getMyReview(order.id, user.id) : null,
+  ])
   const canReview =
     order.status === "completed" &&
     !myReview &&

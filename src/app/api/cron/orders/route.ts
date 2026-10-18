@@ -5,7 +5,7 @@ import { settleOrders } from "@/features/payments/server"
 import { serverEnv } from "@/lib/env.server"
 
 /**
- * Scheduled job (netlify/functions/orders-cron.mts, every 10 minutes): completes orders whose
+ * Scheduled job (netlify/functions/orders-cron.mts, every 5 minutes): completes orders whose
  * window passed, pays sellers and refunds buyers at Stripe, then sends notification emails (when
  * configured). Authenticated with CRON_SECRET.
  */
