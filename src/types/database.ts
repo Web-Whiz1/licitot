@@ -342,6 +342,47 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          created_at: string
+          data: Json
+          emailed_at: string | null
+          id: number
+          link: string | null
+          read_at: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          emailed_at?: string | null
+          id?: never
+          link?: string | null
+          read_at?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          emailed_at?: string | null
+          id?: never
+          link?: string | null
+          read_at?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_disputes: {
         Row: {
           details: string
@@ -624,20 +665,149 @@ export type Database = {
           },
         ]
       }
+      reports: {
+        Row: {
+          auction_id: string | null
+          created_at: string
+          details: string | null
+          id: number
+          reason: string
+          reported_user_id: string | null
+          reporter_id: string | null
+          resolution_note: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+        }
+        Insert: {
+          auction_id?: string | null
+          created_at?: string
+          details?: string | null
+          id?: never
+          reason: string
+          reported_user_id?: string | null
+          reporter_id?: string | null
+          resolution_note?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+        }
+        Update: {
+          auction_id?: string | null
+          created_at?: string
+          details?: string | null
+          id?: never
+          reason?: string
+          reported_user_id?: string | null
+          reporter_id?: string | null
+          resolution_note?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_auction_id_fkey"
+            columns: ["auction_id"]
+            isOneToOne: false
+            referencedRelation: "auctions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reported_user_id_fkey"
+            columns: ["reported_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: number
+          order_id: string
+          rating: number
+          reviewee_id: string
+          reviewer_id: string
+          reviewer_role: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: never
+          order_id: string
+          rating: number
+          reviewee_id: string
+          reviewer_id: string
+          reviewer_role: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: never
+          order_id?: string
+          rating?: number
+          reviewee_id?: string
+          reviewer_id?: string
+          reviewer_role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_reviewee_id_fkey"
+            columns: ["reviewee_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       watchlist: {
         Row: {
           auction_id: string
           created_at: string
+          ending_notified_at: string | null
           user_id: string
         }
         Insert: {
           auction_id: string
           created_at?: string
+          ending_notified_at?: string | null
           user_id?: string
         }
         Update: {
           auction_id?: string
           created_at?: string
+          ending_notified_at?: string | null
           user_id?: string
         }
         Relationships: [
@@ -662,8 +832,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_hide_auction: {
+        Args: { p_auction_id: string; p_reason: string }
+        Returns: undefined
+      }
       admin_resolve_dispute: {
         Args: { p_note?: string; p_order_id: string; p_outcome: string }
+        Returns: undefined
+      }
+      admin_resolve_report: {
+        Args: { p_note: string; p_report_id: number; p_status: string }
+        Returns: undefined
+      }
+      admin_set_banned: {
+        Args: { p_banned: boolean; p_user_id: string }
+        Returns: undefined
+      }
+      admin_stats: { Args: never; Returns: Json }
+      admin_unhide_auction: {
+        Args: { p_auction_id: string }
         Returns: undefined
       }
       advance_orders: { Args: never; Returns: Json }
@@ -746,6 +933,15 @@ export type Database = {
         }[]
       }
       is_admin: { Args: never; Returns: boolean }
+      leave_review: {
+        Args: { p_comment: string; p_order_id: string; p_rating: number }
+        Returns: undefined
+      }
+      mark_all_notifications_read: { Args: never; Returns: undefined }
+      mark_notifications_emailed: {
+        Args: { p_ids: number[] }
+        Returns: undefined
+      }
       mark_order_shipped: {
         Args: {
           p_carrier: string
@@ -754,6 +950,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      notify_watch_ending: { Args: never; Returns: number }
       open_dispute: {
         Args: { p_details: string; p_order_id: string; p_reason: string }
         Returns: undefined
@@ -779,6 +976,15 @@ export type Database = {
       order_mark_released: {
         Args: { p_order_id: string; p_transfer_id: string }
         Returns: undefined
+      }
+      orders_ready_for_payout: {
+        Args: { p_order_id?: string }
+        Returns: {
+          amount: number
+          id: string
+          stripe_account_id: string
+          stripe_charge_id: string
+        }[]
       }
       place_bid: {
         Args: { p_auction_id: string; p_max_amount: number }
@@ -835,6 +1041,15 @@ export type Database = {
       }
       replace_auction_images: {
         Args: { p_auction_id: string; p_images: Json }
+        Returns: undefined
+      }
+      report_content: {
+        Args: {
+          p_auction_id: string
+          p_details: string
+          p_reason: string
+          p_user_id: string
+        }
         Returns: undefined
       }
       respond_dispute: {

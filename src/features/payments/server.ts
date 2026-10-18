@@ -92,32 +92,21 @@ export async function settleOrders(orderId?: string): Promise<SettleResult> {
   // Time-based steps first (shipped past the window → completed; abandoned → cancelled).
   await db.rpc("advance_orders")
 
-  let toRelease = db
-    .from("orders")
-    .select("id, seller_id, item_price, shipping_cost, platform_fee, stripe_charge_id, release_at")
-    .eq("status", "completed")
-    .eq("funds_model", "escrow")
-    .is("released_at", null)
-    .not("stripe_charge_id", "is", null)
-    .limit(50)
-  if (orderId) toRelease = toRelease.eq("id", orderId)
-  const { data: releases } = await toRelease
+  // Which payouts are due is decided by the database clock (release_at uses now() too).
+  const { data: releases } = await db.rpc(
+    "orders_ready_for_payout",
+    orderId ? { p_order_id: orderId } : {},
+  )
 
   for (const o of releases ?? []) {
-    if (o.release_at && new Date(o.release_at).getTime() > Date.now()) continue
     try {
-      const { data: seller } = await db
-        .from("profiles_private")
-        .select("stripe_account_id")
-        .eq("id", o.seller_id)
-        .single()
-      if (!seller?.stripe_account_id) throw new Error("seller has no Stripe account")
+      if (!o.stripe_account_id) throw new Error("seller has no Stripe account")
       const transfer = await stripe().transfers.create(
         {
-          amount: o.item_price + o.shipping_cost - o.platform_fee,
+          amount: o.amount,
           currency: "ron",
-          destination: seller.stripe_account_id,
-          source_transaction: o.stripe_charge_id!,
+          destination: o.stripe_account_id,
+          source_transaction: o.stripe_charge_id,
           transfer_group: o.id,
           metadata: { order_id: o.id },
         },

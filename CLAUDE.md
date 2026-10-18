@@ -112,6 +112,17 @@ scripts/               gen-icons.ts (no seed/demo data: the DB holds only real u
   server via `set_auction_image_hashes`), refuses photos within Hamming distance 6 of another
   seller's listing (`duplicate_photo`) and limits sellers without a paid-out sale to 3 active
   auctions (`new_seller_limit`).
+- **Notifications**: rows in `notifications` are written only by DB triggers (auctions, orders,
+  reviews) and RPCs (reports, admin tools, `notify_watch_ending` via pg_cron); the UI renders
+  `type` + `data` with `features/notifications/format.ts` → `notifications.types.*`. Emails go
+  out from the cron job via Resend once `RESEND_API_KEY` + `EMAIL_FROM` are set (last 24 h only).
+- **Reviews**: `leave_review()` after a completed order, once per party, within 30 days; a trigger
+  keeps `profiles.rating_avg/rating_count`. Profiles are cached: call `updateTag(profileTag(u))`.
+- **Moderation**: `report_content()` (listing or profile); admins (`profiles.role = admin`) use
+  `/admin` (stats, reports, disputes) and RPCs `admin_hide_auction`, `admin_set_banned`,
+  `admin_resolve_report`, `admin_stats` — each re-checks `is_admin()`.
+- **Clocks**: time comparisons that gate money (payout due, deadlines) run in SQL with `now()`
+  (e.g. `orders_ready_for_payout()`), never against the app server clock.
 - **Legal pages** read the operator's details from `src/lib/legal.ts` (fictional "LiciTot"
   until the real company exists; empty fields are hidden). Long texts are in `legal.*`.
 - **Feature flags**: `private.app_settings` (`require_connect_for_publish` is true since
@@ -128,7 +139,8 @@ scripts/               gen-icons.ts (no seed/demo data: the DB holds only real u
 - **URLs**: auction pages are `/licitatie/<uuid>-<slug>`. Stale slugs 308-redirect to the
   canonical URL.
 - **Components**: Server Components by default; `"use client"` only for interactive islands.
-  Realtime subscriptions only on the auction detail page.
+  Realtime subscriptions only on the auction detail page and the header notification bell
+  (which must `realtime.setAuth(token)` before subscribing: private rows need the user token).
 - **Colors**: use semantic tokens (`bg-primary`, `text-muted-foreground`, `bg-sky-soft`…), never raw
   hex in components. Baby blue (`sky`) is decoration only — never text on white. Adding a token?
   Update `src/lib/brand/tokens.ts` + `globals.css`; `pnpm test` checks sync and WCAG AA contrast.

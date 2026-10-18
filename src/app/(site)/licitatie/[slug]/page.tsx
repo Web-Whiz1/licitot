@@ -13,6 +13,7 @@ import { AuctionStatusBadge } from "@/features/auctions/components/status-badge"
 import { BidBox } from "@/features/bids/components/bid-box"
 import type { LiveAuction } from "@/features/bids/live-store"
 import { ViewerBidBox } from "@/features/bids/components/viewer-bid-box"
+import { ReportButton } from "@/features/moderation/components/report-button"
 import { ViewerWatchButton } from "@/features/watchlist/viewer-watch-button"
 import { WatchButton } from "@/features/watchlist/watch-button"
 import { getPublicAuction, getSimilarAuctions } from "@/features/auctions/listing"
@@ -242,6 +243,7 @@ async function AuctionDetail({ params }: Pick<PageProps<"/licitatie/[slug]">, "p
               {t("detail.description")}
             </h2>
             <p className="leading-relaxed whitespace-pre-line">{a.description}</p>
+            <ReportButton auctionId={a.id} />
           </section>
 
           <section aria-labelledby="details-title" className="space-y-3">

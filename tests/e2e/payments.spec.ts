@@ -169,4 +169,20 @@ test("buy now, pay on Stripe Checkout, ship", async ({ page, browser }, info) =>
   await sellerPage.reload()
   await expect(sellerPage.getByText(/Ai primit 310\sRON în contul tău Stripe/)).toBeVisible()
   await sellerContext.close()
+
+  // The buyer rates the seller; the rating shows on the seller's public profile.
+  await page.reload()
+  // Stars are visually hidden radios: click the visible star (its label), as a person would.
+  await page.getByLabel("5 stele").locator("..").click()
+  await page.getByLabel("Comentariu (opțional)").fill("Totul a fost în regulă, recomand.")
+  await page.getByRole("button", { name: "Trimite recenzia" }).click()
+  await expect(page.getByText("Recenzia ta: 5 stele")).toBeVisible()
+  const { data: sellerProfile } = await admin
+    .from("profiles")
+    .select("username")
+    .eq("id", seller.id)
+    .single()
+  await page.goto(`/u/${sellerProfile!.username}`)
+  await expect(page.getByText(/5 din 5/)).toBeVisible()
+  await expect(page.getByText("Totul a fost în regulă, recomand.")).toBeVisible()
 })

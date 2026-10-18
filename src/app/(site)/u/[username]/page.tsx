@@ -10,7 +10,10 @@ import { getSellerAuctions } from "@/features/auctions/listing"
 import { EmptyState } from "@/features/profiles/components/empty-state"
 import { getPublicProfile } from "@/features/profiles/queries"
 import { USERNAME_PATTERN } from "@/features/profiles/schemas"
-import { APP_LOCALE, APP_TIME_ZONE } from "@/lib/dates"
+import { ReportButton } from "@/features/moderation/components/report-button"
+import { Stars } from "@/features/reviews/components/stars"
+import { getProfileReviews } from "@/features/reviews/queries"
+import { APP_LOCALE, APP_TIME_ZONE, formatDate } from "@/lib/dates"
 
 const memberSinceFormatter = new Intl.DateTimeFormat(APP_LOCALE, {
   timeZone: APP_TIME_ZONE,
@@ -95,6 +98,9 @@ async function Profile({ params }: Pick<PageProps<"/u/[username]">, "params">) {
       </header>
 
       {profile.bio ? <p className="mt-6 max-w-2xl whitespace-pre-line">{profile.bio}</p> : null}
+      <div className="mt-2 flex justify-end">
+        <ReportButton userId={profile.id} />
+      </div>
 
       <section aria-labelledby="active-title" className="mt-10">
         <h2 id="active-title" className="mb-4 text-2xl font-bold tracking-tight">
@@ -107,7 +113,7 @@ async function Profile({ params }: Pick<PageProps<"/u/[username]">, "params">) {
         <h2 id="reviews-title" className="mb-4 text-2xl font-bold tracking-tight">
           {t("reviews")}
         </h2>
-        <EmptyState icon={Star} title={t("noReviews")} />
+        <ProfileReviews profileId={profile.id} username={profile.username} />
       </section>
     </>
   )
@@ -119,6 +125,43 @@ async function SellerListings({ sellerId, emptyLabel }: { sellerId: string; empt
     <AuctionGrid auctions={items} />
   ) : (
     <EmptyState icon={Gavel} title={emptyLabel} />
+  )
+}
+
+async function ProfileReviews({ profileId, username }: { profileId: string; username: string }) {
+  const [t, reviews] = await Promise.all([
+    getTranslations(),
+    getProfileReviews(profileId, username),
+  ])
+  if (reviews.length === 0) return <EmptyState icon={Star} title={t("profile.noReviews")} />
+  return (
+    <ul className="space-y-3">
+      {reviews.map((r) => (
+        <li key={r.id} className="flex gap-3 rounded-2xl border bg-card p-4">
+          <UserAvatar
+            name={r.reviewer?.display_name ?? "?"}
+            avatarPath={r.reviewer?.avatar_path ?? null}
+            size={40}
+            className="size-10 shrink-0"
+          />
+          <div className="min-w-0 space-y-1">
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+              <span className="font-semibold">
+                {r.reviewer?.display_name ?? t("reviews.deletedUser")}
+              </span>
+              <span className="text-muted-foreground">
+                {r.reviewer_role === "buyer" ? t("reviews.asBuyer") : t("reviews.asSeller")}
+              </span>
+              <Stars rating={r.rating} label={t("reviews.star", { n: r.rating })} />
+            </p>
+            {r.comment ? <p className="text-sm whitespace-pre-line">{r.comment}</p> : null}
+            <time dateTime={r.created_at} className="text-xs text-muted-foreground">
+              {formatDate(r.created_at)}
+            </time>
+          </div>
+        </li>
+      ))}
+    </ul>
   )
 }
 

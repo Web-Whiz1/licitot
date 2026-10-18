@@ -1,11 +1,13 @@
 import { timingSafeEqual } from "node:crypto"
 import { NextResponse, type NextRequest } from "next/server"
+import { sendPendingEmails } from "@/features/notifications/email"
 import { settleOrders } from "@/features/payments/server"
 import { serverEnv } from "@/lib/env.server"
 
 /**
  * Scheduled job (netlify/functions/orders-cron.mts, every 10 minutes): completes orders whose
- * window passed, pays sellers and refunds buyers at Stripe. Authenticated with CRON_SECRET.
+ * window passed, pays sellers and refunds buyers at Stripe, then sends notification emails (when
+ * configured). Authenticated with CRON_SECRET.
  */
 export async function POST(request: NextRequest) {
   const secret = serverEnv().CRON_SECRET
@@ -16,6 +18,7 @@ export async function POST(request: NextRequest) {
     timingSafeEqual(Buffer.from(given), Buffer.from(secret!))
   if (!ok) return NextResponse.json({ error: "unauthorized" }, { status: 401 })
 
-  const result = await settleOrders()
-  return NextResponse.json(result)
+  const orders = await settleOrders()
+  const emails = await sendPendingEmails()
+  return NextResponse.json({ ...orders, emails })
 }

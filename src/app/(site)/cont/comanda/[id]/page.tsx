@@ -37,6 +37,9 @@ import {
   type OrderView,
 } from "@/features/payments/queries"
 import { fulfillCheckoutSession, settleOrders } from "@/features/payments/server"
+import { ReviewForm } from "@/features/reviews/components/review-form"
+import { Stars } from "@/features/reviews/components/stars"
+import { getMyReview } from "@/features/reviews/queries"
 import { formatDateTime, isPast } from "@/lib/dates"
 import { PLATFORM_FEE_PERCENT, formatRON } from "@/lib/money"
 import { formatRoPhone } from "@/lib/phone"
@@ -116,6 +119,12 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/co
     isBuyer && order.status === "paid" && order.delivery_method === "pickup"
       ? await getHandoverCode(order.id)
       : null
+  const myReview = order.status === "completed" ? await getMyReview(order.id, user.id) : null
+  const canReview =
+    order.status === "completed" &&
+    !myReview &&
+    (isBuyer || isSeller) &&
+    !isPast(addDays(order.completed_at ?? order.created_at, 30))
   const a = order.auction
   const deliveryOptions = [
     ...(a.ship_pickup ? (["pickup"] as const) : []),
@@ -195,6 +204,17 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/co
             handoverCode={handoverCode}
             deliveryOptions={[...deliveryOptions]}
           />
+
+          {canReview ? (
+            <div className="rounded-2xl border bg-card p-5">
+              <ReviewForm orderId={order.id} role={isBuyer ? "buyer" : "seller"} />
+            </div>
+          ) : myReview ? (
+            <p className="flex items-center gap-2 rounded-2xl border bg-card p-4 text-sm">
+              <Stars rating={myReview.rating} label={t("reviews.star", { n: myReview.rating })} />
+              {t("reviews.yours", { n: myReview.rating })}
+            </p>
+          ) : null}
 
           {contact ? (
             <section aria-labelledby="contact" className="space-y-3 rounded-2xl border bg-card p-5">

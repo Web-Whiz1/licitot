@@ -2,6 +2,8 @@ import { UserRound } from "lucide-react"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
 import { Button } from "@/components/ui/button"
+import { NotificationBell } from "@/features/notifications/components/notification-bell"
+import { getNotificationSummary } from "@/features/notifications/queries"
 import { getCurrentProfile } from "../session"
 import { UserMenuDropdown } from "./user-menu-dropdown"
 
@@ -9,13 +11,21 @@ import { UserMenuDropdown } from "./user-menu-dropdown"
 export async function UserMenu() {
   const profile = await getCurrentProfile()
   if (profile) {
+    const notifications = await getNotificationSummary(profile.id)
     return (
-      <UserMenuDropdown
-        displayName={profile.display_name}
-        username={profile.username}
-        avatarPath={profile.avatar_path}
-        isAdmin={profile.role === "admin" && !profile.is_banned}
-      />
+      <>
+        <NotificationBell
+          userId={profile.id}
+          initialItems={notifications.items}
+          initialUnread={notifications.unread}
+        />
+        <UserMenuDropdown
+          displayName={profile.display_name}
+          username={profile.username}
+          avatarPath={profile.avatar_path}
+          isAdmin={profile.role === "admin" && !profile.is_banned}
+        />
+      </>
     )
   }
   return <SignInButton label={(await getTranslations("nav"))("signIn")} />

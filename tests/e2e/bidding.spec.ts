@@ -70,7 +70,16 @@ test("proxy bids, live updates and the outbid notice", async ({ page, browser },
   await bogdanPage.getByRole("button", { name: "Licitează" }).first().click()
   await bogdanPage.getByRole("button", { name: "Confirm oferta" }).click()
   await expect(bogdanPage.getByText("Ești pe primul loc!").first()).toBeVisible()
-  await expect(page.getByText(/Ai fost depășit/)).toBeVisible({ timeout: 15_000 })
+  await expect(page.getByText(/Ai fost depășit. Mărește oferta/)).toBeVisible({ timeout: 15_000 })
+
+  // The header bell gets the "outbid" notification live.
+  const bell = page.getByRole("button", { name: /Notificări \(1 necitită\)/ })
+  await expect(bell).toBeVisible({ timeout: 15_000 })
+  await bell.click()
+  await expect(
+    page.getByRole("menu").getByText(/Ai fost depășit la „Cameră foto Sony/),
+  ).toBeVisible()
+  await page.keyboard.press("Escape")
   await expect(page.getByText(/^610\sRON$/).first()).toBeVisible()
 
   // History masks names and marks the viewer's own bids.

@@ -16,6 +16,9 @@ const serverSchema = z.object({
   STRIPE_CONNECT_WEBHOOK_SECRET: z.string().startsWith("whsec_").optional(),
   // Shared secret of the scheduled job that settles orders (POST /api/cron/orders).
   CRON_SECRET: z.string().min(32).optional(),
+  // Email notifications (Resend). Both must be set; the sender needs a verified domain.
+  RESEND_API_KEY: z.string().startsWith("re_").optional(),
+  EMAIL_FROM: z.string().min(3).optional(),
 })
 
 let cached: z.infer<typeof serverSchema> | undefined
@@ -28,6 +31,8 @@ export function serverEnv() {
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || undefined,
     STRIPE_CONNECT_WEBHOOK_SECRET: process.env.STRIPE_CONNECT_WEBHOOK_SECRET || undefined,
     CRON_SECRET: process.env.CRON_SECRET || undefined,
+    RESEND_API_KEY: process.env.RESEND_API_KEY || undefined,
+    EMAIL_FROM: process.env.EMAIL_FROM || undefined,
   })
   return cached
 }
