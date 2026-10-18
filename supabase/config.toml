@@ -161,7 +161,7 @@ site_url = "env(SUPABASE_AUTH_SITE_URL)"
 # The public URL that Auth serves on. Defaults to the API external URL with `/auth/v1` appended.
 # external_url = ""
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-# LiciTot: local dev + deployed app. Add the Firebase App Hosting URL before deploying.
+# LiciTot: local dev + the production site (SUPABASE_AUTH_PROD_REDIRECT = https://licitot.ro/**).
 additional_redirect_urls = [
   "http://localhost:3000/**",
   "http://127.0.0.1:3000/**",

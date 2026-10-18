@@ -29,7 +29,7 @@ async function createTestConnectedAccount(email: string) {
     email,
     business_type: "individual",
     capabilities: { card_payments: { requested: true }, transfers: { requested: true } },
-    business_profile: { mcc: "5999", url: "https://licitot.netlify.app" },
+    business_profile: { mcc: "5999", url: "https://licitot.ro" },
     individual: {
       first_name: "Ion",
       last_name: "Vânzătorul",

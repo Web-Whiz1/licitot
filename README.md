@@ -57,7 +57,7 @@ pnpm dev                     # http://localhost:3000
    2. **Locally**, no webhook is needed: payments are confirmed when the buyer returns from Checkout, and the seller's status when they return from onboarding.
    3. **After deploying**, create the two webhook endpoints and copy the printed secrets into Netlify (`STRIPE_WEBHOOK_SECRET`, `STRIPE_CONNECT_WEBHOOK_SECRET`):
       ```bash
-      pnpm stripe:webhooks https://licitot.netlify.app
+      pnpm stripe:webhooks https://licitot.ro
       ```
    4. Test card: `4242 4242 4242 4242`, any future date and CVC. In seller onboarding (test mode), the phone code is `000 000`.
 4. **Netlify (deploy):** see [Deploy](#deploy-netlify-free) below.
@@ -75,11 +75,15 @@ Netlify builds the app on its own servers from a Git repository and runs the ser
    `.env.local` and `.env.netlify` are git-ignored, so no secrets get pushed.
 2. **Import into Netlify.**
    1. Add new project → Import an existing project → GitHub → `licitot`. Build settings come from `netlify.toml` (`pnpm build`, publish `.next`, Node 22).
-   2. Set the project name to `licitot` → `https://licitot.netlify.app`.
+   2. Set the project name to `licitot` (default address `https://licitot.netlify.app`).
 3. **Add the environment variables.** Before the first deploy, go to Project configuration → Environment variables → Import from .env and paste the contents of `.env.netlify`.
 4. **Deploy.** Every later `git push` redeploys automatically.
 
-If your URL isn't `https://licitot.netlify.app`, update `NEXT_PUBLIC_SITE_URL` in Netlify, set `SUPABASE_AUTH_PROD_REDIRECT` in `.env.local`, run `pnpm db:config` so Supabase allows sign-in redirects to the new address, then redeploy.
+### Domain (licitot.ro)
+
+The site is served at **https://licitot.ro**. The domain is registered at ROTLD (registrar ICI) and its nameservers point to **Netlify DNS** (`dns1…dns4.p03.nsone.net`), so all DNS records (site, email, verifications) are managed in Netlify (Domains → licitot.ro). `www.licitot.ro` and `licitot.netlify.app` redirect to `licitot.ro`; HTTPS is a Let's Encrypt certificate renewed by Netlify.
+
+If the address ever changes: update `NEXT_PUBLIC_SITE_URL` in Netlify, `SUPABASE_AUTH_SITE_URL` and `SUPABASE_AUTH_PROD_REDIRECT` in `.env.local`, run `pnpm db:config` so Supabase allows sign-in redirects to the new address, move the Stripe webhook endpoints to the new URL (Stripe doesn't follow redirects), then redeploy.
 
 Building for Netlify locally on Windows (`netlify build`) currently fails while bundling the proxy, so let Netlify build it.
 

@@ -1,5 +1,5 @@
 // Registers LiciTot's two Stripe webhook endpoints for a deployed site and prints their
-// signing secrets. Usage: `pnpm stripe:webhooks https://licitot.netlify.app`
+// signing secrets. Usage: `pnpm stripe:webhooks https://licitot.ro`
 // Then set STRIPE_WEBHOOK_SECRET and STRIPE_CONNECT_WEBHOOK_SECRET in Netlify and redeploy.
 // Re-running is safe: existing endpoints for the same URL are reused (secrets are only shown
 // when an endpoint is created; roll them in the Stripe dashboard if you lose them).

@@ -15,6 +15,7 @@ on completed auctions (Stripe Connect, **test mode only**). Built in phases; see
 - ImageKit (signed uploads), Stripe Connect Express (sandbox keys now; live keys later), stripe-node 22
 - pnpm 12, Vitest 5, Playwright, ESLint 9, Prettier
 - **Deploy: Netlify** (`netlify.toml`, OpenNext Next.js runtime), built from Git on Netlify. Free tier.
+  Production: **https://licitot.ro** (DNS hosted in Netlify DNS; see README → Domain).
 
 ## Next.js 16 specifics — read `node_modules/next/dist/docs/` before using an API
 
