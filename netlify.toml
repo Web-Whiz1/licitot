@@ -21,3 +21,11 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     X-Frame-Options = "DENY"
+
+# One canonical address: the default Netlify subdomain redirects to the real domain (deploy
+# previews keep their own addresses).
+[[redirects]]
+  from = "https://licitot.netlify.app/*"
+  to = "https://licitot.ro/:splat"
+  status = 301
+  force = true
