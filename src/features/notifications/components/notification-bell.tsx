@@ -135,7 +135,7 @@ export function NotificationBell({
                 asChild
                 className={cn(
                   "flex flex-col items-start gap-0.5 rounded-none px-3 py-2.5 whitespace-normal",
-                  !n.read_at && "bg-sky-soft/60",
+                  !n.read_at && "bg-tint/60",
                 )}
               >
                 <Link href={n.link ?? "/cont/notificari"} onClick={() => open(n)}>

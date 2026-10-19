@@ -52,8 +52,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const STATUS_VARIANT = {
   pending_payment: "warning",
-  paid: "sky",
-  shipped: "sky",
+  paid: "tint",
+  shipped: "tint",
   disputed: "warning",
   completed: "success",
   cancelled: "secondary",
@@ -266,7 +266,7 @@ async function FundsNote({
   const t = await getTranslations("orders")
   const total = order.item_price + order.shipping_cost
   let text: string | null = null
-  let tone: "success" | "muted" | "sky" = "sky"
+  let tone: "success" | "muted" | "tint" = "tint"
 
   if (order.status === "cancelled" && order.paid_at) {
     tone = "muted"
@@ -292,7 +292,7 @@ async function FundsNote({
       className={cn(
         "flex items-start gap-2 rounded-2xl p-4 text-sm font-medium",
         tone === "success" && "bg-success-soft text-success",
-        tone === "sky" && "bg-sky-soft text-secondary-foreground",
+        tone === "tint" && "bg-tint text-tint-foreground",
         tone === "muted" && "bg-muted",
       )}
     >

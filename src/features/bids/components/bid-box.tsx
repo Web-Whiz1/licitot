@@ -167,18 +167,25 @@ export function BidBox({ initial, viewer }: { initial: LiveAuction; viewer: View
   return (
     <>
       {/* ── Price ── */}
-      <div className="rounded-xl bg-sky-soft p-4" aria-live="polite">
-        <p className="text-sm text-secondary-foreground">
+      <div className="rounded-2xl bg-tint p-4 md:p-5" aria-live="polite">
+        <p className="text-xs font-semibold tracking-[0.12em] text-tint-foreground uppercase">
           {live.status === "ended_sold"
             ? t("finalPrice")
             : hasBids
               ? tAll("detail.currentBid")
               : tAll("detail.startingPrice")}
         </p>
-        <p className="text-3xl font-extrabold text-primary tabular-nums">
+        {/* Remounts on every new price, so a fresh bid flashes lime once. */}
+        <p
+          key={live.current_price}
+          className={cn(
+            "-mx-1.5 mt-1 w-fit rounded-lg px-1.5 text-4xl font-bold tracking-tight text-primary tabular-nums",
+            live.current_price !== initial.current_price && "animate-bump",
+          )}
+        >
           {price(live.final_price ?? live.current_price)}
         </p>
-        <p className="mt-1 flex items-center gap-1.5 text-sm text-secondary-foreground">
+        <p className="mt-1.5 flex items-center gap-1.5 text-sm text-tint-foreground">
           <Gavel aria-hidden className="size-4" />
           {hasBids ? tAll("auction.bids", { count: live.bid_count }) : tAll("detail.noBids")}
         </p>
@@ -193,9 +200,11 @@ export function BidBox({ initial, viewer }: { initial: LiveAuction; viewer: View
 
       {/* ── Time ── */}
       {isOpen && live.ends_at ? (
-        <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">{tAll("detail.endsIn")}</p>
-          <Countdown endsAt={live.ends_at} className="text-xl font-bold" />
+        <div className="space-y-1 rounded-2xl border px-4 py-3.5">
+          <p className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+            {tAll("detail.endsIn")}
+          </p>
+          <Countdown endsAt={live.ends_at} className="text-2xl font-bold tracking-tight" />
           <p className="text-xs text-muted-foreground">
             {tAll("detail.endsOn", { date: formatDateTime(live.ends_at) })}
           </p>
@@ -308,7 +317,7 @@ export function BidBox({ initial, viewer }: { initial: LiveAuction; viewer: View
               </p>
             </div>
             <Button type="submit" size="lg" className="w-full" disabled={!canBid || pending}>
-              <Gavel data-icon="inline-start" />
+              <Gavel data-icon="inline-start" className="group-hover/button:animate-raise" />
               {isLeader ? t("raiseMaxButton") : t("placeBid")}
             </Button>
           </form>
@@ -371,8 +380,8 @@ export function BidBox({ initial, viewer }: { initial: LiveAuction; viewer: View
                 <li
                   key={b.id}
                   className={cn(
-                    "flex items-center justify-between gap-3 rounded-lg px-2 py-1.5",
-                    i === 0 && "bg-muted font-semibold",
+                    "flex items-center justify-between gap-3 rounded-xl px-2.5 py-2",
+                    i === 0 && "bg-tint font-semibold text-tint-foreground",
                   )}
                 >
                   <span className="min-w-0 truncate">
@@ -412,7 +421,7 @@ export function BidBox({ initial, viewer }: { initial: LiveAuction; viewer: View
       {/* ── Mobile: sticky price + bid bar above the bottom navigation ── */}
       {isOpen ? (
         <>
-          <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 border-t bg-background/95 px-4 py-2 backdrop-blur-md lg:hidden">
+          <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 border-t border-border/70 bg-background/85 px-4 py-2.5 backdrop-blur-xl backdrop-saturate-150 lg:hidden">
             <div className="mx-auto flex max-w-xl items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-xs text-muted-foreground">

@@ -43,7 +43,7 @@ export default async function WonPage() {
             highlight={a.order?.status === "pending_payment" ? "warning" : undefined}
             badges={
               a.order ? (
-                <Badge variant={a.order.status === "pending_payment" ? "warning" : "sky"}>
+                <Badge variant={a.order.status === "pending_payment" ? "warning" : "tint"}>
                   {tAll(`orders.status.${a.order.status}`)}
                 </Badge>
               ) : null

@@ -183,7 +183,7 @@ async function AuctionDetail({ params }: Pick<PageProps<"/licitatie/[slug]">, "p
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-24 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-start">
-          <div className="space-y-4 rounded-2xl border bg-card p-5 shadow-card">
+          <div className="space-y-4 rounded-3xl border bg-card p-5 shadow-raised md:p-6">
             <div className="space-y-2">
               <div className="flex items-start justify-between gap-3">
                 <AuctionStatusBadge status={a.status} />
@@ -191,7 +191,9 @@ async function AuctionDetail({ params }: Pick<PageProps<"/licitatie/[slug]">, "p
                   <ViewerWatchButton auctionId={a.id} sellerId={a.seller_id} />
                 </Suspense>
               </div>
-              <h1 className="text-2xl font-extrabold tracking-tight break-words">{a.title}</h1>
+              <h1 className="font-display text-[1.75rem] leading-[1.1] tracking-[-0.02em] break-words md:text-3xl">
+                {a.title}
+              </h1>
             </div>
 
             <Suspense fallback={<BidBox initial={live} viewer={undefined} />}>
@@ -200,8 +202,10 @@ async function AuctionDetail({ params }: Pick<PageProps<"/licitatie/[slug]">, "p
           </div>
 
           {seller ? (
-            <div className="space-y-3 rounded-2xl border bg-card p-5 shadow-card">
-              <h2 className="text-sm font-medium text-muted-foreground">{t("detail.seller")}</h2>
+            <div className="space-y-4 rounded-3xl border bg-card p-5 shadow-card md:p-6">
+              <h2 className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+                {t("detail.seller")}
+              </h2>
               <div className="flex items-center gap-3">
                 <UserAvatar
                   name={seller.display_name}
@@ -239,7 +243,7 @@ async function AuctionDetail({ params }: Pick<PageProps<"/licitatie/[slug]">, "p
 
         <div className="min-w-0 space-y-8 lg:col-start-1 lg:row-start-2">
           <section aria-labelledby="description-title" className="space-y-3">
-            <h2 id="description-title" className="text-xl font-bold tracking-tight">
+            <h2 id="description-title" className="font-display text-2xl tracking-[-0.02em]">
               {t("detail.description")}
             </h2>
             <p className="leading-relaxed whitespace-pre-line">{a.description}</p>
@@ -247,10 +251,10 @@ async function AuctionDetail({ params }: Pick<PageProps<"/licitatie/[slug]">, "p
           </section>
 
           <section aria-labelledby="details-title" className="space-y-3">
-            <h2 id="details-title" className="text-xl font-bold tracking-tight">
+            <h2 id="details-title" className="font-display text-2xl tracking-[-0.02em]">
               {t("detail.details")}
             </h2>
-            <dl className="grid gap-x-6 gap-y-3 rounded-2xl border bg-card p-5 text-sm sm:grid-cols-2">
+            <dl className="grid gap-x-6 gap-y-4 rounded-3xl border bg-card p-5 text-sm shadow-card sm:grid-cols-2 md:p-6">
               <Detail icon={BadgeCheck} label={t("detail.condition")}>
                 {t(`sell.conditions.${a.condition}`)}
               </Detail>
@@ -308,7 +312,7 @@ async function Similar({
   if (!items.length) return null
   return (
     <section aria-labelledby="similar-title" className="mt-12">
-      <h2 id="similar-title" className="mb-4 text-2xl font-bold tracking-tight">
+      <h2 id="similar-title" className="mb-6 font-display text-3xl tracking-[-0.02em] md:text-4xl">
         {title}
       </h2>
       <AuctionGrid auctions={items} />
@@ -327,7 +331,9 @@ function Detail({
 }) {
   return (
     <div className="flex gap-3">
-      <Icon aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
+      <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-tint text-primary">
+        <Icon aria-hidden className="size-4" />
+      </span>
       <div>
         <dt className="text-muted-foreground">{label}</dt>
         <dd className="font-medium">{children}</dd>
@@ -339,8 +345,8 @@ function Detail({
 function DetailSkeleton() {
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem]" aria-hidden>
-      <Skeleton className="aspect-[4/3] w-full rounded-2xl" />
-      <Skeleton className="h-96 w-full rounded-2xl" />
+      <Skeleton className="aspect-[4/3] w-full rounded-3xl" />
+      <Skeleton className="h-96 w-full rounded-3xl" />
     </div>
   )
 }

@@ -28,7 +28,7 @@ export default async function NotificationsPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-xl font-bold tracking-tight">{t("title")}</h2>
+        <h2 className="font-display text-xl font-semibold tracking-tight">{t("title")}</h2>
         {items.some((n) => !n.read_at) ? (
           <ActionButton action={markAllNotificationsRead} variant="outline" size="sm">
             {t("markAllRead")}
@@ -39,7 +39,7 @@ export default async function NotificationsPage() {
         {items.map((n) => {
           const { key, values } = notificationMessage(n)
           return (
-            <li key={n.id} className={cn(!n.read_at && "bg-sky-soft/50")}>
+            <li key={n.id} className={cn(!n.read_at && "bg-tint/60")}>
               <Link
                 href={n.link ?? "/cont/notificari"}
                 className="flex flex-col gap-0.5 px-4 py-3 hover:bg-muted"

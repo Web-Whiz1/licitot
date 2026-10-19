@@ -63,7 +63,7 @@ export default async function CategoryPage({
           </>
         )}
       </nav>
-      <h1 className="mb-4 text-3xl font-extrabold tracking-tight">{category.name}</h1>
+      <h1 className="mb-4 font-display text-3xl font-semibold tracking-tight">{category.name}</h1>
 
       <ul aria-label={t("browse.subcategories")} className="mb-6 flex flex-wrap gap-2">
         {[

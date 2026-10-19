@@ -9,6 +9,7 @@ export function AuctionThumb({
   alt,
   sizes,
   className,
+  imageClassName,
   priority,
   noPhotoLabel,
 }: {
@@ -17,6 +18,8 @@ export function AuctionThumb({
   alt: string
   sizes: string
   className?: string
+  /** Extra classes for the <img> (e.g. hover zoom). */
+  imageClassName?: string
   priority?: boolean
   noPhotoLabel: string
 }) {
@@ -28,7 +31,7 @@ export function AuctionThumb({
           alt={alt}
           fill
           sizes={sizes}
-          className="object-cover"
+          className={cn("object-cover", imageClassName)}
           priority={priority}
           placeholder={blurDataUrl ? "blur" : "empty"}
           blurDataURL={blurDataUrl ?? undefined}

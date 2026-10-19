@@ -50,7 +50,7 @@ export function AccountTabsNav({ pathname }: { pathname: string | null }) {
 
   return (
     <nav aria-label={t("title")} className="relative -mx-4 overflow-x-auto px-4 md:mx-0 md:px-0">
-      <ul className="flex min-w-max gap-1 border-b">
+      <ul className="flex min-w-max gap-1.5 py-1">
         {TABS.map(({ href, key, icon: Icon }) => {
           const active = pathname !== null && (pathname === href || pathname.startsWith(`${href}/`))
           return (
@@ -60,10 +60,10 @@ export function AccountTabsNav({ pathname }: { pathname: string | null }) {
                 ref={active ? centerInNav : undefined}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "-mb-px flex items-center gap-2 border-b-2 px-3 py-3 text-sm font-medium whitespace-nowrap transition-colors",
+                  "flex h-10 items-center gap-2 rounded-full px-4 text-sm font-medium whitespace-nowrap transition-[background-color,color] duration-200 ease-snap",
                   active
-                    ? "border-primary text-primary"
-                    : "border-transparent text-muted-foreground hover:text-foreground",
+                    ? "bg-foreground text-background"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
                 <Icon aria-hidden className="size-4" />

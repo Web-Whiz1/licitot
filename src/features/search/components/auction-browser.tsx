@@ -110,7 +110,7 @@ export async function AuctionBrowser({
                 <Link
                   href={c.href}
                   aria-label={t("browse.removeFilter", { label: c.label })}
-                  className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-sky"
+                  className="inline-flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--secondary-foreground)_12%)]"
                 >
                   {c.label}
                   <X aria-hidden className="size-3.5" />

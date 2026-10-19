@@ -18,6 +18,7 @@ async function currentYear() {
   return new Date().getFullYear()
 }
 
+/** Ink band that closes every page: logo, links, legal badges. */
 export async function Footer() {
   const t = await getTranslations("footer")
   const year = await currentYear()
@@ -46,24 +47,26 @@ export async function Footer() {
   ]
 
   return (
-    <footer className="mt-16 border-t bg-muted/60">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 md:grid-cols-[1.4fr_repeat(3,1fr)] md:px-6">
-        <div className="space-y-4">
-          <Logo />
-          <p className="max-w-xs text-sm text-muted-foreground">{t("about")}</p>
+    <footer className="mt-24 bg-ink text-ink-foreground">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 pt-16 pb-12 md:grid-cols-[1.6fr_repeat(3,1fr)] md:px-6">
+        <div className="space-y-5">
+          <Logo variant="inverse" markClassName="size-10" wordmarkClassName="text-[1.875rem]" />
+          <p className="max-w-xs text-sm leading-relaxed text-ink-muted">{t("about")}</p>
         </div>
 
         {columns.map((col) => (
           <nav key={col.title} aria-label={col.title}>
-            <h2 className="mb-3 text-sm font-semibold">{col.title}</h2>
-            <ul className="space-y-2 text-sm">
+            <h2 className="mb-4 text-xs font-semibold tracking-[0.14em] text-ink-muted uppercase">
+              {col.title}
+            </h2>
+            <ul className="space-y-2.5 text-sm">
               {col.links.map((link) => (
                 <li key={link.href}>
                   {/* Rarely used: no background prefetch on every page (fewer server calls). */}
                   <Link
                     href={link.href}
                     prefetch={false}
-                    className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                    className="text-ink-foreground/90 underline-offset-4 transition-colors hover:text-highlight hover:underline focus-visible:outline-ink-accent"
                   >
                     {link.label}
                   </Link>
@@ -74,7 +77,7 @@ export async function Footer() {
         ))}
       </div>
 
-      <div className="border-t">
+      <div className="border-t border-ink-foreground/10">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 md:flex-row md:items-center md:justify-between md:px-6">
           <div className="flex flex-wrap items-center gap-2">
             {DISPUTE_BADGES.map((b) => (
@@ -83,7 +86,7 @@ export async function Footer() {
                 href={b.href}
                 target="_blank"
                 rel="nofollow noopener noreferrer"
-                className="rounded-lg focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+                className="rounded-lg focus-visible:outline-ink-accent"
               >
                 <Image
                   src={b.src}
@@ -91,12 +94,12 @@ export async function Footer() {
                   width={250}
                   height={62}
                   unoptimized
-                  className="h-auto w-[250px] max-w-full"
+                  className="h-auto w-[220px] max-w-full"
                 />
               </a>
             ))}
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-ink-muted">
             {t("rights", { year })} · {t("madeIn")}
           </p>
         </div>

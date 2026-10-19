@@ -22,7 +22,7 @@ export default async function CheckEmailPage({ searchParams }: PageProps<"/verif
       }
     >
       <div className="space-y-4 text-center">
-        <span className="mx-auto grid size-14 place-items-center rounded-full bg-sky-soft text-primary">
+        <span className="mx-auto grid size-14 place-items-center rounded-full bg-tint text-primary">
           <MailCheck aria-hidden className="size-7" />
         </span>
         <Suspense fallback={<p className="text-sm">{t("checkEmailGeneric")}</p>}>

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Plus_Jakarta_Sans } from "next/font/google"
+import localFont from "next/font/local"
 import { NextIntlClientProvider } from "next-intl"
 import { getTranslations } from "next-intl/server"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -9,11 +9,24 @@ import { colorTokens } from "@/lib/brand/tokens"
 import { SITE_NAME, SITE_URL } from "@/lib/site"
 import "./globals.css"
 
-// latin-ext carries ă, â, î, ș, ț (comma-below).
-const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin", "latin-ext"],
-  variable: "--font-jakarta",
+// Self-hosted single-file subsets (Basic Latin, Latin-1, Latin Extended-A, ș ț with comma-below
+// and typographic punctuation), so one request per family covers every Romanian page.
+// Source and license: src/assets/fonts/README.md.
+const geist = localFont({
+  src: "../assets/fonts/Geist-Variable.woff2",
+  weight: "100 900",
+  variable: "--font-geist",
   display: "swap",
+})
+
+// Fraunces SemiBold with optical sizes (SOFT 50). One weight only: declared for the whole range
+// so headings never get a synthesized bold.
+const fraunces = localFont({
+  src: "../assets/fonts/Fraunces-Display.woff2",
+  weight: "100 900",
+  variable: "--font-fraunces",
+  display: "swap",
+  adjustFontFallback: "Times New Roman",
 })
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -39,7 +52,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ro" className={jakarta.variable} suppressHydrationWarning>
+    <html lang="ro" className={`${geist.variable} ${fraunces.variable}`} suppressHydrationWarning>
       <body className="flex min-h-dvh flex-col">
         <NextIntlClientProvider>
           <ThemeProvider>

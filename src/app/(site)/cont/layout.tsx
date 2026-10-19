@@ -8,7 +8,7 @@ export default async function AccountLayout({ children }: LayoutProps<"/cont">) 
   const t = await getTranslations("account")
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
-      <h1 className="mb-6 text-3xl font-extrabold tracking-tight">{t("title")}</h1>
+      <h1 className="mb-6 font-display text-3xl font-semibold tracking-tight">{t("title")}</h1>
       <Suspense fallback={<AccountTabsNav pathname={null} />}>
         <AccountTabs />
       </Suspense>

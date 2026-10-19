@@ -156,7 +156,7 @@ export function ImageUploader({ initial, onChange, onPendingChange, invalid, des
         }}
         className={cn(
           "flex flex-col items-center gap-2 rounded-xl border-2 border-dashed p-6 text-center transition-colors",
-          dragOver ? "border-primary bg-sky-soft" : "border-input bg-muted/40",
+          dragOver ? "border-primary bg-tint" : "border-input bg-muted/40",
           invalid && "border-destructive",
         )}
       >

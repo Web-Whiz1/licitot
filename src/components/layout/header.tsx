@@ -13,15 +13,30 @@ export function Header() {
   const t = useTranslations()
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 md:gap-6 md:px-6">
-        <Link href="/" aria-label={t("a11y.home")} className="rounded-md">
+    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-xl backdrop-saturate-150">
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 md:h-[4.5rem] md:gap-5 md:px-6">
+        <Link href="/" aria-label={t("a11y.home")} className="shrink-0 rounded-full">
           <Logo />
         </Link>
 
-        <SearchForm id="search-desktop" className="hidden max-w-xl flex-1 md:block" />
+        <nav aria-label={t("a11y.mainNav")} className="hidden items-center lg:flex">
+          <Link
+            href="/cauta"
+            className="rounded-full px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            {t("nav.explore")}
+          </Link>
+          <Link
+            href="/cum-functioneaza"
+            className="rounded-full px-3.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            {t("nav.howItWorks")}
+          </Link>
+        </nav>
 
-        <nav aria-label={t("a11y.mainNav")} className="ml-auto flex items-center gap-1 md:gap-2">
+        <SearchForm id="search-desktop" className="hidden max-w-md flex-1 md:block" />
+
+        <div className="ml-auto flex items-center gap-1 md:gap-2">
           <Button asChild className="hidden md:inline-flex">
             <Link href="/vinde">
               <Plus data-icon="inline-start" />
@@ -33,7 +48,7 @@ export function Header() {
           <Suspense fallback={<Skeleton className="size-9 rounded-full" />}>
             <UserMenu />
           </Suspense>
-        </nav>
+        </div>
       </div>
 
       <div className="px-4 pb-3 md:hidden">

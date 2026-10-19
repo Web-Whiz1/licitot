@@ -35,9 +35,7 @@ export function UserAvatar({
           className="object-cover"
         />
       ) : null}
-      <AvatarFallback className="bg-sky font-bold text-sky-foreground">
-        {initials(name)}
-      </AvatarFallback>
+      <AvatarFallback>{initials(name)}</AvatarFallback>
     </Avatar>
   )
 }

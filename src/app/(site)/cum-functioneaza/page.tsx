@@ -38,17 +38,17 @@ export default async function HowItWorksPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 md:px-6 md:py-14">
       <header className="max-w-2xl space-y-3">
-        <h1 className="text-4xl font-extrabold tracking-tight">{t("howTitle")}</h1>
+        <h1 className="font-display text-4xl font-semibold tracking-tight">{t("howTitle")}</h1>
         <p className="text-lg text-muted-foreground">{t("howIntro")}</p>
       </header>
 
       {groups.map((g) => (
         <section key={g.title} className="mt-12 space-y-5">
-          <h2 className="text-2xl font-bold tracking-tight">{g.title}</h2>
+          <h2 className="font-display text-2xl font-semibold tracking-tight">{g.title}</h2>
           <ol className="grid gap-4 sm:grid-cols-2">
             {g.steps.map((s, i) => (
               <li key={s.title} className="flex gap-4 rounded-2xl border bg-card p-5 shadow-card">
-                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-sky-soft text-primary">
+                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-tint text-primary">
                   <s.icon aria-hidden className="size-5" />
                 </span>
                 <div className="space-y-1">

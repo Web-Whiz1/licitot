@@ -24,7 +24,7 @@ export default async function FeesPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 md:px-6 md:py-14">
       <header className="space-y-3">
-        <h1 className="text-4xl font-extrabold tracking-tight">{t("feesTitle")}</h1>
+        <h1 className="font-display text-4xl font-semibold tracking-tight">{t("feesTitle")}</h1>
         <p className="text-lg text-muted-foreground">{t("feesIntro")}</p>
       </header>
 
@@ -37,8 +37,8 @@ export default async function FeesPage() {
         ))}
       </dl>
 
-      <section className="mt-10 space-y-3 rounded-2xl bg-sky-soft p-6">
-        <h2 className="text-xl font-bold tracking-tight">{t("exampleTitle")}</h2>
+      <section className="mt-10 space-y-3 rounded-2xl bg-tint p-6">
+        <h2 className="font-display text-xl font-semibold tracking-tight">{t("exampleTitle")}</h2>
         <p className="text-secondary-foreground">
           {t("example", {
             price: formatRON(EXAMPLE_PRICE, { compact: true }),

@@ -20,6 +20,14 @@ const dateTimeFormatter = new Intl.DateTimeFormat(APP_LOCALE, {
   minute: "2-digit",
 })
 
+const dayTimeFormatter = new Intl.DateTimeFormat(APP_LOCALE, {
+  timeZone: APP_TIME_ZONE,
+  day: "numeric",
+  month: "short",
+  hour: "2-digit",
+  minute: "2-digit",
+})
+
 const shortDateFormatter = new Intl.DateTimeFormat(APP_LOCALE, {
   timeZone: APP_TIME_ZONE,
   day: "2-digit",
@@ -44,6 +52,11 @@ export function formatDate(d: DateInput): string {
 /** "12 oct. 2026, 14:30" */
 export function formatDateTime(d: DateInput): string {
   return dateTimeFormatter.format(toDate(d))
+}
+
+/** "12 oct., 14:30" (compact, for chips) */
+export function formatDayTime(d: DateInput): string {
+  return dayTimeFormatter.format(toDate(d))
 }
 
 /** "12.10.2026" */

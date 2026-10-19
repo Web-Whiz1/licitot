@@ -61,7 +61,7 @@ export function CheckoutForm({
                 key={m}
                 className={cn(
                   "flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-colors",
-                  method === m ? "border-primary bg-sky-soft" : "hover:bg-muted",
+                  method === m ? "border-primary bg-tint" : "hover:bg-muted",
                 )}
               >
                 <input

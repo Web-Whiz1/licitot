@@ -5,9 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * LiciTot design tokens.
+ * LiciTot design tokens: "casa de licitații modernă" (see BRAND.md).
  * Color values mirror src/lib/brand/tokens.ts (kept in sync by tokens.test.ts).
- * Baby blue (--sky) is for surfaces only; it fails contrast as text on white.
+ * Lime (--highlight) is a signal color: a background under ink text, or text on ink.
+ * Never lime text on paper (1.1:1).
  */
 
 @theme inline {
@@ -26,9 +27,14 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-sky: var(--sky);
-  --color-sky-soft: var(--sky-soft);
-  --color-sky-foreground: var(--sky-foreground);
+  --color-tint: var(--tint);
+  --color-tint-foreground: var(--tint-foreground);
+  --color-highlight: var(--highlight);
+  --color-highlight-foreground: var(--highlight-foreground);
+  --color-ink: var(--ink);
+  --color-ink-foreground: var(--ink-foreground);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-accent: var(--ink-accent);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -39,8 +45,10 @@
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
 
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  /* Geist for the interface and numbers; Fraunces (SOFT 50, optical sizes) for headings. */
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-heading: var(--font-fraunces), ui-serif, Georgia, serif;
 
   --radius-sm: calc(var(--radius) * 0.5);
   --radius-md: calc(var(--radius) * 0.75);
@@ -53,86 +61,132 @@
   --shadow-card: var(--elevation-card);
   --shadow-raised: var(--elevation-raised);
   --shadow-overlay: var(--elevation-overlay);
+  --shadow-glow: var(--elevation-glow);
 }
 
 @theme {
-  /* Type scale (see BRAND.md). Line heights tuned for Romanian diacritics above caps. */
-  --text-display: 2.5rem;
-  --text-display--line-height: 1.15;
-  --text-display--letter-spacing: -0.02em;
-  --text-display--font-weight: 800;
+  /* Fluid display size for hero headlines (Fraunces). */
+  --text-display: clamp(2.625rem, 1.75rem + 3.8vw, 4.75rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.035em;
+  --text-display--font-weight: 600;
+
+  /* Motion: quick, decisive, no bounce on layout. Durations 120 / 200 / 320 ms. */
+  --ease-snap: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-out-back: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  --animate-rise: rise 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-bump: bump 900ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-raise: raise 420ms cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+  /* A new bid: the price flashes lime and settles. */
+  @keyframes bump {
+    0% {
+      background-color: var(--highlight);
+      color: var(--highlight-foreground);
+      transform: scale(1.03);
+    }
+    100% {
+      transform: none;
+    }
+  }
+  /* The paddle on the bid button lifts when a bid goes through. */
+  @keyframes raise {
+    40% {
+      transform: translateY(-3px) rotate(-12deg);
+    }
+  }
 }
 
 :root {
   --radius: 0.75rem;
 
-  --background: #ffffff;
-  --foreground: #0f1b2d;
+  --background: #f7f5f0;
+  --foreground: #0f1530;
   --card: #ffffff;
-  --card-foreground: #0f1b2d;
+  --card-foreground: #0f1530;
   --popover: #ffffff;
-  --popover-foreground: #0f1b2d;
-  --primary: #1d6fc2;
+  --popover-foreground: #0f1530;
+  --primary: #1f3bdb;
   --primary-foreground: #ffffff;
-  --primary-hover: #1a66b3;
-  --secondary: #e8f4fd;
-  --secondary-foreground: #0b4a85;
-  --muted: #f3f7fb;
-  --muted-foreground: #52627a;
-  --accent: #e8f4fd;
-  --accent-foreground: #0b3a66;
-  --sky: #8ec9f5;
-  --sky-soft: #e8f4fd;
-  --sky-foreground: #0b3a66;
-  --border: #dce5ef;
-  --input: #7c8da3;
-  --ring: #1d6fc2;
-  --destructive: #c2281d;
-  --destructive-soft: #fdecea;
-  --success: #157f3d;
-  --success-soft: #e7f6ec;
-  --warning: #a15c07;
-  --warning-soft: #fef4e2;
+  --primary-hover: #1730bc;
+  --secondary: #e9ecfd;
+  --secondary-foreground: #14289c;
+  --muted: #efece5;
+  --muted-foreground: #565c6e;
+  --accent: #efece5;
+  --accent-foreground: #0f1530;
+  --tint: #e9ecfd;
+  --tint-foreground: #14289c;
+  --highlight: #d2f45c;
+  --highlight-foreground: #0f1530;
+  --ink: #0f1530;
+  --ink-foreground: #f7f5f0;
+  --ink-muted: #aeb4cf;
+  --ink-accent: #93a2ff;
+  --border: #e3ded4;
+  --input: #878b9b;
+  --ring: #1f3bdb;
+  --destructive: #c42b25;
+  --destructive-soft: #fbe9e7;
+  --success: #0e7a43;
+  --success-soft: #e1f3e8;
+  --warning: #9e5300;
+  --warning-soft: #fbeeda;
 
-  --elevation-card: 0 1px 2px rgb(15 27 45 / 0.05), 0 1px 3px rgb(15 27 45 / 0.07);
-  --elevation-raised: 0 4px 12px rgb(15 27 45 / 0.08), 0 2px 4px rgb(15 27 45 / 0.05);
-  --elevation-overlay: 0 16px 40px rgb(15 27 45 / 0.16), 0 4px 12px rgb(15 27 45 / 0.08);
+  /* Shadows are tinted with ink, soft and low: they separate layers, never decorate. */
+  --elevation-card: 0 1px 2px rgb(15 21 48 / 0.05), 0 1px 1px rgb(15 21 48 / 0.03);
+  --elevation-raised: 0 18px 40px -18px rgb(15 21 48 / 0.28), 0 4px 10px -4px rgb(15 21 48 / 0.08);
+  --elevation-overlay: 0 28px 64px -20px rgb(15 21 48 / 0.32), 0 8px 18px -6px rgb(15 21 48 / 0.1);
+  --elevation-glow: 0 12px 28px -12px rgb(31 59 219 / 0.65);
 }
 
 .dark {
   /* Native controls (select popups, scrollbars, date pickers) follow the theme. */
   color-scheme: dark;
-  --background: #0b1320;
-  --foreground: #e6eef7;
-  --card: #111c2c;
-  --card-foreground: #e6eef7;
-  --popover: #111c2c;
-  --popover-foreground: #e6eef7;
-  --primary: #8ec9f5;
-  --primary-foreground: #0b1320;
-  --primary-hover: #a9d6f8;
-  --secondary: #16304d;
-  --secondary-foreground: #dcebfa;
-  --muted: #16233a;
-  --muted-foreground: #9db0c7;
-  --accent: #16304d;
-  --accent-foreground: #dcebfa;
-  --sky: #8ec9f5;
-  --sky-soft: #13283f;
-  --sky-foreground: #0b1320;
-  --border: #22324a;
-  --input: #5a6f8c;
-  --ring: #8ec9f5;
-  --destructive: #f87171;
-  --destructive-soft: #3a1518;
+  --background: #0b0e1c;
+  --foreground: #eceef7;
+  --card: #13172f;
+  --card-foreground: #eceef7;
+  --popover: #171c38;
+  --popover-foreground: #eceef7;
+  --primary: #93a2ff;
+  --primary-foreground: #0b0e1c;
+  --primary-hover: #aab6ff;
+  --secondary: #1b2252;
+  --secondary-foreground: #cdd4ff;
+  --muted: #171b34;
+  --muted-foreground: #a3a9c4;
+  --accent: #1f2442;
+  --accent-foreground: #eceef7;
+  --tint: #171d48;
+  --tint-foreground: #cdd4ff;
+  --highlight: #d2f45c;
+  --highlight-foreground: #0b0e1c;
+  --ink: #05070f;
+  --ink-foreground: #eceef7;
+  --ink-muted: #a3a9c4;
+  --ink-accent: #93a2ff;
+  --border: #272d52;
+  --input: #6c7298;
+  --ring: #93a2ff;
+  --destructive: #ff8076;
+  --destructive-soft: #3a1517;
   --success: #4ade80;
-  --success-soft: #0f2e1d;
+  --success-soft: #0e2b1c;
   --warning: #fbbf24;
-  --warning-soft: #33260a;
+  --warning-soft: #2f2409;
 
-  --elevation-card: 0 1px 2px rgb(0 0 0 / 0.3);
-  --elevation-raised: 0 4px 12px rgb(0 0 0 / 0.35);
-  --elevation-overlay: 0 16px 40px rgb(0 0 0 / 0.5);
+  --elevation-card: 0 1px 2px rgb(0 0 0 / 0.4);
+  --elevation-raised: 0 20px 44px -16px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(147 162 255 / 0.06);
+  --elevation-overlay: 0 28px 64px -16px rgb(0 0 0 / 0.75), 0 0 0 1px rgb(147 162 255 / 0.08);
+  --elevation-glow: 0 12px 30px -12px rgb(147 162 255 / 0.5);
 }
 
 @layer base {
@@ -147,6 +201,20 @@
   body {
     @apply bg-background text-foreground antialiased;
   }
+  /* Fraunces ships one weight (600): headings never get a synthesized bold. */
+  .font-display,
+  .font-heading {
+    font-synthesis-weight: none;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  ::selection {
+    background-color: var(--highlight);
+    color: var(--highlight-foreground);
+  }
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
@@ -160,7 +228,9 @@
     *::before,
     *::after {
       animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
   }
 }

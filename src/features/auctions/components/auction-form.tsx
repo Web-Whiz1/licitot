@@ -224,7 +224,7 @@ export function AuctionForm({ auctionId: initialId, categories, defaults }: Prop
               {ITEM_CONDITIONS.map((c) => (
                 <label
                   key={c}
-                  className="flex cursor-pointer flex-col gap-0.5 rounded-lg border p-3 text-sm transition-colors has-checked:border-primary has-checked:bg-sky-soft has-focus-visible:outline-2 has-focus-visible:outline-ring"
+                  className="flex cursor-pointer flex-col gap-0.5 rounded-lg border p-3 text-sm transition-colors has-checked:border-primary has-checked:bg-tint has-focus-visible:outline-2 has-focus-visible:outline-ring"
                 >
                   <input
                     type="radio"
@@ -417,7 +417,7 @@ export function AuctionForm({ auctionId: initialId, categories, defaults }: Prop
       {/* Summary + actions (sticky on desktop) */}
       <aside className="space-y-4 rounded-2xl border bg-card p-5 shadow-card lg:sticky lg:top-24">
         <h2 className="text-lg font-semibold">{t("summary")}</h2>
-        <div className="rounded-lg bg-sky-soft p-3 text-sm text-secondary-foreground">
+        <div className="rounded-xl bg-tint p-3 text-sm text-tint-foreground">
           {startBani !== null && startBani >= MIN_PRICE ? (
             <>
               <p className="font-semibold">
@@ -481,7 +481,7 @@ function Section({
   return (
     <section className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold tracking-tight">{title}</h2>
+        <h2 className="font-display text-xl font-semibold tracking-tight">{title}</h2>
         {hint ? (
           <p id={hintId} className="mt-1 text-sm text-muted-foreground">
             {hint}

@@ -39,7 +39,7 @@ export default async function AdminReportsPage() {
   return (
     <div className="space-y-10">
       <section aria-labelledby="reports" className="space-y-4">
-        <h2 id="reports" className="text-xl font-bold tracking-tight">
+        <h2 id="reports" className="font-display text-xl font-semibold tracking-tight">
           {t("admin.reportsTitle")}
         </h2>
         {reports.length === 0 ? (
@@ -53,7 +53,7 @@ export default async function AdminReportsPage() {
               return (
                 <li key={r.id} className="space-y-3 rounded-2xl border bg-card p-5">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant={r.auction ? "sky" : "secondary"}>
+                    <Badge variant={r.auction ? "tint" : "neutral"}>
                       {r.auction ? t("admin.reportedAuction") : t("admin.reportedUser")}
                     </Badge>
                     {r.auction ? (

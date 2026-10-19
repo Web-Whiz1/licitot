@@ -1,12 +1,19 @@
-// Generates every static brand asset from src/lib/brand/logo-geometry.ts.
+// Generates every static brand asset from src/lib/brand/logo-geometry.ts and wordmark.ts.
 // Run with `pnpm icons` after changing the logo. Outputs are committed.
 import { mkdir, writeFile } from "node:fs/promises"
 import path from "node:path"
 import sharp from "sharp"
 import { fullLogoSvg, LOGO_COLORS, markSvg, monoMarkSvg } from "../src/lib/brand/logo-geometry"
+import {
+  WORDMARK_LICI_PATH,
+  WORDMARK_TOT_PATH,
+  WORDMARK_VIEWBOX_WIDTH,
+} from "../src/lib/brand/wordmark"
 
 const root = path.resolve(import.meta.dirname, "..")
 const out = (...p: string[]) => path.join(root, ...p)
+
+const wordmark = { width: WORDMARK_VIEWBOX_WIDTH, lici: WORDMARK_LICI_PATH, tot: WORDMARK_TOT_PATH }
 
 async function png(svg: string, size: number): Promise<Buffer> {
   return sharp(Buffer.from(svg), { density: 600 }).resize(size, size).png().toBuffer()
@@ -35,23 +42,42 @@ function ico(images: { size: number; data: Buffer }[]): Buffer {
   return Buffer.concat([header, ...entries, ...images.map((i) => i.data)])
 }
 
+// App icons: cream paddle on Klein blue; the L cut-out shows the blue through.
+const appIcon = (padding: number, backgroundRadius = 0) =>
+  markSvg({ background: LOGO_COLORS.paddle, paddle: LOGO_COLORS.paper, padding, backgroundRadius })
+
 async function main() {
   await mkdir(out("public/brand"), { recursive: true })
   await mkdir(out("public/icons"), { recursive: true })
 
   const files: [string, string | Buffer][] = [
-    // Vector logos
-    ["public/brand/logo.svg", fullLogoSvg()],
+    // Vector logos (wordmark outlined: no font needed)
+    ["public/brand/logo.svg", fullLogoSvg(wordmark)],
     [
       "public/brand/logo-reversed.svg",
-      fullLogoSvg({ ink: LOGO_COLORS.inkReversed, accent: LOGO_COLORS.accentReversed }),
+      fullLogoSvg(wordmark, {
+        paddle: LOGO_COLORS.paddleOnDark,
+        lici: LOGO_COLORS.paper,
+        tot: LOGO_COLORS.paddleOnDark,
+      }),
     ],
-    ["public/brand/logo-mono.svg", fullLogoSvg({ mono: LOGO_COLORS.ink })],
-    ["public/brand/logo-mono-white.svg", fullLogoSvg({ mono: "#FFFFFF" })],
+    [
+      "public/brand/logo-mono.svg",
+      fullLogoSvg(wordmark, {
+        paddle: LOGO_COLORS.ink,
+        dot: LOGO_COLORS.ink,
+        lici: LOGO_COLORS.ink,
+        tot: LOGO_COLORS.ink,
+      }),
+    ],
+    [
+      "public/brand/logo-mono-white.svg",
+      fullLogoSvg(wordmark, { paddle: "#FFFFFF", dot: "#FFFFFF", lici: "#FFFFFF", tot: "#FFFFFF" }),
+    ],
     ["public/brand/logo-mark.svg", markSvg()],
     ["public/brand/logo-mark-mono.svg", monoMarkSvg(LOGO_COLORS.ink)],
-    // Favicon (SVG for modern browsers, ICO fallback)
-    ["src/app/icon.svg", markSvg()],
+    // Favicon: SVG (switches to periwinkle on dark browser chrome) + ICO fallback
+    ["src/app/icon.svg", markSvg({ paddleDark: LOGO_COLORS.paddleOnDark })],
     [
       "src/app/favicon.ico",
       ico(
@@ -60,16 +86,13 @@ async function main() {
         ),
       ),
     ],
-    // Apple touch icon: opaque white square, mark centered with breathing room
-    ["src/app/apple-icon.png", await png(markSvg({ background: "#FFFFFF", padding: 10 }), 180)],
+    // Apple touch icon: opaque square (iOS rounds the corners itself)
+    ["src/app/apple-icon.png", await png(appIcon(12), 180)],
     // PWA icons
-    ["public/icons/icon-192.png", await png(markSvg({ background: "#FFFFFF", padding: 6 }), 192)],
-    ["public/icons/icon-512.png", await png(markSvg({ background: "#FFFFFF", padding: 6 }), 512)],
-    // Maskable: content inside the central 80% safe zone
-    [
-      "public/icons/icon-maskable-512.png",
-      await png(markSvg({ background: "#E8F4FD", padding: 18 }), 512),
-    ],
+    ["public/icons/icon-192.png", await png(appIcon(12, 20), 192)],
+    ["public/icons/icon-512.png", await png(appIcon(12, 20), 512)],
+    // Maskable: full-bleed background, artwork inside the central 80% safe zone
+    ["public/icons/icon-maskable-512.png", await png(appIcon(22), 512)],
   ]
 
   for (const [file, data] of files) {

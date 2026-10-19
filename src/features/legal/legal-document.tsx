@@ -42,7 +42,7 @@ export async function LegalDocument({ doc }: { doc: "terms" | "privacy" | "cooki
   return (
     <article className="mx-auto max-w-3xl px-4 py-10 md:px-6 md:py-14">
       <header className="space-y-3">
-        <h1 className="text-4xl font-extrabold tracking-tight">{content.title}</h1>
+        <h1 className="font-display text-4xl font-semibold tracking-tight">{content.title}</h1>
         <p className="text-sm text-muted-foreground">
           {t("updated", { date: formatDate(LEGAL_UPDATED_AT) })}
         </p>
@@ -52,7 +52,7 @@ export async function LegalDocument({ doc }: { doc: "terms" | "privacy" | "cooki
       <div className="mt-10 space-y-8">
         {Object.entries(content.sections).map(([key, s]) => (
           <section key={key} aria-labelledby={`legal-${key}`} className="space-y-3">
-            <h2 id={`legal-${key}`} className="text-xl font-bold tracking-tight">
+            <h2 id={`legal-${key}`} className="font-display text-xl font-semibold tracking-tight">
               {fill(s.title)}
             </h2>
             {fill(s.body)

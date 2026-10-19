@@ -5,7 +5,16 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
 /** GET form to /cauta. Works without JS; next/form adds client-side navigation. */
-export function SearchForm({ className, id }: { className?: string; id: string }) {
+export function SearchForm({
+  className,
+  id,
+  size = "default",
+}: {
+  className?: string
+  id: string
+  /** `lg`: the big search field in the home hero. */
+  size?: "default" | "lg"
+}) {
   const t = useTranslations("search")
 
   return (
@@ -15,7 +24,10 @@ export function SearchForm({ className, id }: { className?: string; id: string }
       </label>
       <Search
         aria-hidden
-        className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+        className={cn(
+          "pointer-events-none absolute top-1/2 -translate-y-1/2 text-muted-foreground",
+          size === "lg" ? "left-5 size-5" : "left-4 size-4",
+        )}
       />
       <Input
         id={id}
@@ -24,7 +36,12 @@ export function SearchForm({ className, id }: { className?: string; id: string }
         enterKeyHint="search"
         autoComplete="off"
         placeholder={t("placeholder")}
-        className="rounded-full bg-muted pl-9 dark:bg-muted"
+        className={cn(
+          "rounded-full",
+          size === "lg"
+            ? "h-14 border-transparent bg-card pr-5 pl-13 text-base shadow-raised md:text-base"
+            : "border-transparent bg-muted pl-10 hover:border-border focus-visible:bg-card",
+        )}
       />
     </Form>
   )

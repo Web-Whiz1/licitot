@@ -58,7 +58,7 @@ async function Profile({ params }: Pick<PageProps<"/u/[username]">, "params">) {
 
   return (
     <>
-      <header className="flex flex-col gap-5 rounded-2xl bg-sky-soft p-6 sm:flex-row sm:items-center md:p-8">
+      <header className="flex flex-col gap-5 rounded-2xl bg-tint p-6 sm:flex-row sm:items-center md:p-8">
         <UserAvatar
           name={profile.display_name}
           avatarPath={profile.avatar_path}
@@ -66,7 +66,7 @@ async function Profile({ params }: Pick<PageProps<"/u/[username]">, "params">) {
           className="size-20 text-2xl"
         />
         <div className="min-w-0 space-y-2">
-          <h1 className="text-3xl font-extrabold tracking-tight break-words">
+          <h1 className="font-display text-3xl font-semibold tracking-tight break-words">
             {profile.display_name}
           </h1>
           <p className="text-sm text-muted-foreground">@{profile.username}</p>
@@ -103,14 +103,14 @@ async function Profile({ params }: Pick<PageProps<"/u/[username]">, "params">) {
       </div>
 
       <section aria-labelledby="active-title" className="mt-10">
-        <h2 id="active-title" className="mb-4 text-2xl font-bold tracking-tight">
+        <h2 id="active-title" className="mb-4 font-display text-2xl font-semibold tracking-tight">
           {t("activeListings")}
         </h2>
         <SellerListings sellerId={profile.id} emptyLabel={t("noListings")} />
       </section>
 
       <section aria-labelledby="reviews-title" className="mt-10">
-        <h2 id="reviews-title" className="mb-4 text-2xl font-bold tracking-tight">
+        <h2 id="reviews-title" className="mb-4 font-display text-2xl font-semibold tracking-tight">
           {t("reviews")}
         </h2>
         <ProfileReviews profileId={profile.id} username={profile.username} />
@@ -167,7 +167,7 @@ async function ProfileReviews({ profileId, username }: { profileId: string; user
 
 function ProfileSkeleton() {
   return (
-    <div className="flex items-center gap-5 rounded-2xl bg-sky-soft p-6 md:p-8" aria-hidden>
+    <div className="flex items-center gap-5 rounded-2xl bg-tint p-6 md:p-8" aria-hidden>
       <Skeleton className="size-20 rounded-full" />
       <div className="space-y-2">
         <Skeleton className="h-8 w-56" />

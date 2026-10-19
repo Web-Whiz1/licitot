@@ -19,18 +19,29 @@ export function AuctionCard({
   const hasBids = auction.bid_count > 0
 
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-xl border bg-card shadow-card transition-shadow hover:shadow-raised">
-      <AuctionThumb
-        path={auction.cover?.path}
-        blurDataUrl={auction.cover?.blurDataUrl}
-        alt=""
-        sizes="(min-width: 1280px) 290px, (min-width: 768px) 25vw, 50vw"
-        priority={priority}
-        noPhotoLabel={t("auction.noPhoto")}
-        className="aspect-[4/3] w-full"
-      />
-      <div className="flex flex-1 flex-col gap-1.5 p-3">
-        <h3 className="line-clamp-2 text-sm leading-snug font-semibold">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-card transition-[transform,box-shadow] duration-300 ease-snap hover:-translate-y-1 hover:shadow-raised">
+      <div className="relative">
+        <AuctionThumb
+          path={auction.cover?.path}
+          blurDataUrl={auction.cover?.blurDataUrl}
+          alt=""
+          sizes="(min-width: 1280px) 290px, (min-width: 768px) 25vw, 50vw"
+          priority={priority}
+          noPhotoLabel={t("auction.noPhoto")}
+          className="aspect-[4/3] w-full"
+          imageClassName="transition-transform duration-500 ease-snap group-hover:scale-[1.04]"
+        />
+        {auction.ends_at ? (
+          <Countdown
+            endsAt={auction.ends_at}
+            compact
+            variant="chip"
+            className="absolute top-2.5 left-2.5"
+          />
+        ) : null}
+      </div>
+      <div className="flex flex-1 flex-col gap-3 p-3.5 md:p-4">
+        <h3 className="line-clamp-2 text-sm leading-snug font-medium md:text-[0.9375rem]">
           {/* Stretched link: the whole card is clickable, one tab stop. */}
           <Link
             href={auctionHref(auction)}
@@ -39,28 +50,29 @@ export function AuctionCard({
             {auction.title}
           </Link>
         </h3>
-        <div className="mt-auto space-y-1">
-          <p className="text-xs text-muted-foreground">
-            {hasBids ? t("card.currentBid") : t("card.startingPrice")}
-          </p>
-          <p className="text-lg leading-none font-extrabold text-primary">
-            {formatRON(auction.current_price, { compact: true })}
-          </p>
-          <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 pt-1 text-xs text-muted-foreground">
-            {auction.ends_at ? <Countdown endsAt={auction.ends_at} compact /> : null}
+        <div className="mt-auto space-y-2">
+          <div>
+            <p className="text-[0.6875rem] font-medium tracking-[0.08em] text-muted-foreground uppercase">
+              {hasBids ? t("card.currentBid") : t("card.startingPrice")}
+            </p>
+            <p className="text-lg leading-tight font-bold tracking-tight text-primary tabular-nums md:text-xl">
+              {formatRON(auction.current_price, { compact: true })}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
             <span className="inline-flex items-center gap-1">
               <Gavel aria-hidden className="size-3.5" />
               {t("auction.bids", { count: auction.bid_count })}
             </span>
+            <span className="inline-flex min-w-0 items-center gap-1">
+              <MapPin aria-hidden className="size-3.5 shrink-0" />
+              <span className="truncate">{auction.city}</span>
+            </span>
           </div>
-          <p className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-            <MapPin aria-hidden className="size-3.5" />
-            {auction.city}
-          </p>
         </div>
       </div>
       {/* Focus ring for the stretched link. */}
-      <span className="pointer-events-none absolute inset-0 rounded-xl ring-ring group-has-[a:focus-visible]:ring-2" />
+      <span className="pointer-events-none absolute inset-0 rounded-2xl ring-ring group-has-[a:focus-visible]:ring-2" />
     </article>
   )
 }
@@ -73,7 +85,7 @@ export function AuctionGrid({
   priorityCount?: number
 }) {
   return (
-    <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
+    <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
       {auctions.map((a, i) => (
         <li key={a.id}>
           <AuctionCard auction={a} priority={i < priorityCount} />

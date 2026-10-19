@@ -15,12 +15,12 @@ export function AuthCard({
 }) {
   return (
     <div className="mx-auto w-full max-w-md px-4 py-10 md:py-16">
-      <div className="rounded-2xl border bg-card p-6 shadow-raised sm:p-8">
-        <div className="mb-6 space-y-2 text-center">
+      <div className="rounded-3xl border bg-card p-6 shadow-raised sm:p-9">
+        <div className="mb-7 space-y-3 text-center">
           <Link href="/" className="mx-auto inline-block rounded-md" aria-hidden tabIndex={-1}>
             <LogoMark className="mx-auto size-12" />
           </Link>
-          <h1 className="text-2xl font-extrabold tracking-tight">{title}</h1>
+          <h1 className="font-display text-3xl tracking-[-0.02em]">{title}</h1>
           {subtitle ? <p className="text-sm text-muted-foreground">{subtitle}</p> : null}
         </div>
         {children}

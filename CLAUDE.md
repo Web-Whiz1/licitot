@@ -142,9 +142,17 @@ scripts/               gen-icons.ts (no seed/demo data: the DB holds only real u
 - **Components**: Server Components by default; `"use client"` only for interactive islands.
   Realtime subscriptions only on the auction detail page and the header notification bell
   (which must `realtime.setAuth(token)` before subscribing: private rows need the user token).
-- **Colors**: use semantic tokens (`bg-primary`, `text-muted-foreground`, `bg-sky-soft`…), never raw
-  hex in components. Baby blue (`sky`) is decoration only — never text on white. Adding a token?
-  Update `src/lib/brand/tokens.ts` + `globals.css`; `pnpm test` checks sync and WCAG AA contrast.
+- **Brand** ("modern auction house", see BRAND.md): Klein blue `primary`, lime `highlight` (live
+  signal), `ink` bands, warm paper `background`, `tint` surfaces. Fonts: Fraunces for headings
+  (`font-display`, one weight: never `font-bold` on it) + Geist (`font-sans`), self-hosted in
+  `src/assets/fonts/`. Prices and countdowns use `tabular-nums`.
+- **Colors**: use semantic tokens (`bg-primary`, `text-muted-foreground`, `bg-tint`…), never raw
+  hex in components. Lime (`highlight`) is never text on paper: only a background under ink
+  text, or text on `ink`. Adding a token? Update `src/lib/brand/tokens.ts` + `globals.css`;
+  `pnpm test` checks sync and WCAG AA contrast.
+- **Motion**: transform/opacity only, `ease-snap`, tokens `animate-rise|bump|raise` in
+  `globals.css`; everything stops under `prefers-reduced-motion`. The auction card price must
+  stay the only `.text-primary` inside `<article>` (e2e reads it).
 - **No `any`**. `noUncheckedIndexedAccess` is on.
 - **Editing files on Windows**: don't round-trip files through PowerShell `Get-Content`/`Set-Content`
   (it mangles UTF-8 diacritics). Use the editor tools.

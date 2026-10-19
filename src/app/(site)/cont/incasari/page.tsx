@@ -55,7 +55,7 @@ export default async function PayoutsPage({ searchParams }: PageProps<"/cont/inc
     <div className="max-w-2xl space-y-6">
       <QueryToast param="stripe" value="gata" message="payouts.returned" />
       <div className="space-y-2">
-        <h2 className="flex items-center gap-2 text-xl font-bold tracking-tight">
+        <h2 className="flex items-center gap-2 font-display text-xl font-semibold tracking-tight">
           <Wallet aria-hidden className="size-5 text-primary" />
           {t("title")}
         </h2>
