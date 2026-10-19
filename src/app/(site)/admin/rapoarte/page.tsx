@@ -39,7 +39,7 @@ export default async function AdminReportsPage() {
   return (
     <div className="space-y-10">
       <section aria-labelledby="reports" className="space-y-4">
-        <h2 id="reports" className="font-display text-xl font-semibold tracking-tight">
+        <h2 id="reports" className="font-display text-xl tracking-tight">
           {t("admin.reportsTitle")}
         </h2>
         {reports.length === 0 ? (

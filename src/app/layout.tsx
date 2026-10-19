@@ -19,16 +19,6 @@ const geist = localFont({
   display: "swap",
 })
 
-// Fraunces SemiBold with optical sizes (SOFT 50). One weight only: declared for the whole range
-// so headings never get a synthesized bold.
-const fraunces = localFont({
-  src: "../assets/fonts/Fraunces-Display.woff2",
-  weight: "100 900",
-  variable: "--font-fraunces",
-  display: "swap",
-  adjustFontFallback: "Times New Roman",
-})
-
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta")
   return {
@@ -52,7 +42,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ro" className={`${geist.variable} ${fraunces.variable}`} suppressHydrationWarning>
+    <html lang="ro" className={geist.variable} suppressHydrationWarning>
       <body className="flex min-h-dvh flex-col">
         <NextIntlClientProvider>
           <ThemeProvider>

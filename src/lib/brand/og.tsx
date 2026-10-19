@@ -1,16 +1,16 @@
 import { readFile } from "node:fs/promises"
 import path from "node:path"
 import { ImageResponse } from "next/og"
-import { LIVE_DOT, LOGO_COLORS, PADDLE_PATH, PADDLE_TRANSFORM } from "./logo-geometry"
+import { LOGO_COLORS, PADDLE_PATH, PADDLE_TRANSFORM } from "./logo-geometry"
 import { colorTokens } from "./tokens"
 
 export const OG_SIZE = { width: 1200, height: 630 }
 
-// Static TrueType instance (Satori reads neither woff2 nor variable fonts), subset like the
-// web fonts so every Romanian diacritic comes from the same file (src/assets/fonts/README.md).
-// Fraunces only: Satori adds stray gaps after some letters with Geist's spacing tables.
+// Static Geist instances re-saved without GSUB (Satori mis-measures words with Geist's
+// contextual substitutions), subset like the web font (src/assets/fonts/README.md).
 const FONT_FILES = [
-  { file: "Fraunces-SemiBold-Display.ttf", name: "Fraunces", weight: 600 },
+  { file: "Geist-Bold-OG.otf", weight: 700 },
+  { file: "Geist-Medium-OG.otf", weight: 500 },
 ] as const
 
 // Cached so OG routes can be prerendered (file reads count as uncached I/O otherwise).
@@ -23,26 +23,25 @@ async function readFontFiles(): Promise<string[]> {
 
 async function loadFonts() {
   const files = await readFontFiles()
-  return FONT_FILES.map(({ name, weight }, i) => {
+  return FONT_FILES.map(({ weight }, i) => {
     const bytes = Buffer.from(files[i]!, "base64")
     // Satori requires a standalone ArrayBuffer, not a view into a larger one.
     const data = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
-    return { name, data: data as ArrayBuffer, weight, style: "normal" as const }
+    return { name: "Geist", data: data as ArrayBuffer, weight, style: "normal" as const }
   })
 }
 
-function Paddle({ size, paddle, dot }: { size: number; paddle: string; dot: string }) {
+function Paddle({ size, fill }: { size: number; fill: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64">
-      <path d={PADDLE_PATH} transform={PADDLE_TRANSFORM} fill={paddle} />
-      <circle cx={LIVE_DOT.cx} cy={LIVE_DOT.cy} r={LIVE_DOT.r} fill={dot} />
+      <path d={PADDLE_PATH} transform={PADDLE_TRANSFORM} fill={fill} />
     </svg>
   )
 }
 
 /**
- * Brand OG template: a midnight stage with a giant Klein-blue paddle, the logo top-left and the
- * title in Fraunces. Reused by the site default and (later) per-auction images.
+ * Brand OG template: a light blue gradient sky with a giant brand-blue paddle, the logo
+ * top-left and a bold Geist title. Reused by the site default and (later) per-auction images.
  */
 export async function brandOgImage({
   title,
@@ -62,28 +61,28 @@ export async function brandOgImage({
         display: "flex",
         position: "relative",
         overflow: "hidden",
-        backgroundColor: c.ink,
-        color: c["ink-foreground"],
-        fontFamily: "Fraunces",
+        backgroundImage: `linear-gradient(160deg, ${c["hero-from"]} 0%, ${c["hero-via"]} 50%, ${c["hero-to"]} 100%)`,
+        color: c.foreground,
+        fontFamily: "Geist",
       }}
     >
-      {/* Spotlight behind the paddle (an SVG gradient: Satori clips CSS radial gradients) */}
+      {/* Soft white glow behind the paddle (an SVG gradient: Satori clips CSS radial ones) */}
       <svg
-        width="1100"
-        height="1100"
+        width="900"
+        height="900"
         viewBox="0 0 100 100"
-        style={{ position: "absolute", right: -330, top: -380 }}
+        style={{ position: "absolute", right: -250, top: -300 }}
       >
         <defs>
-          <radialGradient id="spot">
-            <stop offset="0%" stopColor={LOGO_COLORS.paddle} stopOpacity="0.6" />
-            <stop offset="100%" stopColor={LOGO_COLORS.paddle} stopOpacity="0" />
+          <radialGradient id="glow">
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
           </radialGradient>
         </defs>
-        <circle cx="50" cy="50" r="50" fill="url(#spot)" />
+        <circle cx="50" cy="50" r="50" fill="url(#glow)" />
       </svg>
-      <div style={{ position: "absolute", right: -30, bottom: -120, display: "flex" }}>
-        <Paddle size={600} paddle={LOGO_COLORS.paddle} dot={LOGO_COLORS.dot} />
+      <div style={{ position: "absolute", right: -20, bottom: -130, display: "flex" }}>
+        <Paddle size={600} fill={LOGO_COLORS.paddle} />
       </div>
 
       <div
@@ -96,15 +95,15 @@ export async function brandOgImage({
           padding: 72,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <Paddle size={76} paddle={c["ink-accent"]} dot={c.highlight} />
-          <div style={{ display: "flex", fontFamily: "Fraunces", fontSize: 54, letterSpacing: -1 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <Paddle size={72} fill={LOGO_COLORS.paddle} />
+          <div style={{ display: "flex", fontSize: 50, fontWeight: 700, letterSpacing: -1.8 }}>
             <span>Lici</span>
-            <span style={{ color: c["ink-accent"] }}>Tot</span>
+            <span style={{ color: c.primary }}>Tot</span>
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 22, maxWidth: 700 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 720 }}>
           {eyebrow ? (
             <div
               style={{
@@ -112,24 +111,21 @@ export async function brandOgImage({
                 alignItems: "center",
                 gap: 12,
                 fontSize: 26,
-                letterSpacing: 2,
-                textTransform: "uppercase",
-                color: c.highlight,
+                fontWeight: 700,
+                color: c.primary,
               }}
             >
-              <div
-                style={{ width: 14, height: 14, borderRadius: 9999, backgroundColor: c.highlight }}
-              />
+              <div style={{ width: 14, height: 14, borderRadius: 9999, backgroundColor: c.live }} />
               {eyebrow}
             </div>
           ) : null}
           <div
             style={{
               display: "flex",
-              fontFamily: "Fraunces",
               fontSize: title.length > 40 ? 72 : 100,
-              lineHeight: 1.02,
-              letterSpacing: title.length > 40 ? -2 : -3.5,
+              fontWeight: 700,
+              lineHeight: 1,
+              letterSpacing: title.length > 40 ? -2.5 : -4.5,
             }}
           >
             {title}
@@ -139,8 +135,9 @@ export async function brandOgImage({
               style={{
                 display: "flex",
                 fontSize: 34,
+                fontWeight: 500,
                 lineHeight: 1.3,
-                color: c["ink-muted"],
+                color: c["hero-muted"],
               }}
             >
               {subtitle}

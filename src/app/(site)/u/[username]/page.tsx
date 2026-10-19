@@ -66,7 +66,7 @@ async function Profile({ params }: Pick<PageProps<"/u/[username]">, "params">) {
           className="size-20 text-2xl"
         />
         <div className="min-w-0 space-y-2">
-          <h1 className="font-display text-3xl font-semibold tracking-tight break-words">
+          <h1 className="font-display text-3xl tracking-tight break-words">
             {profile.display_name}
           </h1>
           <p className="text-sm text-muted-foreground">@{profile.username}</p>
@@ -103,14 +103,14 @@ async function Profile({ params }: Pick<PageProps<"/u/[username]">, "params">) {
       </div>
 
       <section aria-labelledby="active-title" className="mt-10">
-        <h2 id="active-title" className="mb-4 font-display text-2xl font-semibold tracking-tight">
+        <h2 id="active-title" className="mb-4 font-display text-2xl tracking-tight">
           {t("activeListings")}
         </h2>
         <SellerListings sellerId={profile.id} emptyLabel={t("noListings")} />
       </section>
 
       <section aria-labelledby="reviews-title" className="mt-10">
-        <h2 id="reviews-title" className="mb-4 font-display text-2xl font-semibold tracking-tight">
+        <h2 id="reviews-title" className="mb-4 font-display text-2xl tracking-tight">
           {t("reviews")}
         </h2>
         <ProfileReviews profileId={profile.id} username={profile.username} />

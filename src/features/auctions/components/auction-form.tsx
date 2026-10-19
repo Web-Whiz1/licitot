@@ -481,7 +481,7 @@ function Section({
   return (
     <section className="space-y-4">
       <div>
-        <h2 className="font-display text-xl font-semibold tracking-tight">{title}</h2>
+        <h2 className="font-display text-xl tracking-tight">{title}</h2>
         {hint ? (
           <p id={hintId} className="mt-1 text-sm text-muted-foreground">
             {hint}

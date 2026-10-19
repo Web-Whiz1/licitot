@@ -494,8 +494,6 @@
     "emptyTitle": "Încă nu sunt licitații active.",
     "emptyHint": "Fii primul care pune ceva la licitație: durează două minute.",
     "heroEyebrow": "Licitații live, din toată țara",
-    "liveTitle": "Live acum",
-    "liveSeeAll": "Toate",
     "liveEmptyTitle": "Sala e pregătită.",
     "liveEmptyHint": "Prima licitație poate fi a ta.",
     "trustTitle": "De ce LiciTot",
@@ -526,7 +524,8 @@
     "stepsMore": "Află toate detaliile",
     "sellTitle": "Ai ceva de vândut?",
     "sellText": "Pune-l pe licitație în două minute. Listarea e gratuită, iar comisionul de {percent}% se plătește doar dacă vinzi.",
-    "sellCta": "Pune pe licitație"
+    "sellCta": "Pune pe licitație",
+    "liveCount": "{count, plural, one {# licitație live acum} few {# licitații live acum} other {# de licitații live acum}}"
   },
   "footer": {
     "about": "LiciTot e locul unde orice lucru își găsește un nou proprietar — prin licitație, la prețul corect.",
@@ -547,10 +546,10 @@
   },
   "brand": {
     "title": "Identitatea vizuală LiciTot",
-    "intro": "Ghidul nostru de brand: o casă de licitații modernă. Albastru Klein pentru încredere, verde-lime pentru momentele live, hârtie caldă și miez de noapte pentru scenă.",
+    "intro": "Ghidul nostru de brand: albastru curat, de la bleu bebe la bleumarin. Luminos, aerisit și de încredere, cu roșu doar pentru momentele live.",
     "toc": "Cuprins",
     "colors": "Culori",
-    "colorsIntro": "Albastrul Klein poartă tot ce se citește sau se apasă. Lime-ul e semnalul „live”: fundal sub text închis sau text pe cerneală, niciodată text pe hârtie.",
+    "colorsIntro": "Albastrul LiciTot poartă tot ce se citește sau se apasă. Bleu bebe e doar pentru fundaluri și gradienturi, niciodată text. Roșul apare doar la „live” și în ultimele minute.",
     "contrastOnWhite": "Contrast pe fundal",
     "contrastPairs": "Perechi de contrast verificate (WCAG AA)",
     "contrastPairsIntro": "Fiecare combinație text/fundal folosită în interfață e testată automat în ambele teme.",
@@ -559,19 +558,23 @@
     "darkTheme": "Tema întunecată",
     "swatches": {
       "primary": {
-        "name": "Albastru Klein",
+        "name": "Albastru LiciTot",
         "usage": "Butoane, linkuri, prețuri, paleta din logo"
       },
-      "highlight": {
-        "name": "Lime live",
-        "usage": "Semnale live, ultimele minute, acțiunea principală pe cerneală"
+      "sky": {
+        "name": "Bleu bebe",
+        "usage": "Gradienturi, ilustrații, evidențieri. Niciodată text"
       },
       "ink": {
-        "name": "Cerneală",
-        "usage": "Scena: hero, subsol, etichete „Vândută”"
+        "name": "Bleumarin",
+        "usage": "Subsol, etichete „Vândută”, cronometre pe fotografii"
+      },
+      "live": {
+        "name": "Roșu live",
+        "usage": "Punctul live și ultima oră a unei licitații"
       },
       "background": {
-        "name": "Hârtie",
+        "name": "Cer pal",
         "usage": "Fundalul paginii"
       },
       "card": {
@@ -583,15 +586,15 @@
         "usage": "Suprafețe evidențiate, iconuri, prețul curent"
       },
       "foreground": {
-        "name": "Cerneală text",
+        "name": "Bleumarin text",
         "usage": "Text principal"
       },
       "muted-foreground": {
-        "name": "Gri ardezie",
+        "name": "Gri albăstrui",
         "usage": "Text secundar, metadate"
       },
       "border": {
-        "name": "Gri cald",
+        "name": "Linie",
         "usage": "Borduri, separatoare"
       },
       "success": {
@@ -603,15 +606,15 @@
         "usage": "Se termină curând, preț de rezervă neatins"
       },
       "destructive": {
-        "name": "Roșu",
+        "name": "Roșu eroare",
         "usage": "Erori, ai fost depășit, anulare"
       }
     },
     "typography": "Tipografie",
-    "typographyIntro": "Fraunces (serif cu dimensiuni optice, varianta SOFT) pentru titluri și Geist pentru interfață și cifre. Ambele acoperă complet ă, â, î, ș, ț (cu virgulă, nu cu sedilă).",
+    "typographyIntro": "O singură familie, Geist: greutăți mari și litere strânse pentru titluri, regular pentru text, cifre tabulare pentru prețuri și cronometre. Acoperă complet ă, â, î, ș, ț (cu virgulă, nu cu sedilă).",
     "typeSample": "Șase țânțari zburdă prin ceață",
     "logo": "Logo",
-    "logoIntro": "Paleta de licitație ridicată: gestul prin care oricine spune „eu!” într-o sală de licitații. „L”-ul decupat e și acul unui ceas, iar punctul lime e semnalul live.",
+    "logoIntro": "Paleta de licitație ridicată: gestul prin care oricine spune „eu!” într-o sală de licitații. „L”-ul decupat e și acul unui ceas: fiecare licitație se întrece cu timpul.",
     "logoFull": "Logo complet",
     "logoMark": "Simbol",
     "logoMono": "Monocrom",
@@ -629,7 +632,7 @@
     "radius": "Colțuri rotunjite",
     "radiusIntro": "Colțuri moi, ca paleta din logo. Butoanele și etichetele sunt pastile, cardurile au 20–24 px.",
     "shadows": "Umbre",
-    "shadowsIntro": "Umbre joase, nuanțate cu cerneală, doar pentru a separa straturi. Strălucirea albastră e rezervată acțiunii principale.",
+    "shadowsIntro": "Umbre joase, nuanțate cu bleumarin, doar pentru a separa straturi. Strălucirea albastră e rezervată acțiunii principale.",
     "components": "Componente",
     "buttons": "Butoane",
     "inputs": "Câmpuri",
@@ -675,12 +678,12 @@
     "motionIntro": "Rapidă, hotărâtă, cu sens: mișcarea confirmă o acțiune sau semnalează ceva live. Totul se oprește dacă sistemul cere mișcare redusă.",
     "motionRules": [
       "Durate: 120 ms (apăsare), 200 ms (hover, culori), 320–520 ms (intrări în pagină).",
-      "Curba de bază: cubic-bezier(0.2, 0.8, 0.2, 1) — pornește repede, se așază lin.",
+      "Curba de bază: cubic-bezier(0.2, 0.8, 0.2, 1): pornește repede, se așază lin.",
       "Animăm doar transform și opacitate, ca să rămână fluid și pe telefoane modeste.",
-      "Prețul care crește clipește o dată în lime; punctul live pulsează doar în ultimele 24 de ore."
+      "Prețul care crește clipește o dată în bleu; punctul roșu pulsează doar în ultimele 24 de ore."
     ],
-    "highlight": "Live",
-    "ink": "Cerneală"
+    "ink": "Cerneală",
+    "live": "Live"
   },
   "info": {
     "howTitle": "Cum funcționează LiciTot",

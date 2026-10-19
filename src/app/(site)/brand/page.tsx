@@ -31,9 +31,9 @@ const SECTIONS = [
 ] as const
 
 const TYPE_SCALE = [
-  { name: "Display", className: "font-display text-display", spec: "42–76 · Fraunces" },
-  { name: "H1", className: "font-display text-4xl tracking-tight", spec: "36/40 · Fraunces" },
-  { name: "H2", className: "font-display text-3xl tracking-tight", spec: "30/36 · Fraunces" },
+  { name: "Display", className: "font-display text-display", spec: "44–80 · Geist 750" },
+  { name: "H1", className: "font-display text-4xl", spec: "36/40 · Geist 750" },
+  { name: "H2", className: "font-display text-3xl", spec: "30/36 · Geist 750" },
   { name: "H3", className: "text-xl font-semibold", spec: "20/28 · Geist 600" },
   { name: "Body", className: "text-base", spec: "16/24 · Geist 400" },
   { name: "Small", className: "text-sm", spec: "14/20 · Geist 400" },
@@ -279,14 +279,14 @@ export default async function BrandPage() {
       <Section id="motion" title={t("motion")} intro={t("motionIntro")}>
         <div className="mb-6 flex flex-wrap items-center gap-3">
           <Badge variant="live">
-            <LiveDot pulse className="size-1.5" />
-            {t("highlight")}
+            <LiveDot pulse className="size-1.5 text-live" />
+            {t("live")}
           </Badge>
-          <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-ink px-2.5 text-xs font-semibold text-ink-foreground tabular-nums">
-            <LiveDot pulse className="text-highlight" />
+          <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-ink/80 px-2.5 text-xs font-semibold text-ink-foreground tabular-nums">
+            <LiveDot pulse className="text-live" />
             2h 15m
           </span>
-          <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-highlight px-2.5 text-xs font-semibold text-highlight-foreground tabular-nums">
+          <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-live px-2.5 text-xs font-semibold text-live-foreground tabular-nums">
             <LiveDot pulse />
             4m 08s
           </span>
@@ -306,7 +306,6 @@ export default async function BrandPage() {
         <h3 className="mb-3 text-xl font-semibold">{t("buttons")}</h3>
         <div className="flex flex-wrap items-center gap-3">
           <Button>{t("bidNow")}</Button>
-          <Button variant="highlight">{t("highlight")}</Button>
           <Button variant="ink">{t("ink")}</Button>
           <Button variant="secondary">{t("secondary")}</Button>
           <Button variant="outline">{t("outline")}</Button>
@@ -357,7 +356,7 @@ export default async function BrandPage() {
         <h3 className="mt-10 mb-3 text-xl font-semibold">{t("badges")}</h3>
         <div className="flex flex-wrap gap-2">
           <Badge variant="live">
-            <LiveDot className="size-1.5" />
+            <LiveDot className="size-1.5 text-live" />
             {t("statusActive")}
           </Badge>
           <Badge variant="warning">
@@ -374,7 +373,7 @@ export default async function BrandPage() {
           <div className="relative grid aspect-[4/3] place-items-center bg-tint">
             <LogoMark className="size-16 opacity-70" />
             <span className="absolute top-2.5 left-2.5 inline-flex h-7 items-center gap-1.5 rounded-full bg-ink/75 px-2.5 text-xs font-semibold text-ink-foreground tabular-nums">
-              <LiveDot className="text-highlight" />
+              <LiveDot className="text-live" />
               2h 15m
             </span>
           </div>

@@ -12,7 +12,7 @@ export function SellPageShell({
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-12">
       <header className="mb-8 space-y-2">
-        <h1 className="font-display text-3xl font-semibold tracking-tight md:text-4xl">{title}</h1>
+        <h1 className="font-display text-3xl tracking-tight md:text-4xl">{title}</h1>
         {subtitle ? <p className="text-muted-foreground">{subtitle}</p> : null}
       </header>
       {children}

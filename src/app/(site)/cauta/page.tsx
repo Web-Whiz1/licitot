@@ -35,7 +35,7 @@ async function Results({ searchParams }: Pick<PageProps<"/cauta">, "searchParams
   ])
   return (
     <>
-      <h1 className="mb-6 font-display text-3xl font-semibold tracking-tight break-words">
+      <h1 className="mb-6 font-display text-3xl tracking-tight break-words">
         {filters.q ? t("resultsFor", { q: filters.q }) : t("allAuctions")}
       </h1>
       <AuctionBrowser

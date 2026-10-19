@@ -1,6 +1,5 @@
 import {
   ArrowRight,
-  ArrowUpRight,
   BadgeCheck,
   BadgePercent,
   Gavel,
@@ -9,6 +8,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import Link from "next/link"
+import { useTranslations } from "next-intl"
 import { getTranslations } from "next-intl/server"
 import { Suspense } from "react"
 import { AuctionThumb } from "@/components/auction-thumb"
@@ -21,51 +21,51 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { AuctionGrid, auctionHref } from "@/features/auctions/components/auction-card"
 import { AuctionGridSkeleton } from "@/features/auctions/components/card-skeletons"
 import { CategoryIcon } from "@/features/auctions/components/category-icon"
-import { getHomeSections } from "@/features/auctions/listing"
+import { getHomeSections, type AuctionCardData } from "@/features/auctions/listing"
 import { getCategoryTree } from "@/features/auctions/queries"
 import { EmptyState } from "@/features/profiles/components/empty-state"
 import { formatRON, PLATFORM_FEE_PERCENT } from "@/lib/money"
+import { cn } from "@/lib/utils"
 
 export default async function HomePage() {
   const t = await getTranslations()
 
   return (
     <>
-      {/* ── Hero: the auction stage ── */}
-      <section className="relative isolate overflow-hidden bg-ink text-ink-foreground">
+      {/* ── Hero: a clear blue sky, with the auctions closest to the hammer on the right ── */}
+      <section className="relative isolate overflow-hidden bg-[linear-gradient(160deg,var(--hero-from)_0%,var(--hero-via)_48%,var(--hero-to)_100%)] text-hero-foreground">
         <div
           aria-hidden
-          className="pointer-events-none absolute -top-56 -right-40 -z-10 size-[44rem] rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--primary)_50%,transparent)_0%,transparent_65%)] opacity-90 dark:opacity-50"
+          className="pointer-events-none absolute -top-48 -right-32 -z-10 size-[44rem] rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--card)_85%,transparent)_0%,transparent_62%)] dark:bg-[radial-gradient(circle,color-mix(in_oklab,var(--primary)_30%,transparent)_0%,transparent_62%)]"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute -bottom-72 -left-40 -z-10 size-[36rem] rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--ink-accent)_22%,transparent)_0%,transparent_65%)]"
+          className="pointer-events-none absolute -bottom-72 -left-48 -z-10 size-[38rem] rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--primary)_16%,transparent)_0%,transparent_65%)]"
         />
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 pt-10 pb-14 md:px-6 lg:grid-cols-[1.15fr_1fr] lg:gap-14 lg:pt-20 lg:pb-24">
+        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 pt-10 pb-14 md:px-6 lg:grid-cols-[1.1fr_1fr] lg:gap-10 lg:pt-20 lg:pb-24">
           <div className="space-y-7">
-            <p className="inline-flex animate-rise items-center gap-2 rounded-full bg-ink-foreground/[0.07] px-3.5 py-1.5 text-sm font-medium text-ink-foreground ring-1 ring-ink-foreground/10">
-              <LiveDot pulse className="text-highlight" />
-              {t("home.heroEyebrow")}
-            </p>
-            <h1 className="font-display text-[2.75rem] leading-[1.02] tracking-[-0.035em] text-balance md:text-display">
+            <Suspense fallback={<Eyebrow label={t("home.heroEyebrow")} />}>
+              <LiveEyebrow />
+            </Suspense>
+            <h1 className="font-display text-[2.75rem] leading-[0.98] tracking-[-0.045em] text-balance md:text-display">
               {t.rich("home.heroTitle", {
-                accent: (chunks) => <span className="text-highlight">{chunks}</span>,
+                accent: (chunks) => <span className="text-primary">{chunks}</span>,
               })}
             </h1>
-            <p className="max-w-lg animate-rise text-lg text-pretty text-ink-muted [animation-delay:80ms]">
+            <p className="max-w-lg animate-rise text-lg text-pretty text-hero-muted [animation-delay:80ms]">
               {t("home.heroSubtitle")}
             </p>
             <div className="max-w-xl animate-rise space-y-4 [animation-delay:160ms]">
               <SearchForm id="search-hero" size="lg" />
               <div className="flex flex-wrap items-center gap-3">
-                <Button asChild size="lg" variant="highlight">
+                <Button asChild size="lg">
                   <Link href="/vinde">{t("home.heroCtaSell")}</Link>
                 </Button>
                 <Button
                   asChild
                   size="lg"
-                  variant="ghost"
-                  className="text-ink-foreground hover:bg-ink-foreground/10 hover:text-ink-foreground"
+                  variant="outline"
+                  className="border-transparent bg-card/60 backdrop-blur-md hover:bg-card"
                 >
                   <Link href="/cauta">
                     {t("home.heroCtaBrowse")}
@@ -76,8 +76,8 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <Suspense fallback={<LiveBoardSkeleton />}>
-            <LiveBoard />
+          <Suspense fallback={<LiveStackSkeleton />}>
+            <LiveStack />
           </Suspense>
         </div>
       </section>
@@ -97,86 +97,131 @@ export default async function HomePage() {
   )
 }
 
-/** The three auctions closest to the hammer, with live countdowns. */
-async function LiveBoard() {
+function Eyebrow({ label }: { label: string }) {
+  return (
+    <p className="inline-flex animate-rise items-center gap-2 rounded-full bg-card/70 px-3.5 py-1.5 text-sm font-semibold ring-1 ring-primary/15 backdrop-blur-md">
+      <LiveDot pulse className="text-live" />
+      {label}
+    </p>
+  )
+}
+
+/** "N licitații live acum" from the real count (the generic line while none are live). */
+async function LiveEyebrow() {
+  const [t, sections] = await Promise.all([getTranslations("home"), getHomeSections()])
+  return (
+    <Eyebrow
+      label={
+        sections.liveCount > 0 ? t("liveCount", { count: sections.liveCount }) : t("heroEyebrow")
+      }
+    />
+  )
+}
+
+/** The two auctions closest to the hammer, as overlapping cards with live countdowns. */
+async function LiveStack() {
   const [t, sections] = await Promise.all([getTranslations(), getHomeSections()])
-  const items = sections.endingSoon.slice(0, 3)
+  const items = sections.endingSoon.slice(0, 2)
 
   if (items.length === 0) {
     return (
-      <div aria-hidden className="relative hidden justify-center lg:flex">
-        <div className="grid size-80 place-items-center rounded-[3.5rem] bg-ink-foreground/[0.05] ring-1 ring-ink-foreground/10">
-          <LogoMark variant="inverse" className="size-44 animate-rise" />
+      <div className="relative hidden justify-center lg:flex">
+        <div className="grid w-full max-w-sm animate-rise justify-items-center gap-5 rounded-[2.5rem] bg-card/55 px-8 py-12 text-center shadow-raised ring-1 ring-card backdrop-blur-md">
+          <LogoMark className="size-36 -rotate-3" />
+          <div className="space-y-1">
+            <p className="text-xl font-bold tracking-tight">{t("home.liveEmptyTitle")}</p>
+            <p className="text-sm text-hero-muted">{t("home.liveEmptyHint")}</p>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="animate-rise rounded-[1.75rem] bg-ink-foreground/[0.06] p-2 ring-1 ring-ink-foreground/10 backdrop-blur-sm [animation-delay:120ms]">
-      <div className="flex items-center justify-between px-3 pt-2 pb-3">
-        <p className="inline-flex items-center gap-2 text-sm font-semibold">
-          <LiveDot pulse className="text-highlight" />
-          {t("home.liveTitle")}
-        </p>
-        <Link
-          href="/cauta"
-          className="inline-flex items-center gap-1 rounded-full px-2 py-1 text-sm font-medium text-ink-muted transition-colors hover:text-ink-foreground"
+    <ul
+      className={cn(
+        "relative mx-auto w-full max-w-md",
+        items.length > 1 ? "h-[27rem] sm:h-[30.5rem]" : "h-auto",
+      )}
+    >
+      {items.map((a, i) => (
+        <li
+          key={a.id}
+          className={cn(
+            "animate-rise",
+            items.length > 1 &&
+              (i === 0
+                ? "absolute top-0 right-0 z-10 w-[78%] rotate-[4deg] [animation-delay:120ms]"
+                : "absolute top-24 left-0 z-20 w-[78%] -rotate-[5deg] [animation-delay:240ms]"),
+            items.length === 1 && "mx-auto w-[82%] -rotate-2",
+          )}
         >
-          {t("home.liveSeeAll")}
-          <ArrowUpRight aria-hidden className="size-4" />
-        </Link>
-      </div>
-      <ul className="space-y-1.5">
-        {items.map((a, i) => (
-          <li key={a.id} className="animate-rise" style={{ animationDelay: `${200 + i * 90}ms` }}>
-            <Link
-              href={auctionHref(a)}
-              className="group flex items-center gap-3 rounded-2xl bg-ink-foreground/[0.04] p-2 pr-3 ring-1 ring-transparent transition-[background-color,box-shadow] duration-200 hover:bg-ink-foreground/[0.09] hover:ring-ink-foreground/10"
-            >
-              <AuctionThumb
-                path={a.cover?.path}
-                blurDataUrl={a.cover?.blurDataUrl}
-                alt=""
-                sizes="72px"
-                noPhotoLabel={t("auction.noPhoto")}
-                className="size-16 shrink-0 rounded-xl md:size-[4.5rem]"
-                imageClassName="transition-transform duration-500 ease-snap group-hover:scale-105"
-              />
-              <span className="min-w-0 flex-1 space-y-1">
-                <span className="line-clamp-1 text-sm font-medium">{a.title}</span>
-                <span className="flex items-center gap-2 text-xs text-ink-muted">
-                  <Gavel aria-hidden className="size-3.5" />
-                  {t("auction.bids", { count: a.bid_count })}
-                </span>
-              </span>
-              <span className="flex shrink-0 flex-col items-end gap-1.5">
-                <span className="text-base font-bold tracking-tight text-ink-foreground tabular-nums">
-                  {formatRON(a.current_price, { compact: true })}
-                </span>
-                {a.ends_at ? <Countdown endsAt={a.ends_at} compact variant="chip" /> : null}
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
+          <StackCard auction={a} priority={i === 0} />
+        </li>
+      ))}
+    </ul>
   )
 }
 
-function LiveBoardSkeleton() {
+function StackCard({ auction: a, priority }: { auction: AuctionCardData; priority: boolean }) {
+  const t = useTranslations()
+  const hasBids = a.bid_count > 0
   return (
-    <div
-      aria-hidden
-      className="space-y-1.5 rounded-[1.75rem] bg-ink-foreground/[0.06] p-2 ring-1 ring-ink-foreground/10"
+    <Link
+      href={auctionHref(a)}
+      className="group block overflow-hidden rounded-[1.5rem] border bg-card text-card-foreground shadow-overlay transition-transform duration-300 ease-snap hover:-translate-y-1.5 hover:rotate-0"
     >
-      <div className="h-11" />
-      {[0, 1, 2].map((i) => (
-        <div key={i} className="flex items-center gap-3 rounded-2xl p-2">
-          <Skeleton className="size-16 rounded-xl bg-ink-foreground/10 md:size-[4.5rem]" />
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-4 w-3/4 bg-ink-foreground/10" />
-            <Skeleton className="h-3 w-1/3 bg-ink-foreground/10" />
+      <div className="relative">
+        <AuctionThumb
+          path={a.cover?.path}
+          blurDataUrl={a.cover?.blurDataUrl}
+          alt=""
+          sizes="(min-width: 1024px) 360px, 80vw"
+          priority={priority}
+          noPhotoLabel={t("auction.noPhoto")}
+          className="aspect-[4/3] w-full"
+          imageClassName="transition-transform duration-500 ease-snap group-hover:scale-[1.04]"
+        />
+        {a.ends_at ? (
+          <Countdown endsAt={a.ends_at} compact variant="chip" className="absolute top-3 left-3" />
+        ) : null}
+      </div>
+      <div className="space-y-2.5 p-4">
+        <p className="line-clamp-1 text-[0.9375rem] font-semibold">{a.title}</p>
+        <div className="flex items-end justify-between gap-3">
+          <div>
+            <p className="text-[0.6875rem] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+              {hasBids ? t("card.currentBid") : t("card.startingPrice")}
+            </p>
+            <p className="text-2xl leading-tight font-bold tracking-tight text-primary tabular-nums">
+              {formatRON(a.current_price, { compact: true })}
+            </p>
+          </div>
+          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+            <Gavel aria-hidden className="size-3.5" />
+            {t("auction.bids", { count: a.bid_count })}
+          </span>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+function LiveStackSkeleton() {
+  return (
+    <div aria-hidden className="relative mx-auto h-[27rem] w-full max-w-md sm:h-[30.5rem]">
+      {[0, 1].map((i) => (
+        <div
+          key={i}
+          className={cn(
+            "absolute w-[78%] overflow-hidden rounded-[1.5rem] border bg-card shadow-overlay",
+            i === 0 ? "top-0 right-0 rotate-[4deg]" : "top-24 left-0 -rotate-[5deg]",
+          )}
+        >
+          <Skeleton className="aspect-[4/3] rounded-none" />
+          <div className="space-y-2 p-4">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-6 w-1/3" />
           </div>
         </div>
       ))}
@@ -347,7 +392,7 @@ async function SellBand() {
           <p className="text-lg text-pretty text-primary-foreground/85">
             {t("sellText", { percent: PLATFORM_FEE_PERCENT })}
           </p>
-          <Button asChild size="lg" variant="highlight" className="mt-2">
+          <Button asChild size="lg" variant="inverse" className="mt-2">
             <Link href="/vinde">
               {t("sellCta")}
               <ArrowRight data-icon="inline-end" />

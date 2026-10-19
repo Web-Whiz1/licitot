@@ -19,9 +19,9 @@ const badgeVariants = cva(
         success: "bg-success-soft text-success",
         warning: "bg-warning-soft text-warning",
         danger: "bg-destructive-soft text-destructive",
-        /** Lime "live" signal (running auctions). */
-        live: "bg-highlight text-highlight-foreground",
-        /** "Sold" stamp: ink on paper, inverted in dark mode so it never sinks into the card. */
+        /** Running auctions: soft blue with a red live dot. */
+        live: "bg-tint text-tint-foreground",
+        /** "Sold" stamp: navy on light, inverted in dark mode so it never sinks into the card. */
         ink: "bg-foreground text-background",
         tint: "bg-tint text-tint-foreground",
         neutral: "bg-muted text-muted-foreground",

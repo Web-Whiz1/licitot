@@ -12,9 +12,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground shadow-glow hover:bg-primary-hover",
-        // Lime: live moments and the hero call to action on ink.
-        highlight:
-          "bg-highlight text-highlight-foreground hover:bg-[color-mix(in_oklch,var(--highlight),var(--highlight-foreground)_10%)]",
+        // White on a blue band (the seller call to action).
+        inverse:
+          "bg-primary-foreground text-primary shadow-raised hover:bg-[color-mix(in_oklch,var(--primary-foreground),var(--primary)_10%)]",
         ink: "bg-ink text-ink-foreground hover:bg-[color-mix(in_oklch,var(--ink),var(--ink-foreground)_12%)]",
         outline:
           "border-border bg-card text-foreground hover:border-[color-mix(in_oklch,var(--border),var(--foreground)_25%)] hover:bg-muted aria-expanded:bg-muted dark:border-input/60",

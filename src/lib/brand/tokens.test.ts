@@ -40,9 +40,7 @@ describe("contrastRatio", () => {
     expect(contrastRatio("#000000", "#FFFFFF")).toBeCloseTo(21, 5)
     expect(contrastRatio("#FFFFFF", "#000000")).toBeCloseTo(21, 5)
   })
-  it("confirms lime is a signal color only (never text on paper)", () => {
-    expect(contrastRatio(colorTokens.light.highlight, colorTokens.light.background)).toBeLessThan(
-      AA_UI,
-    )
+  it("confirms baby blue is decoration-only on the page background", () => {
+    expect(contrastRatio(colorTokens.light.sky, colorTokens.light.background)).toBeLessThan(AA_UI)
   })
 })

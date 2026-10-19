@@ -142,13 +142,13 @@ scripts/               gen-icons.ts (no seed/demo data: the DB holds only real u
 - **Components**: Server Components by default; `"use client"` only for interactive islands.
   Realtime subscriptions only on the auction detail page and the header notification bell
   (which must `realtime.setAuth(token)` before subscribing: private rows need the user token).
-- **Brand** ("modern auction house", see BRAND.md): Klein blue `primary`, lime `highlight` (live
-  signal), `ink` bands, warm paper `background`, `tint` surfaces. Fonts: Fraunces for headings
-  (`font-display`, one weight: never `font-bold` on it) + Geist (`font-sans`), self-hosted in
-  `src/assets/fonts/`. Prices and countdowns use `tabular-nums`.
+- **Brand** ("Bleu", chosen by the owner; see BRAND.md): clean blues from baby blue to navy.
+  Brand blue `primary`, baby blue `sky` (decoration only), `hero-*` gradient tokens, navy `ink`
+  (footer, chips on photos), `tint` surfaces, red `live` only for the live dot and the last
+  hour. No lime/neon accents. One font family, Geist (self-hosted in `src/assets/fonts/`):
+  `font-display` = weight 750 + tight tracking. Prices and countdowns use `tabular-nums`.
 - **Colors**: use semantic tokens (`bg-primary`, `text-muted-foreground`, `bg-tint`…), never raw
-  hex in components. Lime (`highlight`) is never text on paper: only a background under ink
-  text, or text on `ink`. Adding a token? Update `src/lib/brand/tokens.ts` + `globals.css`;
+  hex in components. Adding a token? Update `src/lib/brand/tokens.ts` + `globals.css`;
   `pnpm test` checks sync and WCAG AA contrast.
 - **Motion**: transform/opacity only, `ease-snap`, tokens `animate-rise|bump|raise` in
   `globals.css`; everything stops under `prefers-reduced-motion`. The auction card price must

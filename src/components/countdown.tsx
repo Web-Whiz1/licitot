@@ -38,7 +38,7 @@ const CHIP =
 /**
  * Live countdown. SSR renders the end date in Romanian time; the client then ticks.
  * `compact` drops seconds when more than an hour remains (cards).
- * `chip` renders a pill for photos: ink glass with a lime "live" dot, all lime in the last hour.
+ * `chip` renders a pill for photos: navy glass with a red "live" dot, all red in the last hour.
  */
 export function Countdown({
   endsAt,
@@ -95,14 +95,14 @@ export function Countdown({
         title={formatDateTime(endsAt)}
         className={cn(
           CHIP,
-          urgent ? "bg-highlight text-highlight-foreground" : "bg-ink/75 text-ink-foreground",
+          urgent ? "bg-live text-live-foreground" : "bg-ink/75 text-ink-foreground",
           className,
         )}
       >
         {ended ? (
           <Clock aria-hidden className="size-3.5" />
         ) : (
-          <LiveDot pulse={soon} className={urgent ? undefined : "text-highlight"} />
+          <LiveDot pulse={soon} className={urgent ? undefined : "text-live"} />
         )}
         {label}
       </time>

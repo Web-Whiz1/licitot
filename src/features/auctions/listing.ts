@@ -119,6 +119,8 @@ export async function getHomeSections() {
   ])
   for (const r of [endingSoon, newest, featured]) if (r.error) throw r.error
   return {
+    /** All live auctions (the exact count comes with the ending-soon query). */
+    liveCount: endingSoon.count ?? 0,
     endingSoon: (endingSoon.data as CardRow[]).map(toCard),
     newest: (newest.data as CardRow[]).map(toCard),
     featured: (featured.data as CardRow[]).map(toCard),

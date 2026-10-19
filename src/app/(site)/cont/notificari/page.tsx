@@ -28,7 +28,7 @@ export default async function NotificationsPage() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="font-display text-xl font-semibold tracking-tight">{t("title")}</h2>
+        <h2 className="font-display text-xl tracking-tight">{t("title")}</h2>
         {items.some((n) => !n.read_at) ? (
           <ActionButton action={markAllNotificationsRead} variant="outline" size="sm">
             {t("markAllRead")}

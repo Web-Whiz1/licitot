@@ -175,7 +175,7 @@ export function BidBox({ initial, viewer }: { initial: LiveAuction; viewer: View
               ? tAll("detail.currentBid")
               : tAll("detail.startingPrice")}
         </p>
-        {/* Remounts on every new price, so a fresh bid flashes lime once. */}
+        {/* Remounts on every new price, so a fresh bid flashes baby blue once. */}
         <p
           key={live.current_price}
           className={cn(

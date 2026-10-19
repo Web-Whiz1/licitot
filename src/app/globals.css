@@ -5,10 +5,10 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * LiciTot design tokens: "casa de licitații modernă" (see BRAND.md).
+ * LiciTot design tokens: "Bleu", clean blues from baby blue to navy (see BRAND.md).
  * Color values mirror src/lib/brand/tokens.ts (kept in sync by tokens.test.ts).
- * Lime (--highlight) is a signal color: a background under ink text, or text on ink.
- * Never lime text on paper (1.1:1).
+ * Baby blue (--sky) is decoration only (gradients, illustrations), never text.
+ * Red (--live) marks only live moments and the last minutes of an auction.
  */
 
 @theme inline {
@@ -29,12 +29,18 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-tint: var(--tint);
   --color-tint-foreground: var(--tint-foreground);
-  --color-highlight: var(--highlight);
-  --color-highlight-foreground: var(--highlight-foreground);
+  --color-sky: var(--sky);
+  --color-live: var(--live);
+  --color-live-foreground: var(--live-foreground);
   --color-ink: var(--ink);
   --color-ink-foreground: var(--ink-foreground);
   --color-ink-muted: var(--ink-muted);
   --color-ink-accent: var(--ink-accent);
+  --color-hero-from: var(--hero-from);
+  --color-hero-via: var(--hero-via);
+  --color-hero-to: var(--hero-to);
+  --color-hero-foreground: var(--hero-foreground);
+  --color-hero-muted: var(--hero-muted);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -45,10 +51,10 @@
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
 
-  /* Geist for the interface and numbers; Fraunces (SOFT 50, optical sizes) for headings. */
+  /* One family, Geist: regular weights for text, heavy and tightly tracked for headings. */
   --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
-  --font-heading: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-display: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
 
   --radius-sm: calc(var(--radius) * 0.5);
   --radius-md: calc(var(--radius) * 0.75);
@@ -65,11 +71,11 @@
 }
 
 @theme {
-  /* Fluid display size for hero headlines (Fraunces). */
-  --text-display: clamp(2.625rem, 1.75rem + 3.8vw, 4.75rem);
-  --text-display--line-height: 1.02;
-  --text-display--letter-spacing: -0.035em;
-  --text-display--font-weight: 600;
+  /* Fluid display size for hero headlines. */
+  --text-display: clamp(2.75rem, 1.6rem + 4.4vw, 5rem);
+  --text-display--line-height: 0.98;
+  --text-display--letter-spacing: -0.045em;
+  --text-display--font-weight: 750;
 
   /* Motion: quick, decisive, no bounce on layout. Durations 120 / 200 / 320 ms. */
   --ease-snap: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -85,11 +91,10 @@
       transform: translateY(12px);
     }
   }
-  /* A new bid: the price flashes lime and settles. */
+  /* A new bid: the price flashes baby blue and settles. */
   @keyframes bump {
     0% {
-      background-color: var(--highlight);
-      color: var(--highlight-foreground);
+      background-color: var(--sky);
       transform: scale(1.03);
     }
     100% {
@@ -107,32 +112,38 @@
 :root {
   --radius: 0.75rem;
 
-  --background: #f7f5f0;
-  --foreground: #0f1530;
+  --background: #f4f8fd;
+  --foreground: #0a1a3a;
   --card: #ffffff;
-  --card-foreground: #0f1530;
+  --card-foreground: #0a1a3a;
   --popover: #ffffff;
-  --popover-foreground: #0f1530;
-  --primary: #1f3bdb;
+  --popover-foreground: #0a1a3a;
+  --primary: #1666d8;
   --primary-foreground: #ffffff;
-  --primary-hover: #1730bc;
-  --secondary: #e9ecfd;
-  --secondary-foreground: #14289c;
-  --muted: #efece5;
-  --muted-foreground: #565c6e;
-  --accent: #efece5;
-  --accent-foreground: #0f1530;
-  --tint: #e9ecfd;
-  --tint-foreground: #14289c;
-  --highlight: #d2f45c;
-  --highlight-foreground: #0f1530;
-  --ink: #0f1530;
-  --ink-foreground: #f7f5f0;
-  --ink-muted: #aeb4cf;
-  --ink-accent: #93a2ff;
-  --border: #e3ded4;
-  --input: #878b9b;
-  --ring: #1f3bdb;
+  --primary-hover: #1257bd;
+  --secondary: #e3effc;
+  --secondary-foreground: #0d4a9e;
+  --muted: #eaf1fa;
+  --muted-foreground: #566580;
+  --accent: #eaf1fa;
+  --accent-foreground: #0a1a3a;
+  --tint: #e3effc;
+  --tint-foreground: #0d4a9e;
+  --sky: #a9d3fa;
+  --live: #d0313a;
+  --live-foreground: #ffffff;
+  --ink: #0a1a3a;
+  --ink-foreground: #f4f8fd;
+  --ink-muted: #a3b4cd;
+  --ink-accent: #a9d3fa;
+  --hero-from: #e8f3fe;
+  --hero-via: #cfe6fc;
+  --hero-to: #a9d3fa;
+  --hero-foreground: #0a1a3a;
+  --hero-muted: #3c5170;
+  --border: #dce6f2;
+  --input: #7a8ba5;
+  --ring: #1666d8;
   --destructive: #c42b25;
   --destructive-soft: #fbe9e7;
   --success: #0e7a43;
@@ -140,42 +151,48 @@
   --warning: #9e5300;
   --warning-soft: #fbeeda;
 
-  /* Shadows are tinted with ink, soft and low: they separate layers, never decorate. */
-  --elevation-card: 0 1px 2px rgb(15 21 48 / 0.05), 0 1px 1px rgb(15 21 48 / 0.03);
-  --elevation-raised: 0 18px 40px -18px rgb(15 21 48 / 0.28), 0 4px 10px -4px rgb(15 21 48 / 0.08);
-  --elevation-overlay: 0 28px 64px -20px rgb(15 21 48 / 0.32), 0 8px 18px -6px rgb(15 21 48 / 0.1);
-  --elevation-glow: 0 12px 28px -12px rgb(31 59 219 / 0.65);
+  /* Shadows are tinted with navy, soft and low: they separate layers, never decorate. */
+  --elevation-card: 0 1px 2px rgb(10 26 58 / 0.05), 0 1px 1px rgb(10 26 58 / 0.03);
+  --elevation-raised: 0 22px 44px -20px rgb(10 26 58 / 0.3), 0 4px 10px -4px rgb(10 26 58 / 0.07);
+  --elevation-overlay: 0 28px 64px -20px rgb(10 26 58 / 0.32), 0 8px 18px -6px rgb(10 26 58 / 0.1);
+  --elevation-glow: 0 12px 26px -12px rgb(22 102 216 / 0.6);
 }
 
 .dark {
   /* Native controls (select popups, scrollbars, date pickers) follow the theme. */
   color-scheme: dark;
-  --background: #0b0e1c;
-  --foreground: #eceef7;
-  --card: #13172f;
-  --card-foreground: #eceef7;
-  --popover: #171c38;
-  --popover-foreground: #eceef7;
-  --primary: #93a2ff;
-  --primary-foreground: #0b0e1c;
-  --primary-hover: #aab6ff;
-  --secondary: #1b2252;
-  --secondary-foreground: #cdd4ff;
-  --muted: #171b34;
-  --muted-foreground: #a3a9c4;
-  --accent: #1f2442;
-  --accent-foreground: #eceef7;
-  --tint: #171d48;
-  --tint-foreground: #cdd4ff;
-  --highlight: #d2f45c;
-  --highlight-foreground: #0b0e1c;
-  --ink: #05070f;
-  --ink-foreground: #eceef7;
-  --ink-muted: #a3a9c4;
-  --ink-accent: #93a2ff;
-  --border: #272d52;
-  --input: #6c7298;
-  --ring: #93a2ff;
+  --background: #08111f;
+  --foreground: #eaf1fa;
+  --card: #0f1c33;
+  --card-foreground: #eaf1fa;
+  --popover: #12213b;
+  --popover-foreground: #eaf1fa;
+  --primary: #5aa7f5;
+  --primary-foreground: #06101f;
+  --primary-hover: #7dbaf7;
+  --secondary: #13284a;
+  --secondary-foreground: #cfe4fb;
+  --muted: #0f1c33;
+  --muted-foreground: #9db0c9;
+  --accent: #172a47;
+  --accent-foreground: #eaf1fa;
+  --tint: #11264a;
+  --tint-foreground: #cfe4fb;
+  --sky: #a9d3fa;
+  --live: #d0313a;
+  --live-foreground: #ffffff;
+  --ink: #050c18;
+  --ink-foreground: #eaf1fa;
+  --ink-muted: #9db0c9;
+  --ink-accent: #a9d3fa;
+  --hero-from: #0b1b3d;
+  --hero-via: #0e2a5e;
+  --hero-to: #1a4c99;
+  --hero-foreground: #f4f8fd;
+  --hero-muted: #b5c8e3;
+  --border: #1e3253;
+  --input: #5f7596;
+  --ring: #5aa7f5;
   --destructive: #ff8076;
   --destructive-soft: #3a1517;
   --success: #4ade80;
@@ -184,9 +201,9 @@
   --warning-soft: #2f2409;
 
   --elevation-card: 0 1px 2px rgb(0 0 0 / 0.4);
-  --elevation-raised: 0 20px 44px -16px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(147 162 255 / 0.06);
-  --elevation-overlay: 0 28px 64px -16px rgb(0 0 0 / 0.75), 0 0 0 1px rgb(147 162 255 / 0.08);
-  --elevation-glow: 0 12px 30px -12px rgb(147 162 255 / 0.5);
+  --elevation-raised: 0 20px 44px -16px rgb(0 0 0 / 0.7), 0 0 0 1px rgb(169 211 250 / 0.06);
+  --elevation-overlay: 0 28px 64px -16px rgb(0 0 0 / 0.75), 0 0 0 1px rgb(169 211 250 / 0.08);
+  --elevation-glow: 0 12px 30px -12px rgb(90 167 245 / 0.5);
 }
 
 @layer base {
@@ -201,10 +218,11 @@
   body {
     @apply bg-background text-foreground antialiased;
   }
-  /* Fraunces ships one weight (600): headings never get a synthesized bold. */
+  /* Headings: heavy Geist with tight tracking (a font-* or tracking-* utility overrides). */
   .font-display,
   .font-heading {
-    font-synthesis-weight: none;
+    font-weight: 750;
+    letter-spacing: -0.03em;
   }
   h1,
   h2,
@@ -212,8 +230,8 @@
     text-wrap: balance;
   }
   ::selection {
-    background-color: var(--highlight);
-    color: var(--highlight-foreground);
+    background-color: var(--sky);
+    color: var(--foreground);
   }
   button:not(:disabled),
   [role="button"]:not(:disabled) {

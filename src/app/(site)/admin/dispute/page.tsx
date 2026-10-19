@@ -23,7 +23,7 @@ export default async function AdminDisputesPage() {
 
   return (
     <section aria-labelledby="disputes" className="space-y-4">
-      <h2 id="disputes" className="font-display text-xl font-semibold tracking-tight">
+      <h2 id="disputes" className="font-display text-xl tracking-tight">
         {t("admin.disputesTitle")}
       </h2>
       {disputes.length === 0 ? (

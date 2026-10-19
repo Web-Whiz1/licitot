@@ -1,15 +1,14 @@
-import { LIVE_DOT, MARK_VIEWBOX, PADDLE_PATH, PADDLE_TRANSFORM } from "@/lib/brand/logo-geometry"
+import { MARK_VIEWBOX, PADDLE_PATH, PADDLE_TRANSFORM } from "@/lib/brand/logo-geometry"
 import { cn } from "@/lib/utils"
 
 /**
- * - `brand`: Klein blue paddle (periwinkle in dark mode) + lime dot, on paper or midnight.
- * - `inverse`: for ink bands (hero, footer) in both themes.
+ * - `brand`: blue paddle (lighter blue in dark mode) on the page background.
+ * - `inverse`: for navy (ink) bands such as the footer, in both themes.
  * - `mono`: one color (currentColor), for photos or print. The L stays a hole in every variant.
  */
 type LogoVariant = "brand" | "inverse" | "mono"
 
 const PADDLE = { brand: "fill-primary", inverse: "fill-ink-accent", mono: "fill-current" }
-const DOT = { brand: "fill-highlight", inverse: "fill-highlight", mono: "fill-current" }
 
 type MarkProps = {
   className?: string
@@ -25,7 +24,6 @@ export function LogoMark({ className, variant = "brand", title }: MarkProps) {
   return (
     <svg viewBox={MARK_VIEWBOX} className={cn("size-8 shrink-0", className)} {...a11y}>
       <path d={PADDLE_PATH} transform={PADDLE_TRANSFORM} className={PADDLE[variant]} />
-      <circle cx={LIVE_DOT.cx} cy={LIVE_DOT.cy} r={LIVE_DOT.r} className={DOT[variant]} />
     </svg>
   )
 }
@@ -37,7 +35,7 @@ type LogoProps = {
   variant?: LogoVariant
 }
 
-/** Mark + "LiciTot" wordmark in Fraunces (live text, so it stays crisp and accessible). */
+/** Mark + "LiciTot" wordmark (live text, so it stays crisp and accessible). */
 export function Logo({
   className,
   markClassName,
@@ -45,11 +43,11 @@ export function Logo({
   variant = "brand",
 }: LogoProps) {
   return (
-    <span className={cn("inline-flex items-center gap-1.5", className)}>
+    <span className={cn("inline-flex items-center gap-1", className)}>
       <LogoMark variant={variant} className={markClassName} />
       <span
         className={cn(
-          "font-display text-[1.625rem] leading-none tracking-[-0.02em]",
+          "text-[1.4375rem] leading-none font-bold tracking-[-0.035em]",
           wordmarkClassName,
         )}
       >
