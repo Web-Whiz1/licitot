@@ -22,7 +22,8 @@
     "db:config": "dotenv -e .env.local -- supabase config push",
     "db:types": "dotenv -e .env.local -- node -e \"require('child_process').execSync('supabase gen types typescript --project-id ' + process.env.SUPABASE_PROJECT_REF + ' --schema public > src/types/database.ts', {stdio:'inherit'})\"",
     "stripe:webhooks": "dotenv -e .env.local -- tsx scripts/stripe-webhooks.ts",
-    "check": "pnpm lint && pnpm typecheck && pnpm test"
+    "check": "pnpm lint && pnpm typecheck && pnpm test",
+    "vc": "pnpm dlx vercel@62.4.0"
   },
   "engines": {
     "node": ">=22"
