@@ -10,6 +10,19 @@ const nextConfig: NextConfig = {
     loader: "custom",
     loaderFile: "./src/lib/imagekit-loader.ts",
   },
+  // Security headers on every response, whatever the host (the CDN adds HSTS).
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Frame-Options", value: "DENY" },
+        ],
+      },
+    ]
+  },
 }
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts")

@@ -9,7 +9,7 @@
 - **App:** Next.js 16 (App Router, Cache Components), React 19, TypeScript and Tailwind CSS v4, with shadcn/ui components.
 - **Backend:** Supabase for Auth, Postgres with RLS, Realtime and pg_cron.
 - **Services:** ImageKit for images and Stripe Connect (Express) for payments.
-- **Hosting:** Netlify (free tier).
+- **Hosting:** Vercel (free Hobby plan), functions in Dublin next to Supabase.
 
 See [CLAUDE.md](CLAUDE.md) for conventions and [BRAND.md](BRAND.md) for the brand system.
 
@@ -52,40 +52,40 @@ pnpm dev                     # http://localhost:3000
 2. **ImageKit (Phase 3):** create an account and copy the URL endpoint, public key and private key from Developer options into `.env.local`.
    - Files go under `/licitot/auctions/<user id>/` and `/licitot/avatars/<user id>/`.
    - No dashboard configuration is needed. Automatic format (`f-auto`) is requested per URL.
-3. **Stripe (Phase 6):** put the sandbox keys (`pk_test_…`, `sk_test_…`) in `.env.local` and `.env.netlify`.
+3. **Stripe (Phase 6):** put the sandbox keys (`pk_test_…`, `sk_test_…`) in `.env.local` and `.env.vercel`.
    1. **Enable Connect** once: Stripe Dashboard (sandbox) → Connect → Get started → "Platform or marketplace", then complete the platform profile. Without it, sellers can't activate payouts.
    2. **Locally**, no webhook is needed: payments are confirmed when the buyer returns from Checkout, and the seller's status when they return from onboarding.
-   3. **After deploying**, create the two webhook endpoints and copy the printed secrets into Netlify (`STRIPE_WEBHOOK_SECRET`, `STRIPE_CONNECT_WEBHOOK_SECRET`):
+   3. **After deploying**, create the two webhook endpoints and copy the printed secrets into Vercel (`STRIPE_WEBHOOK_SECRET`, `STRIPE_CONNECT_WEBHOOK_SECRET`):
       ```bash
       pnpm stripe:webhooks https://licitot.ro
       ```
    4. Test card: `4242 4242 4242 4242`, any future date and CVC. In seller onboarding (test mode), the phone code is `000 000`.
-4. **Netlify (deploy):** see [Deploy](#deploy-netlify-free) below.
+4. **Vercel (deploy):** see [Deploy](#deploy-vercel-free) below.
 
-## Deploy (Netlify, free)
+## Deploy (Vercel, free)
 
-Netlify builds the app on its own servers from a Git repository and runs the server parts (sign-in, Server Actions, the proxy) as Netlify Functions. Dragging a folder onto Netlify ("Netlify Drop") won't work, because it only hosts static files.
+Vercel project **`lici-tot/licitot`** builds from GitHub on its own servers. Every push to `main` goes to production; other branches get preview deployments (protected by Vercel login). Server parts (sign-in, Server Actions, the proxy) run as functions in **Dublin (`dub1`, `vercel.json`)**, next to Supabase (eu-west-1). Static and cached pages come from Vercel's CDN (Frankfurt for visitors in Romania).
 
-1. **Push to GitHub.** Create an empty repo on GitHub (private is fine), then:
-   ```bash
-   git add -A && git commit -m "LiciTot"
-   git remote add origin https://github.com/<you>/licitot.git
-   git push -u origin main
-   ```
-   `.env.local` and `.env.netlify` are git-ignored, so no secrets get pushed.
-2. **Import into Netlify.**
-   1. Add new project → Import an existing project → GitHub → `licitot`. Build settings come from `netlify.toml` (`pnpm build`, publish `.next`, Node 22).
-   2. Set the project name to `licitot` (default address `https://licitot.netlify.app`).
-3. **Add the environment variables.** Before the first deploy, go to Project configuration → Environment variables → Import from .env and paste the contents of `.env.netlify`.
-4. **Deploy.** Every later `git push` redeploys automatically.
+- **CLI:** `pnpm vc <command>` (Vercel CLI 62.4.0); log in once with `pnpm vc login`.
+- **Environment variables (Production):** every `NEXT_PUBLIC_*`, `SUPABASE_SECRET_KEY`, `IMAGEKIT_PRIVATE_KEY`, `STRIPE_*`, `CRON_SECRET`, plus `ENABLE_EXPERIMENTAL_COREPACK=1` (so Vercel installs pnpm 12 from `packageManager`). The values are in the git-ignored `.env.vercel`; set one with `pnpm vc env add NAME production` (value on stdin), then redeploy.
+- **Orders job (every 5 minutes):** pg_cron job `licitot-orders-http` in Supabase calls `POST /api/cron/orders` through pg_net, with `CRON_SECRET` read from Supabase Vault (`licitot_cron_secret`). If you change `CRON_SECRET`, update it in Vercel **and** in Vault (`select vault.update_secret(id, 'new value')`). Check runs in `cron.job_run_details` and responses in `net._http_response`.
+- **E2E against the live site:** `E2E_BASE_URL=https://licitot.ro pnpm test:e2e` (no local server).
 
 ### Domain (licitot.ro)
 
-The site is served at **https://licitot.ro**. The domain is registered at ROTLD (registrar ICI) and its nameservers point to **Netlify DNS** (`dns1…dns4.p03.nsone.net`), so all DNS records (site, email, verifications) are managed in Netlify (Domains → licitot.ro). `www.licitot.ro` and `licitot.netlify.app` redirect to `licitot.ro`; HTTPS is a Let's Encrypt certificate renewed by Netlify.
+The site is served at **https://licitot.ro**; the domain is registered at ROTLD (registrar ICI). DNS records:
 
-If the address ever changes: update `NEXT_PUBLIC_SITE_URL` in Netlify, `SUPABASE_AUTH_SITE_URL` and `SUPABASE_AUTH_PROD_REDIRECT` in `.env.local`, run `pnpm db:config` so Supabase allows sign-in redirects to the new address, move the Stripe webhook endpoints to the new URL (Stripe doesn't follow redirects), then redeploy.
+| Type  | Name                 | Value                                                        |
+| ----- | -------------------- | ------------------------------------------------------------ |
+| A     | `licitot.ro`         | `76.76.21.21` (Vercel)                                       |
+| CNAME | `www`                | `cname.vercel-dns.com` (Vercel redirects it to `licitot.ro`) |
+| TXT   | `_vercel.licitot.ro` | the two `vc-domain-verify=…` values from Vercel              |
 
-Building for Netlify locally on Windows (`netlify build`) currently fails while bundling the proxy, so let Netlify build it.
+If the DNS is on Cloudflare, these records must be **DNS only** (grey cloud). HTTPS is a Let's Encrypt certificate issued and renewed by Vercel.
+
+If the address ever changes: update `NEXT_PUBLIC_SITE_URL` in Vercel, `SUPABASE_AUTH_SITE_URL` and `SUPABASE_AUTH_PROD_REDIRECT` in `.env.local`, run `pnpm db:config` so Supabase allows sign-in redirects to the new address, update the URL in `private.call_orders_job()` (new migration), move the Stripe webhook endpoints to the new URL (Stripe doesn't follow redirects), then redeploy.
+
+A Cloudflare Workers setup (OpenNext) is kept on the `cloudflare` branch for later; it needs the Workers Paid plan and an OpenNext release with the Cache Components fix.
 
 ## Roadmap
 

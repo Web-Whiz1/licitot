@@ -14,8 +14,10 @@ on completed auctions (Stripe Connect, **test mode only**). Built in phases; see
 - Supabase (hosted project, no Docker): Auth, Postgres + RLS, Realtime, pg_cron. `@supabase/ssr`
 - ImageKit (signed uploads), Stripe Connect Express (sandbox keys now; live keys later), stripe-node 22
 - pnpm 12, Vitest 5, Playwright, ESLint 9, Prettier
-- **Deploy: Netlify** (`netlify.toml`, OpenNext Next.js runtime), built from Git on Netlify. Free tier.
-  Production: **https://licitot.ro** (DNS hosted in Netlify DNS; see README → Domain).
+- **Deploy: Vercel** (free Hobby plan, project `lici-tot/licitot`), built from GitHub on every push to
+  `main`; functions in **Dublin** (`vercel.json` → `dub1`, next to Supabase eu-west-1).
+  Production: **https://licitot.ro** (see README → Deploy/Domain). CLI: `pnpm vc`.
+  Netlify is retired (builds stopped). A Cloudflare Workers setup waits on the `cloudflare` branch.
 
 ## Next.js 16 specifics — read `node_modules/next/dist/docs/` before using an API
 
@@ -32,7 +34,6 @@ on completed auctions (Stripe Connect, **test mode only**). Built in phases; see
 src/app/(site)/        public pages with header/footer/mobile nav
 src/app/(auth)/        auth pages (Phase 2)
 src/app/api/           route handlers: ImageKit auth, Stripe webhook, cron (orders) only
-netlify/functions/     scheduled functions (orders-cron.mts)
 src/components/ui/     shadcn primitives (customized for brand — sizes ≥40px, solid hover colors)
 src/components/layout/ header, footer, mobile nav, theme toggle, demo banner
 src/components/brand/  <Logo/>, <LogoMark/>
@@ -102,8 +103,9 @@ scripts/               gen-icons.ts (no seed/demo data: the DB holds only real u
   - Seller deadline 5 days (`ship_by`): then the buyer may cancel (full refund); auto-cancel at
     10 days. Disputes (`open_dispute`) freeze the money; admins decide at `/admin`.
   - Time-based steps: pg_cron `advance_orders()` every 5 min; Stripe transfers/refunds run in
-    `settleOrders()` from the order page, after order actions and from the Netlify scheduled
-    function `netlify/functions/orders-cron.mts` → `POST /api/cron/orders` (`CRON_SECRET`).
+    `settleOrders()` from the order page, after order actions and from pg_cron job
+    `licitot-orders-http` (every 5 min, pg_net) → `POST /api/cron/orders` with `CRON_SECRET` from
+    Supabase Vault (`licitot_cron_secret`; keep it equal to the Vercel env var).
   - Order/Stripe state changes only through RPCs; service-role ones are called from
     `features/payments/server.ts`. Minimum price is 2 RON (Stripe). Contact details of the other
     party come from `get_order_contact()` only after payment.

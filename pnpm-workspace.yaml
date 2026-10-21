@@ -1,4 +1,4 @@
-# Flat node_modules (npm-style, no symlinks). Netlify's Next.js runtime copies the standalone
+# Flat node_modules (npm-style, no symlinks). Some hosts' Next.js runtimes copy the standalone
 # server output; with pnpm's default symlinked layout that copy fails on Windows (EPERM).
 nodeLinker: hoisted
 
