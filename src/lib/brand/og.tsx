@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises"
 import path from "node:path"
 import { ImageResponse } from "next/og"
+import { SITE_URL } from "@/lib/site"
 import { LOGO_COLORS, PADDLE_PATH, PADDLE_TRANSFORM } from "./logo-geometry"
 import { colorTokens } from "./tokens"
 
@@ -8,17 +9,30 @@ export const OG_SIZE = { width: 1200, height: 630 }
 
 // Static Geist instances re-saved without GSUB (Satori mis-measures words with Geist's
 // contextual substitutions), subset like the web font (src/assets/fonts/README.md).
+// They live in public/fonts/: serverless functions don't ship public files, so when an OG
+// image is regenerated at runtime the font is fetched from the site itself.
 const FONT_FILES = [
   { file: "Geist-Bold-OG.otf", weight: 700 },
   { file: "Geist-Medium-OG.otf", weight: 500 },
 ] as const
 
+async function fontBase64(file: string): Promise<string> {
+  try {
+    // Build time: read from disk.
+    return await readFile(path.join(process.cwd(), "public/fonts", file), "base64")
+  } catch {
+    // Serverless runtime: fetch the public copy.
+    const res = await fetch(`${SITE_URL}/fonts/${file}`)
+    if (!res.ok) throw new Error(`OG font ${file}: HTTP ${res.status}`)
+    return Buffer.from(await res.arrayBuffer()).toString("base64")
+  }
+}
+
 // Cached so OG routes can be prerendered (file reads count as uncached I/O otherwise).
 // Base64 strings round-trip through the cache reliably; binary views do not.
 async function readFontFiles(): Promise<string[]> {
   "use cache"
-  const dir = path.join(process.cwd(), "src/assets/fonts")
-  return Promise.all(FONT_FILES.map(({ file }) => readFile(path.join(dir, file), "base64")))
+  return Promise.all(FONT_FILES.map(({ file }) => fontBase64(file)))
 }
 
 async function loadFonts() {
