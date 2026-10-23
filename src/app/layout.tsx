@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import localFont from "next/font/local"
 import { NextIntlClientProvider } from "next-intl"
 import { getTranslations } from "next-intl/server"
+import { SmoothScroll } from "@/components/layout/smooth-scroll"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
@@ -74,6 +75,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <TooltipProvider>
               {children}
               <Toaster />
+              <SmoothScroll />
             </TooltipProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

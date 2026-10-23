@@ -5,8 +5,13 @@ import { cn } from "cn"
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui"
 import { CheckIcon, ChevronRightIcon } from "lucide-react"
 
-function DropdownMenu({ ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
-  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />
+// LiciTot: menus are non-modal by default. A modal menu locks page scrolling, which hides the
+// scrollbar and makes the page jump sideways each time a header menu opens.
+function DropdownMenu({
+  modal = false,
+  ...props
+}: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) {
+  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" modal={modal} {...props} />
 }
 
 function DropdownMenuPortal({
