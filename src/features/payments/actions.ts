@@ -8,10 +8,11 @@ import { fail, zodFieldErrors, type ActionResult } from "@/lib/action-result"
 import { publicEnv } from "@/lib/env"
 import { imagekitUrl } from "@/lib/imagekit"
 import { rateLimit } from "@/lib/rate-limit"
+import { SITE_URL } from "@/lib/site"
 import { stripe } from "@/lib/stripe.server"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { createClient } from "@/lib/supabase/server"
-import { fulfillCheckoutSession, returnOrigin, settleOrders } from "./server"
+import { fulfillCheckoutSession, returnOrigin, settleOrders, syncConnectedAccount } from "./server"
 import { disputeSchema, disputeResponseSchema, handoverSchema, shipSchema } from "./schemas"
 
 /** Stable codes raised by the order RPCs (SQLSTATE P0001), mapped to orders.errors.*. */
@@ -93,6 +94,139 @@ export async function startStripeOnboarding(): Promise<ActionResult> {
   } catch (e) {
     unstable_rethrow(e) // redirect() throws on purpose
     console.error("[connect.onboarding]", e)
+    return fail("orders.errors.stripe_unavailable")
+  }
+}
+
+const sellerKindSchema = z.enum(["individual", "company"])
+export type SellerKind = z.infer<typeof sellerKindSchema>
+
+/**
+ * Creates the seller's Express account with the business type they picked (most LiciTot
+ * sellers are private individuals), prefilled with what we already know, so Stripe's
+ * onboarding asks as little as possible. Onboarding itself is embedded on /cont/incasari.
+ * For an account that exists but isn't submitted yet, only the business type is updated.
+ */
+export async function createSellerAccount(kind: SellerKind): Promise<ActionResult> {
+  const parsed = sellerKindSchema.safeParse(kind)
+  if (!parsed.success) return fail("auth.errors.generic")
+  const user = await getCurrentUser()
+  if (!user) return fail("orders.errors.not_authenticated")
+  if (!(await rateLimit({ key: `connect:${user.id}`, limit: 10, windowSeconds: 600 }))) {
+    return fail("orders.errors.rate_limited")
+  }
+
+  const supabase = await createClient()
+  const [{ data: priv }, { data: profile }] = await Promise.all([
+    supabase
+      .from("profiles_private")
+      .select("stripe_account_id, stripe_details_submitted")
+      .eq("id", user.id)
+      .single(),
+    supabase.from("profiles").select("username").eq("id", user.id).single(),
+  ])
+
+  try {
+    if (priv?.stripe_account_id) {
+      if (!priv.stripe_details_submitted) {
+        await stripe().accounts.update(priv.stripe_account_id, { business_type: parsed.data })
+      }
+      return { ok: true }
+    }
+
+    // Stripe needs a public https address; the seller's profile page is what buyers see.
+    const profileUrl =
+      profile && SITE_URL.startsWith("https://") ? `${SITE_URL}/u/${profile.username}` : undefined
+    const account = await stripe().accounts.create(
+      {
+        type: "express",
+        country: "RO",
+        email: user.email ?? undefined,
+        business_type: parsed.data,
+        capabilities: { card_payments: { requested: true }, transfers: { requested: true } },
+        business_profile: {
+          product_description: "Vânzări prin licitații pe LiciTot",
+          mcc: "5999", // Miscellaneous and specialty retail
+          url: profileUrl,
+        },
+        metadata: { user_id: user.id },
+      },
+      // A double click must not create two accounts.
+      { idempotencyKey: `connect-account-${user.id}-${parsed.data}` },
+    )
+    const { data: stored, error } = await createAdminClient().rpc("set_stripe_account", {
+      p_user_id: user.id,
+      p_account_id: account.id,
+    })
+    if (error || !stored) throw new Error(error?.message ?? "set_stripe_account failed")
+    return { ok: true }
+  } catch (e) {
+    console.error("[connect.create]", e)
+    return fail("orders.errors.stripe_unavailable")
+  }
+}
+
+/**
+ * Short-lived Account Session for the embedded Stripe components on /cont/incasari:
+ * onboarding, alerts, balance and payouts, and account details (bank account, identity).
+ */
+export async function createConnectSession(): Promise<ActionResult<{ clientSecret: string }>> {
+  const user = await getCurrentUser()
+  if (!user) return fail("orders.errors.not_authenticated")
+  if (!(await rateLimit({ key: `connect-session:${user.id}`, limit: 30, windowSeconds: 600 }))) {
+    return fail("orders.errors.rate_limited")
+  }
+  const supabase = await createClient()
+  const { data: priv } = await supabase
+    .from("profiles_private")
+    .select("stripe_account_id")
+    .eq("id", user.id)
+    .single()
+  if (!priv?.stripe_account_id) return fail("orders.errors.connect_missing")
+
+  try {
+    const bank = { external_account_collection: true }
+    const session = await stripe().accountSessions.create({
+      account: priv.stripe_account_id,
+      components: {
+        account_onboarding: { enabled: true, features: bank },
+        notification_banner: { enabled: true, features: bank },
+        account_management: { enabled: true, features: bank },
+        // Payouts follow Stripe's automatic schedule; sellers only see them.
+        payouts: {
+          enabled: true,
+          features: {
+            ...bank,
+            instant_payouts: false,
+            standard_payouts: false,
+            edit_payout_schedule: false,
+          },
+        },
+      },
+    })
+    return { ok: true, data: { clientSecret: session.client_secret } }
+  } catch (e) {
+    console.error("[connect.session]", e)
+    return fail("orders.errors.stripe_unavailable")
+  }
+}
+
+/** Re-reads the seller's Stripe account (after the embedded onboarding closes). */
+export async function refreshSellerAccount(): Promise<ActionResult> {
+  const user = await getCurrentUser()
+  if (!user) return fail("orders.errors.not_authenticated")
+  const supabase = await createClient()
+  const { data: priv } = await supabase
+    .from("profiles_private")
+    .select("stripe_account_id")
+    .eq("id", user.id)
+    .single()
+  if (!priv?.stripe_account_id) return fail("orders.errors.connect_missing")
+  try {
+    await syncConnectedAccount(priv.stripe_account_id)
+    return { ok: true }
+  } catch (e) {
+    console.error("[connect.refresh]", e)
     return fail("orders.errors.stripe_unavailable")
   }
 }

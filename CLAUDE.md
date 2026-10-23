@@ -89,7 +89,12 @@ scripts/               gen-icons.ts (no seed/demo data: the DB holds only real u
 - **Reserve price is secret**: `auctions` uses column-level SELECT grants (no `reserve_price`);
   the public sees `has_reserve`/`reserve_met`, sellers read it via `get_auction_reserve()`.
   Never `select("*")` on auctions; **a new auctions column must be added to that grant**.
-- **Payments (Stripe Connect Express, escrow)**: sellers onboard from `/cont/incasari`; publishing
+- **Payments (Stripe Connect Express, escrow)**: sellers onboard on `/cont/incasari`, inside the
+  site: they pick "persoană fizică" (default) or "firmă" once (`createSellerAccount` creates the
+  Express account with that `business_type`, prefilled), then Stripe's **embedded components**
+  (`@stripe/react-connect-js`, Account Session from `createConnectSession`) show onboarding
+  (business type hidden), alerts, balance/payouts and account details, styled from our tokens.
+  Hosted Stripe pages stay as a fallback link. Publishing
   needs `stripe_charges_enabled`. A sale (closing job or buy now) creates an `orders` row via
   trigger. The buyer picks delivery and pays on Stripe Checkout as a **separate charge** on the
   platform (`transfer_group` = order id): the money is held until the order completes, then
@@ -144,6 +149,13 @@ scripts/               gen-icons.ts (no seed/demo data: the DB holds only real u
 - **Components**: Server Components by default; `"use client"` only for interactive islands.
   Realtime subscriptions only on the auction detail page and the header notification bell
   (which must `realtime.setAuth(token)` before subscribing: private rows need the user token).
+  Data shared by client and server components lives in plain modules (e.g.
+  `features/profiles/account-nav.ts`): a server file importing a non-component export from a
+  `"use client"` file only gets a client reference, not the value.
+- **Account area** (`/cont`): one hub. `/cont` is the overview (profile card with the public
+  profile link, "De rezolvat" counters from `getAccountOverview()`); sections are grouped
+  Cumpărături / Vânzări / Cont in `account-nav.ts` (sidebar on desktop, pill row on phones). The
+  avatar menu links to `/cont` plus shortcuts; there is no separate "Profilul meu" entry.
 - **Brand** ("Bleu", chosen by the owner; see BRAND.md): clean blues from baby blue to navy.
   Brand blue `primary`, baby blue `sky` (decoration only), `hero-*` gradient tokens, navy `ink`
   (footer, chips on photos), `tint` surfaces, red `live` only for the live dot and the last

@@ -7,15 +7,17 @@ import { AccountSkeleton } from "@/features/profiles/components/account-skeleton
 export default async function AccountLayout({ children }: LayoutProps<"/cont">) {
   const t = await getTranslations("account")
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 md:px-6 md:py-12">
-      <h1 className="mb-6 font-display text-3xl tracking-tight">{t("title")}</h1>
-      <Suspense fallback={<AccountTabsNav pathname={null} />}>
-        <AccountTabs />
-      </Suspense>
-      <div className="pt-8">
-        <Suspense fallback={<AccountSkeleton />}>
-          <SignedIn>{children}</SignedIn>
+    <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
+      <h1 className="mb-6 font-display text-3xl md:text-4xl">{t("title")}</h1>
+      <div className="lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-10">
+        <Suspense fallback={<AccountTabsNav pathname={null} />}>
+          <AccountTabs />
         </Suspense>
+        <div className="min-w-0 pt-6 lg:pt-0">
+          <Suspense fallback={<AccountSkeleton />}>
+            <SignedIn>{children}</SignedIn>
+          </Suspense>
+        </div>
       </div>
     </div>
   )

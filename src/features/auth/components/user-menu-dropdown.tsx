@@ -1,6 +1,6 @@
 "use client"
 
-import { Gavel, LogOut, Scale, Settings, UserRound } from "lucide-react"
+import { ChevronRight, Gavel, Hand, LogOut, Scale, Settings, Wallet } from "lucide-react"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { UserAvatar } from "@/components/user-avatar"
@@ -9,12 +9,15 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { signOut } from "../actions"
 
+/**
+ * Avatar menu. The header is the way into "Contul meu" (which also holds the public profile);
+ * below it, shortcuts to the sections people use most.
+ */
 export function UserMenuDropdown({
   displayName,
   username,
@@ -35,25 +38,38 @@ export function UserMenuDropdown({
           <UserAvatar name={displayName} avatarPath={avatarPath} size={36} />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="truncate">
-          <span className="block font-semibold">{displayName}</span>
-          <span className="block text-xs font-normal text-muted-foreground">@{username}</span>
-        </DropdownMenuLabel>
+      <DropdownMenuContent align="end" className="w-64">
+        <DropdownMenuItem asChild className="py-2.5">
+          <Link href="/cont">
+            <UserAvatar name={displayName} avatarPath={avatarPath} size={40} className="size-10" />
+            <span className="min-w-0 flex-1">
+              <span className="block truncate font-semibold">{displayName}</span>
+              <span className="block truncate text-xs text-muted-foreground">
+                {t("account.menu.account")} · @{username}
+              </span>
+            </span>
+            <ChevronRight className="text-muted-foreground" />
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href={`/u/${username}`}>
-            <UserRound /> {t("account.menu.profile")}
+          <Link href="/cont/oferte">
+            <Hand /> {t("account.tabs.bids")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/cont/licitatii">
-            <Gavel /> {t("account.menu.dashboard")}
+            <Gavel /> {t("account.tabs.listings")}
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/cont/incasari">
+            <Wallet /> {t("account.tabs.payouts")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/cont/setari">
-            <Settings /> {t("account.menu.settings")}
+            <Settings /> {t("account.tabs.settings")}
           </Link>
         </DropdownMenuItem>
         {isAdmin ? (

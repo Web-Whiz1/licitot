@@ -386,13 +386,15 @@
   "account": {
     "title": "Contul meu",
     "tabs": {
-      "listings": "Licitațiile mele",
+      "overview": "Prezentare",
       "bids": "Ofertele mele",
       "won": "Câștigate",
-      "sold": "Vândute",
       "favorites": "Favorite",
-      "settings": "Setări",
-      "payouts": "Încasări"
+      "listings": "Licitațiile mele",
+      "sold": "Vândute",
+      "payouts": "Încasări",
+      "notifications": "Notificări",
+      "settings": "Profil și setări"
     },
     "empty": {
       "listings": "Încă n-ai pus nimic la licitație.",
@@ -402,10 +404,8 @@
       "favorites": "Apasă pe inimioară la o licitație ca s-o urmărești aici."
     },
     "menu": {
-      "profile": "Profilul meu",
-      "dashboard": "Contul meu",
-      "settings": "Setări",
-      "admin": "Administrare"
+      "admin": "Administrare",
+      "account": "Contul meu"
     },
     "browse": "Vezi licitațiile active",
     "myBids": {
@@ -435,6 +435,24 @@
       "on": "pe {date}",
       "viewBuyer": "Profilul cumpărătorului",
       "details": "Detalii comandă"
+    },
+    "groups": {
+      "buying": "Cumpărături",
+      "selling": "Vânzări",
+      "account": "Cont"
+    },
+    "overview": {
+      "editProfile": "Editează profilul",
+      "publicProfile": "Profilul public",
+      "todoTitle": "De rezolvat",
+      "toPay": "{count, plural, one {Ai o comandă de plătit} few {Ai # comenzi de plătit} other {Ai # de comenzi de plătit}}",
+      "toShip": "{count, plural, one {O comandă așteaptă să o expediezi sau să o predai} few {# comenzi așteaptă să le expediezi sau să le predai} other {# de comenzi așteaptă să le expediezi sau să le predai}}",
+      "toConfirm": "{count, plural, one {Confirmă primirea unei comenzi} few {Confirmă primirea a # comenzi} other {Confirmă primirea a # de comenzi}}",
+      "outbid": "{count, plural, one {Ai fost depășit la o licitație} few {Ai fost depășit la # licitații} other {Ai fost depășit la # de licitații}}",
+      "unread": "{count, plural, one {O notificare necitită} few {# notificări necitite} other {# de notificări necitite}}",
+      "payouts": "Activează încasările ca să poți vinde",
+      "allDone": "Totul e la zi. Nimic de rezolvat acum.",
+      "sectionsTitle": "Toate secțiunile"
     }
   },
   "settings": {
@@ -869,7 +887,7 @@
   },
   "payouts": {
     "title": "Încasări",
-    "intro": "Ca să vinzi pe LiciTot, banii din vânzări ajung direct în contul tău bancar, prin Stripe. Verificarea durează câteva minute.",
+    "intro": "Ca să vinzi pe LiciTot, banii din vânzări ajung în contul tău bancar, prin Stripe. Totul se face aici, pe site, în câteva minute.",
     "feeNote": "LiciTot reține automat comisionul de {percent}% din prețul final. Restul ajunge la tine.",
     "statusNone": "Încasările nu sunt activate.",
     "statusIncomplete": "Ai început configurarea, dar mai sunt date de completat.",
@@ -884,7 +902,20 @@
     "returned": "Am actualizat starea contului tău Stripe.",
     "testNote": "Mod de test: în formularul Stripe poți folosi datele de test sugerate (de ex. codul 000 000 la telefon).",
     "sellNotice": "Înainte să publici, activează-ți încasările.",
-    "sellNoticeLink": "Activează încasările"
+    "sellNoticeLink": "Activează încasările",
+    "kindTitle": "Cum vinzi pe LiciTot?",
+    "kindIntro": "Alegi o singură dată. Majoritatea vânzătorilor sunt persoane fizice.",
+    "recommended": "Recomandat",
+    "individual": "Persoană fizică",
+    "individualHint": "Vinzi lucruri personale. Ai nevoie de un act de identitate și de un cont bancar.",
+    "company": "Firmă",
+    "companyHint": "SRL, PFA sau II. Ai nevoie de CUI și de datele firmei.",
+    "onboardingTitle": "Completează datele pentru încasări",
+    "onboardingIntro": "Formularul securizat Stripe, direct pe LiciTot. Datele ajung doar la Stripe, nu le vedem noi.",
+    "balanceTitle": "Sold și transferuri în cont",
+    "accountTitle": "Datele tale și contul bancar",
+    "embeddedError": "Panoul de plăți nu s-a putut încărca. Reîncarcă pagina sau folosește site-ul Stripe (linkul de mai jos).",
+    "fallbackIntro": "Preferi site-ul Stripe?"
   },
   "legal": {
     "updated": "Ultima actualizare: {date}",
