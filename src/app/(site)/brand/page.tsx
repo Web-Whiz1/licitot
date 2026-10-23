@@ -55,9 +55,9 @@ const RADII = [
   { name: "sm", className: "rounded-sm" },
   { name: "md", className: "rounded-md" },
   { name: "lg", className: "rounded-lg" },
-  { name: "xl", className: "rounded-xl" },
-  { name: "2xl", className: "rounded-2xl" },
-  { name: "3xl", className: "rounded-3xl" },
+  { name: "xl", className: "rounded-lg" },
+  { name: "2xl", className: "rounded-lg" },
+  { name: "3xl", className: "rounded-lg" },
   { name: "full", className: "rounded-full" },
 ] as const
 
@@ -100,7 +100,7 @@ export default async function BrandPage() {
             const dark = colorTokens.dark[token]
             const ratio = contrastRatio(light, colorTokens.light.background)
             return (
-              <li key={token} className="overflow-hidden rounded-2xl border bg-card shadow-card">
+              <li key={token} className="overflow-hidden rounded-lg border bg-card">
                 <div className="flex h-20">
                   <div className="flex-1" style={{ background: light }} />
                   <div className="w-1/3" style={{ background: dark }} title={t("darkTheme")} />
@@ -126,7 +126,7 @@ export default async function BrandPage() {
         <p className="mb-4 text-sm text-muted-foreground">{t("contrastPairsIntro")}</p>
         <div className="grid gap-4 md:grid-cols-2">
           {(["light", "dark"] as const).map((theme) => (
-            <div key={theme} className="overflow-x-auto rounded-2xl border bg-card">
+            <div key={theme} className="overflow-x-auto rounded-lg border bg-card">
               <table className="w-full text-sm">
                 <caption className="border-b bg-muted px-3 py-2 text-left font-semibold">
                   {theme === "light" ? t("lightTheme") : t("darkTheme")}
@@ -170,7 +170,7 @@ export default async function BrandPage() {
 
       {/* Typography */}
       <Section id="typography" title={t("typography")} intro={t("typographyIntro")}>
-        <ul className="divide-y rounded-2xl border bg-card">
+        <ul className="divide-y rounded-lg border bg-card">
           {TYPE_SCALE.map((s) => (
             <li
               key={s.name}
@@ -268,7 +268,7 @@ export default async function BrandPage() {
         <ul className="flex flex-wrap gap-6">
           {SHADOWS.map((s) => (
             <li key={s.name} className="space-y-2 text-center">
-              <div className={cn("size-28 rounded-2xl bg-card", s.className)} />
+              <div className={cn("size-28 rounded-lg bg-card", s.className)} />
               <span className="font-mono text-xs text-muted-foreground">{s.name}</span>
             </li>
           ))}
@@ -279,14 +279,14 @@ export default async function BrandPage() {
       <Section id="motion" title={t("motion")} intro={t("motionIntro")}>
         <div className="mb-6 flex flex-wrap items-center gap-3">
           <Badge variant="live">
-            <LiveDot pulse className="size-1.5 text-live" />
+            <LiveDot pulse className="size-1.5 text-primary" />
             {t("live")}
           </Badge>
           <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-ink/80 px-2.5 text-xs font-semibold text-ink-foreground tabular-nums">
-            <LiveDot pulse className="text-live" />
+            <LiveDot pulse className="text-primary" />
             2h 15m
           </span>
-          <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-live px-2.5 text-xs font-semibold text-live-foreground tabular-nums">
+          <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-warning-soft px-2.5 text-xs font-semibold text-warning tabular-nums">
             <LiveDot pulse />
             4m 08s
           </span>
@@ -356,7 +356,7 @@ export default async function BrandPage() {
         <h3 className="mt-10 mb-3 text-xl font-semibold">{t("badges")}</h3>
         <div className="flex flex-wrap gap-2">
           <Badge variant="live">
-            <LiveDot className="size-1.5 text-live" />
+            <LiveDot className="size-1.5 text-primary" />
             {t("statusActive")}
           </Badge>
           <Badge variant="warning">
@@ -369,11 +369,11 @@ export default async function BrandPage() {
         </div>
 
         <h3 className="mt-10 mb-3 text-xl font-semibold">{t("cards")}</h3>
-        <Card className="max-w-xs gap-0 overflow-hidden p-0 shadow-card">
+        <Card className="max-w-xs gap-0 overflow-hidden p-0">
           <div className="relative grid aspect-[4/3] place-items-center bg-tint">
             <LogoMark className="size-16 opacity-70" />
             <span className="absolute top-2.5 left-2.5 inline-flex h-7 items-center gap-1.5 rounded-full bg-ink/75 px-2.5 text-xs font-semibold text-ink-foreground tabular-nums">
-              <LiveDot className="text-live" />
+              <LiveDot className="text-primary" />
               2h 15m
             </span>
           </div>
@@ -400,11 +400,11 @@ export default async function BrandPage() {
         <ul className="space-y-3">
           {t.raw("voiceExamples").map((ex: { do: string; dont: string }) => (
             <li key={ex.do} className="grid gap-3 sm:grid-cols-2">
-              <p className="flex gap-2 rounded-xl bg-success-soft p-3 text-sm">
+              <p className="flex gap-2 rounded-lg bg-success-soft p-3 text-sm">
                 <Check aria-label={t("voiceDo")} className="mt-0.5 size-4 shrink-0 text-success" />
                 {ex.do}
               </p>
-              <p className="flex gap-2 rounded-xl bg-destructive-soft p-3 text-sm">
+              <p className="flex gap-2 rounded-lg bg-destructive-soft p-3 text-sm">
                 <X
                   aria-label={t("voiceDont")}
                   className="mt-0.5 size-4 shrink-0 text-destructive"
@@ -455,7 +455,7 @@ function LogoTile({
   children: React.ReactNode
 }) {
   return (
-    <figure className="overflow-hidden rounded-2xl border">
+    <figure className="overflow-hidden rounded-lg border">
       <div className={cn("grid h-40 place-items-center p-6", dark ? "bg-ink" : "bg-background")}>
         {children}
       </div>

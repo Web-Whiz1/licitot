@@ -51,7 +51,7 @@ export default async function AdminReportsPage() {
               // The account to act on: the reported user, or the listing's seller.
               const targetUserId = r.reported?.id ?? r.auction?.seller_id ?? null
               return (
-                <li key={r.id} className="space-y-3 rounded-2xl border bg-card p-5">
+                <li key={r.id} className="space-y-3 rounded-lg border bg-card p-5">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant={r.auction ? "tint" : "neutral"}>
                       {r.auction ? t("admin.reportedAuction") : t("admin.reportedUser")}
@@ -133,7 +133,7 @@ export default async function AdminReportsPage() {
         {suspended.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("admin.suspendedEmpty")}</p>
         ) : (
-          <ul className="divide-y rounded-2xl border bg-card">
+          <ul className="divide-y rounded-lg border bg-card">
             {suspended.map((u) => (
               <li
                 key={u.id}
@@ -163,7 +163,7 @@ export default async function AdminReportsPage() {
         {hidden.length === 0 ? (
           <p className="text-sm text-muted-foreground">{t("admin.hiddenEmpty")}</p>
         ) : (
-          <ul className="divide-y rounded-2xl border bg-card">
+          <ul className="divide-y rounded-lg border bg-card">
             {hidden.map((a) => (
               <li
                 key={a.id}

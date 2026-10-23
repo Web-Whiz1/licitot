@@ -42,7 +42,7 @@ function ico(images: { size: number; data: Buffer }[]): Buffer {
   return Buffer.concat([header, ...entries, ...images.map((i) => i.data)])
 }
 
-// App icons: white paddle on brand blue; the L cut-out shows the blue through.
+// App icons: white paddle on bordo; the L cut-out shows the bordo through.
 const appIcon = (padding: number, backgroundRadius = 0) =>
   markSvg({ background: LOGO_COLORS.paddle, paddle: LOGO_COLORS.white, padding, backgroundRadius })
 
@@ -57,8 +57,8 @@ async function main() {
       "public/brand/logo-reversed.svg",
       fullLogoSvg(wordmark, {
         paddle: LOGO_COLORS.paddleOnDark,
-        lici: LOGO_COLORS.white,
-        tot: LOGO_COLORS.sky,
+        lici: LOGO_COLORS.paper,
+        tot: LOGO_COLORS.paper,
       }),
     ],
     [
@@ -75,7 +75,7 @@ async function main() {
     ],
     ["public/brand/logo-mark.svg", markSvg()],
     ["public/brand/logo-mark-mono.svg", monoMarkSvg(LOGO_COLORS.ink)],
-    // Favicon: SVG (switches to a lighter blue on dark browser chrome) + ICO fallback
+    // Favicon: SVG (switches to a lighter rose on dark browser chrome) + ICO fallback
     ["src/app/icon.svg", markSvg({ paddleDark: LOGO_COLORS.paddleOnDark })],
     [
       "src/app/favicon.ico",

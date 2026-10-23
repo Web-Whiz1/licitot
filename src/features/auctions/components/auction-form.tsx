@@ -415,9 +415,9 @@ export function AuctionForm({ auctionId: initialId, categories, defaults }: Prop
       </div>
 
       {/* Summary + actions (sticky on desktop) */}
-      <aside className="space-y-4 rounded-2xl border bg-card p-5 shadow-card lg:sticky lg:top-24">
+      <aside className="space-y-4 rounded-lg border bg-card p-5 lg:sticky lg:top-24">
         <h2 className="text-lg font-semibold">{t("summary")}</h2>
-        <div className="rounded-xl bg-tint p-3 text-sm text-tint-foreground">
+        <div className="rounded-lg bg-tint p-3 text-sm text-tint-foreground">
           {startBani !== null && startBani >= MIN_PRICE ? (
             <>
               <p className="font-semibold">

@@ -87,7 +87,7 @@ export default async function AccountOverviewPage() {
   return (
     <div className="space-y-8">
       {/* ── Profile card: the public profile lives here too, no separate menu entry ── */}
-      <section className="flex flex-col gap-5 rounded-3xl border bg-card p-5 shadow-card sm:flex-row sm:items-center md:p-6">
+      <section className="flex flex-col gap-5 rounded-lg border bg-card p-5 sm:flex-row sm:items-center md:p-6">
         <UserAvatar
           name={p.display_name}
           avatarPath={p.avatar_path}
@@ -146,10 +146,10 @@ export default async function AccountOverviewPage() {
               <li key={todo.text}>
                 <Link
                   href={todo.href}
-                  className="group flex h-full items-center gap-3 rounded-2xl border bg-card p-4 shadow-card transition-[border-color,box-shadow,transform] duration-200 ease-snap hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-raised"
+                  className="group flex h-full items-center gap-3 rounded-lg border bg-card p-4 transition-[border-color,box-shadow,transform] duration-200 ease-snap hover:-translate-y-0.5 hover:border-primary/40"
                 >
                   <span
-                    className={cn("grid size-10 shrink-0 place-items-center rounded-xl", todo.tone)}
+                    className={cn("grid size-10 shrink-0 place-items-center rounded-lg", todo.tone)}
                   >
                     <todo.icon aria-hidden className="size-5" />
                   </span>
@@ -163,7 +163,7 @@ export default async function AccountOverviewPage() {
             ))}
           </ul>
         ) : (
-          <p className="flex items-center gap-2 rounded-2xl bg-success-soft p-4 text-sm font-medium text-success">
+          <p className="flex items-center gap-2 rounded-lg bg-success-soft p-4 text-sm font-medium text-success">
             <CircleCheck aria-hidden className="size-5 shrink-0" />
             {t("account.overview.allDone")}
           </p>
@@ -177,7 +177,7 @@ export default async function AccountOverviewPage() {
         </h2>
         <div className="grid gap-4 sm:grid-cols-3">
           {ACCOUNT_NAV.filter((g) => g.group !== null).map(({ group, tabs }) => (
-            <div key={group} className="rounded-2xl border bg-card p-2 shadow-card">
+            <div key={group} className="rounded-lg border bg-card p-2">
               <p className="px-3 pt-2 pb-1 text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
                 {t(`account.groups.${group!}`)}
               </p>
@@ -186,7 +186,7 @@ export default async function AccountOverviewPage() {
                   <li key={href}>
                     <Link
                       href={href}
-                      className="flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors hover:bg-muted"
+                      className="flex h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-colors hover:bg-muted"
                     >
                       <Icon aria-hidden className="size-4 text-primary" />
                       {t(`account.tabs.${key}`)}

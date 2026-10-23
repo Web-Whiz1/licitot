@@ -58,7 +58,7 @@ async function Profile({ params }: Pick<PageProps<"/u/[username]">, "params">) {
 
   return (
     <>
-      <header className="flex flex-col gap-5 rounded-2xl bg-tint p-6 sm:flex-row sm:items-center md:p-8">
+      <header className="flex flex-col gap-5 rounded-lg bg-tint p-6 sm:flex-row sm:items-center md:p-8">
         <UserAvatar
           name={profile.display_name}
           avatarPath={profile.avatar_path}
@@ -137,7 +137,7 @@ async function ProfileReviews({ profileId, username }: { profileId: string; user
   return (
     <ul className="space-y-3">
       {reviews.map((r) => (
-        <li key={r.id} className="flex gap-3 rounded-2xl border bg-card p-4">
+        <li key={r.id} className="flex gap-3 rounded-lg border bg-card p-4">
           <UserAvatar
             name={r.reviewer?.display_name ?? "?"}
             avatarPath={r.reviewer?.avatar_path ?? null}
@@ -167,7 +167,7 @@ async function ProfileReviews({ profileId, username }: { profileId: string; user
 
 function ProfileSkeleton() {
   return (
-    <div className="flex items-center gap-5 rounded-2xl bg-tint p-6 md:p-8" aria-hidden>
+    <div className="flex items-center gap-5 rounded-lg bg-tint p-6 md:p-8" aria-hidden>
       <Skeleton className="size-20 rounded-full" />
       <div className="space-y-2">
         <Skeleton className="h-8 w-56" />

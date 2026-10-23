@@ -156,16 +156,23 @@ scripts/               gen-icons.ts (no seed/demo data: the DB holds only real u
   profile link, "De rezolvat" counters from `getAccountOverview()`); sections are grouped
   Cumpărături / Vânzări / Cont in `account-nav.ts` (sidebar on desktop, pill row on phones). The
   avatar menu links to `/cont` plus shortcuts; there is no separate "Profilul meu" entry.
-- **Brand** ("Bleu", chosen by the owner; see BRAND.md): clean blues from baby blue to navy.
-  Brand blue `primary`, baby blue `sky` (decoration only), `hero-*` gradient tokens, navy `ink`
-  (footer, chips on photos), `tint` surfaces, red `live` only for the live dot and the last
-  hour. No lime/neon accents. One font family, Geist (self-hosted in `src/assets/fonts/`):
-  `font-display` = weight 750 + tight tracking. Prices and countdowns use `tabular-nums`.
+- **Brand** ("Casa de licitații", chosen by the owner Oct 2026; see BRAND.md): barely warm stone
+  neutrals, one bordo accent `primary` (buttons, links, prices, focus), `tint` = accent tint,
+  `ink` = dark band (footer, tooltips). Muted statuses, always icon + label: `success` leading
+  (filled `success` + `success-foreground` only for won), `destructive` outbid/errors, `warning`
+  ending soon, `muted` closed. No blue, no lime/neon, no glass (backdrop blur). Fonts (self-hosted
+  in `src/assets/fonts/`): Newsreader serif for headings (`font-display`/`font-heading` = 560),
+  Public Sans for everything else. Prices: sans, bold, `tabular-nums`, never mono, rendered with
+  `<Price/>` ("12.500 RON", currency smaller and muted). Sold items: `<HammerStamp/>` ("Adjudecat").
+- **Shape**: radius 6px (`rounded-md`: buttons, fields, badges, chips) and 8px (`rounded-lg`:
+  cards, panels, dialogs); `rounded-full` only for avatars and dots. **No shadows on cards**:
+  hover changes the border (`hover:border-input`) or background. `shadow-overlay` only on
+  floating layers (menus, dialogs, toasts).
 - **Colors**: use semantic tokens (`bg-primary`, `text-muted-foreground`, `bg-tint`…), never raw
   hex in components. Adding a token? Update `src/lib/brand/tokens.ts` + `globals.css`;
   `pnpm test` checks sync and WCAG AA contrast.
-- **Motion**: transform/opacity only, `ease-snap`, tokens `animate-rise|bump|raise` in
-  `globals.css`; everything stops under `prefers-reduced-motion`. The auction card price must
+- **Motion**: transform/opacity only, 150–250 ms ease-out, tokens `animate-rise|bump|flash|raise`
+  in `globals.css`; everything stops under `prefers-reduced-motion`. The auction card price must
   stay the only `.text-primary` inside `<article>` (e2e reads it).
 - **No `any`**. `noUncheckedIndexedAccess` is on.
 - **Editing files on Windows**: don't round-trip files through PowerShell `Get-Content`/`Set-Content`

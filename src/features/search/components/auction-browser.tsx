@@ -87,9 +87,7 @@ export async function AuctionBrowser({
   return (
     <div className="grid gap-8 lg:grid-cols-[16rem_minmax(0,1fr)]">
       <aside className="hidden lg:block" aria-label={t("browse.filters")}>
-        <div className="sticky top-24 rounded-2xl border bg-card p-5 shadow-card">
-          {form("desktop")}
-        </div>
+        <div className="sticky top-24 rounded-lg border bg-card p-5">{form("desktop")}</div>
       </aside>
 
       <div className="min-w-0 space-y-4">

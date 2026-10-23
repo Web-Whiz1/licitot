@@ -155,7 +155,7 @@ export function ImageUploader({ initial, onChange, onPendingChange, invalid, des
           }
         }}
         className={cn(
-          "flex flex-col items-center gap-2 rounded-xl border-2 border-dashed p-6 text-center transition-colors",
+          "flex flex-col items-center gap-2 rounded-lg border-2 border-dashed p-6 text-center transition-colors",
           dragOver ? "border-primary bg-tint" : "border-input bg-muted/40",
           invalid && "border-destructive",
         )}
@@ -309,7 +309,7 @@ function SortableTile({
         type="button"
         onClick={onRemove}
         aria-label={t("photoRemove")}
-        className="absolute top-1 right-1 grid size-8 place-items-center rounded-full bg-background/90 text-foreground shadow-card hover:bg-background"
+        className="absolute top-1 right-1 grid size-8 place-items-center rounded-full bg-background/90 text-foreground hover:bg-background"
       >
         <X aria-hidden className="size-4" />
       </button>

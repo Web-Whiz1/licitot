@@ -24,12 +24,12 @@ export function SellSkeleton() {
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]" aria-hidden>
       <div className="space-y-6">
-        <Skeleton className="h-36 w-full rounded-xl" />
+        <Skeleton className="h-36 w-full rounded-lg" />
         <Skeleton className="h-10 w-full" />
         <Skeleton className="h-10 w-1/2" />
         <Skeleton className="h-40 w-full" />
       </div>
-      <Skeleton className="h-64 w-full rounded-2xl" />
+      <Skeleton className="h-64 w-full rounded-lg" />
     </div>
   )
 }

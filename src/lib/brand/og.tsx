@@ -7,13 +7,14 @@ import { colorTokens } from "./tokens"
 
 export const OG_SIZE = { width: 1200, height: 630 }
 
-// Static Geist instances re-saved without GSUB (Satori mis-measures words with Geist's
-// contextual substitutions), subset like the web font (src/assets/fonts/README.md).
+// Static Newsreader / Public Sans instances re-saved without GSUB (Satori mis-measures
+// substituted glyphs), subset like the web fonts (src/assets/fonts/README.md).
 // They live in public/fonts/: serverless functions don't ship public files, so when an OG
 // image is regenerated at runtime the font is fetched from the site itself.
 const FONT_FILES = [
-  { file: "Geist-Bold-OG.otf", weight: 700 },
-  { file: "Geist-Medium-OG.otf", weight: 500 },
+  { file: "Newsreader-SemiBold-OG.otf", name: "Newsreader", weight: 600 },
+  { file: "PublicSans-Bold-OG.otf", name: "Public Sans", weight: 700 },
+  { file: "PublicSans-Medium-OG.otf", name: "Public Sans", weight: 500 },
 ] as const
 
 async function fontBase64(file: string): Promise<string> {
@@ -37,11 +38,11 @@ async function readFontFiles(): Promise<string[]> {
 
 async function loadFonts() {
   const files = await readFontFiles()
-  return FONT_FILES.map(({ weight }, i) => {
+  return FONT_FILES.map(({ name, weight }, i) => {
     const bytes = Buffer.from(files[i]!, "base64")
     // Satori requires a standalone ArrayBuffer, not a view into a larger one.
     const data = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
-    return { name: "Geist", data: data as ArrayBuffer, weight, style: "normal" as const }
+    return { name, data: data as ArrayBuffer, weight, style: "normal" as const }
   })
 }
 
@@ -54,8 +55,8 @@ function Paddle({ size, fill }: { size: number; fill: string }) {
 }
 
 /**
- * Brand OG template: a light blue gradient sky with a giant brand-blue paddle, the logo
- * top-left and a bold Geist title. Reused by the site default and (later) per-auction images.
+ * Brand OG template: warm stone paper, a large bordo paddle leaning in from the bottom right,
+ * the logo top-left and a serif title. Reused by the site default and per-page images.
  */
 export async function brandOgImage({
   title,
@@ -75,28 +76,13 @@ export async function brandOgImage({
         display: "flex",
         position: "relative",
         overflow: "hidden",
-        backgroundImage: `linear-gradient(160deg, ${c["hero-from"]} 0%, ${c["hero-via"]} 50%, ${c["hero-to"]} 100%)`,
+        backgroundColor: c.background,
         color: c.foreground,
-        fontFamily: "Geist",
+        fontFamily: "Public Sans",
       }}
     >
-      {/* Soft white glow behind the paddle (an SVG gradient: Satori clips CSS radial ones) */}
-      <svg
-        width="900"
-        height="900"
-        viewBox="0 0 100 100"
-        style={{ position: "absolute", right: -250, top: -300 }}
-      >
-        <defs>
-          <radialGradient id="glow">
-            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-        <circle cx="50" cy="50" r="50" fill="url(#glow)" />
-      </svg>
-      <div style={{ position: "absolute", right: -20, bottom: -130, display: "flex" }}>
-        <Paddle size={600} fill={LOGO_COLORS.paddle} />
+      <div style={{ position: "absolute", right: -40, bottom: -150, display: "flex" }}>
+        <Paddle size={620} fill={LOGO_COLORS.paddle} />
       </div>
 
       <div
@@ -109,37 +95,49 @@ export async function brandOgImage({
           padding: 72,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <Paddle size={72} fill={LOGO_COLORS.paddle} />
-          <div style={{ display: "flex", fontSize: 50, fontWeight: 700, letterSpacing: -1.8 }}>
-            <span>Lici</span>
-            <span style={{ color: c.primary }}>Tot</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Paddle size={68} fill={LOGO_COLORS.paddle} />
+          <div
+            style={{
+              display: "flex",
+              fontFamily: "Newsreader",
+              fontSize: 54,
+              fontWeight: 600,
+              letterSpacing: -0.8,
+            }}
+          >
+            LiciTot
           </div>
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 20, maxWidth: 720 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 22, maxWidth: 700 }}>
           {eyebrow ? (
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: 12,
-                fontSize: 26,
+                fontSize: 24,
                 fontWeight: 700,
+                letterSpacing: 2,
+                textTransform: "uppercase",
                 color: c.primary,
               }}
             >
-              <div style={{ width: 14, height: 14, borderRadius: 9999, backgroundColor: c.live }} />
+              <div
+                style={{ width: 12, height: 12, borderRadius: 9999, backgroundColor: c.primary }}
+              />
               {eyebrow}
             </div>
           ) : null}
           <div
             style={{
               display: "flex",
-              fontSize: title.length > 40 ? 72 : 100,
-              fontWeight: 700,
-              lineHeight: 1,
-              letterSpacing: title.length > 40 ? -2.5 : -4.5,
+              fontFamily: "Newsreader",
+              fontSize: title.length > 40 ? 76 : 104,
+              fontWeight: 600,
+              lineHeight: 1.02,
+              letterSpacing: title.length > 40 ? -1.2 : -2,
             }}
           >
             {title}
@@ -148,10 +146,10 @@ export async function brandOgImage({
             <div
               style={{
                 display: "flex",
-                fontSize: 34,
+                fontSize: 32,
                 fontWeight: 500,
-                lineHeight: 1.3,
-                color: c["hero-muted"],
+                lineHeight: 1.35,
+                color: c["muted-foreground"],
               }}
             >
               {subtitle}

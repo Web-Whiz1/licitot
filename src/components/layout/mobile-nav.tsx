@@ -56,14 +56,14 @@ export function MobileNavBar({ pathname }: { pathname: string | null }) {
                 href={href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "group flex h-full flex-col items-center justify-center gap-0.5 rounded-xl text-[0.6875rem] font-medium transition-colors",
+                  "group flex h-full flex-col items-center justify-center gap-0.5 rounded-lg text-[0.6875rem] font-medium transition-colors",
                   active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {isSell ? (
                   // "Vinde" stands out as a solid blue disc (kept inside the bar so it never
                   // covers the sticky bid bar on auction pages).
-                  <span className="grid size-10 place-items-center rounded-full bg-primary text-primary-foreground shadow-glow transition-transform duration-200 ease-snap group-active:scale-90">
+                  <span className="grid size-10 place-items-center rounded-full bg-primary text-primary-foreground transition-transform duration-200 ease-snap group-active:scale-90">
                     <Icon aria-hidden className="size-5" strokeWidth={2.5} />
                   </span>
                 ) : (

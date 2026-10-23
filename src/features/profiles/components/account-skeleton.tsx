@@ -4,7 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 export function AccountSkeleton() {
   return (
     <div className="space-y-4" aria-hidden>
-      <div className="divide-y rounded-2xl border bg-card">
+      <div className="divide-y rounded-lg border bg-card">
         {[0, 1, 2].map((i) => (
           <div key={i} className="flex gap-4 p-4">
             <Skeleton className="size-20 shrink-0 rounded-lg sm:size-24" />

@@ -143,7 +143,7 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/co
         <Notice tone="muted" icon={CircleX} text={t("orders.paymentCancelled")} />
       ) : null}
 
-      <div className="flex gap-4 rounded-2xl border bg-card p-4">
+      <div className="flex gap-4 rounded-lg border bg-card p-4">
         <AuctionThumb
           path={order.cover?.path}
           blurDataUrl={order.cover?.blur_data_url}
@@ -172,7 +172,7 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/co
 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-4">
-          <dl className="divide-y rounded-2xl border bg-card text-sm">
+          <dl className="divide-y rounded-lg border bg-card text-sm">
             <Row label={t("orders.item")} value={price(order.item_price)} />
             <Row
               label={t("orders.shipping")}
@@ -208,18 +208,18 @@ export default async function OrderPage({ params, searchParams }: PageProps<"/co
           />
 
           {canReview ? (
-            <div className="rounded-2xl border bg-card p-5">
+            <div className="rounded-lg border bg-card p-5">
               <ReviewForm orderId={order.id} role={isBuyer ? "buyer" : "seller"} />
             </div>
           ) : myReview ? (
-            <p className="flex items-center gap-2 rounded-2xl border bg-card p-4 text-sm">
+            <p className="flex items-center gap-2 rounded-lg border bg-card p-4 text-sm">
               <Stars rating={myReview.rating} label={t("reviews.star", { n: myReview.rating })} />
               {t("reviews.yours", { n: myReview.rating })}
             </p>
           ) : null}
 
           {contact ? (
-            <section aria-labelledby="contact" className="space-y-3 rounded-2xl border bg-card p-5">
+            <section aria-labelledby="contact" className="space-y-3 rounded-lg border bg-card p-5">
               <div>
                 <h3 id="contact" className="font-semibold">
                   {t("orders.contactTitle")}
@@ -290,7 +290,7 @@ async function FundsNote({
   return (
     <p
       className={cn(
-        "flex items-start gap-2 rounded-2xl p-4 text-sm font-medium",
+        "flex items-start gap-2 rounded-lg p-4 text-sm font-medium",
         tone === "success" && "bg-success-soft text-success",
         tone === "tint" && "bg-tint text-tint-foreground",
         tone === "muted" && "bg-muted",
@@ -555,7 +555,7 @@ function Card({ children, tone }: { children: React.ReactNode; tone?: "warning" 
   return (
     <div
       className={cn(
-        "space-y-3 rounded-2xl border bg-card p-5",
+        "space-y-3 rounded-lg border bg-card p-5",
         tone === "warning" && "border-warning/40 bg-warning-soft/40",
       )}
     >
@@ -586,7 +586,7 @@ function Notice({
     <p
       role="status"
       className={cn(
-        "flex items-start gap-2 rounded-2xl p-4 text-sm font-medium",
+        "flex items-start gap-2 rounded-lg p-4 text-sm font-medium",
         tone === "success" && "bg-success-soft text-success",
         tone === "warning" && "bg-warning-soft text-warning",
         tone === "muted" && "bg-muted",

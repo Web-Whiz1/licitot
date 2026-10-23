@@ -3,7 +3,6 @@
 import { Clock } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useSyncExternalStore } from "react"
-import { LiveDot } from "@/components/live-dot"
 import { formatDateTime, formatDayTime, timeLeft } from "@/lib/dates"
 import { cn } from "@/lib/utils"
 
@@ -33,12 +32,13 @@ export function useNow(): number | null {
 }
 
 const CHIP =
-  "inline-flex h-7 items-center gap-1.5 rounded-full px-2.5 text-xs font-semibold tabular-nums backdrop-blur-md"
+  "inline-flex h-6.5 items-center gap-1.5 rounded-md px-2 text-xs font-semibold tabular-nums"
 
 /**
  * Live countdown. SSR renders the end date in Romanian time; the client then ticks.
  * `compact` drops seconds when more than an hour remains (cards).
- * `chip` renders a pill for photos: navy glass with a red "live" dot, all red in the last hour.
+ * `chip` renders a solid label for photos: card surface with a clock, the muted "ending soon"
+ * colors in the last hour, muted "closed" colors once it is over.
  */
 export function Countdown({
   endsAt,
@@ -59,7 +59,7 @@ export function Countdown({
   if (now === null) {
     if (variant === "chip") {
       return (
-        <time dateTime={endsAt} className={cn(CHIP, "bg-ink/75 text-ink-foreground", className)}>
+        <time dateTime={endsAt} className={cn(CHIP, "bg-card text-foreground", className)}>
           <Clock aria-hidden className="size-3.5" />
           {formatDayTime(endsAt)}
         </time>
@@ -95,15 +95,15 @@ export function Countdown({
         title={formatDateTime(endsAt)}
         className={cn(
           CHIP,
-          urgent ? "bg-live text-live-foreground" : "bg-ink/75 text-ink-foreground",
+          ended
+            ? "bg-muted text-muted-foreground"
+            : urgent
+              ? "bg-warning-soft text-warning"
+              : "bg-card text-foreground",
           className,
         )}
       >
-        {ended ? (
-          <Clock aria-hidden className="size-3.5" />
-        ) : (
-          <LiveDot pulse={soon} className={urgent ? undefined : "text-live"} />
-        )}
+        <Clock aria-hidden className="size-3.5" />
         {label}
       </time>
     )
@@ -116,7 +116,7 @@ export function Countdown({
       className={cn(
         "inline-flex items-center gap-1 tabular-nums",
         soon && "text-warning",
-        urgent && "font-semibold text-destructive",
+        urgent && "font-semibold",
         className,
       )}
     >

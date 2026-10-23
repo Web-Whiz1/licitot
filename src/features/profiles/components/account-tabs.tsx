@@ -77,7 +77,7 @@ export function AccountTabsNav({ pathname }: { pathname: string | null }) {
                       href={href}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "flex h-10 items-center gap-3 rounded-xl px-3 text-sm transition-[background-color,color] duration-200 ease-snap",
+                        "flex h-10 items-center gap-3 rounded-lg px-3 text-sm transition-[background-color,color] duration-200 ease-snap",
                         active
                           ? "bg-tint font-semibold text-tint-foreground"
                           : "text-muted-foreground hover:bg-muted hover:text-foreground",

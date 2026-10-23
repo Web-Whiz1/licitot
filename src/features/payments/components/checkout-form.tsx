@@ -60,7 +60,7 @@ export function CheckoutForm({
               <label
                 key={m}
                 className={cn(
-                  "flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition-colors",
+                  "flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors",
                   method === m ? "border-primary bg-tint" : "hover:bg-muted",
                 )}
               >

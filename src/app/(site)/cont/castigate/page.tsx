@@ -26,7 +26,7 @@ export default async function WonPage() {
   if (rows.length === 0) return <EmptyState icon={Trophy} title={t("empty.won")} />
 
   return (
-    <ul className="divide-y overflow-hidden rounded-2xl border bg-card">
+    <ul className="divide-y overflow-hidden rounded-lg border bg-card">
       {rows.map((a) => {
         const shipping = [
           a.ship_pickup ? t("won.pickup", { city: a.city }) : null,

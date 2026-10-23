@@ -15,7 +15,7 @@ import { createSellerAccount, type SellerKind } from "../actions"
 export const StripeConnect = dynamic(() => import("./stripe-connect-panel"), {
   ssr: false,
   loading: () => (
-    <div aria-busy="true" className="space-y-4 rounded-3xl border bg-card p-6 shadow-card">
+    <div aria-busy="true" className="space-y-4 rounded-lg border bg-card p-6">
       <Skeleton className="h-6 w-1/3" />
       <Skeleton className="h-11 w-full" />
       <Skeleton className="h-11 w-full" />
@@ -71,12 +71,12 @@ export function SellerKindChooser() {
             disabled={pending}
             onClick={() => choose(kind)}
             className={cn(
-              "group relative flex flex-col items-start gap-3 rounded-3xl border bg-card p-5 text-left shadow-card transition-[border-color,box-shadow,transform] duration-200 ease-snap hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-raised disabled:pointer-events-none disabled:opacity-60",
+              "group relative flex flex-col items-start gap-3 rounded-lg border bg-card p-5 text-left transition-[border-color,box-shadow,transform] duration-200 ease-snap hover:-translate-y-0.5 hover:border-primary/50 disabled:pointer-events-none disabled:opacity-60",
               kind === "individual" && "border-primary/40",
             )}
           >
             <span className="flex w-full items-center justify-between gap-2">
-              <span className="grid size-11 place-items-center rounded-2xl bg-tint text-primary">
+              <span className="grid size-11 place-items-center rounded-lg bg-tint text-primary">
                 {pending && picked === kind ? (
                   <LoaderCircle aria-hidden className="size-5 animate-spin" />
                 ) : (

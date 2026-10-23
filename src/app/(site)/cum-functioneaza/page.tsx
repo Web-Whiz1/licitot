@@ -47,8 +47,8 @@ export default async function HowItWorksPage() {
           <h2 className="font-display text-2xl tracking-tight">{g.title}</h2>
           <ol className="grid gap-4 sm:grid-cols-2">
             {g.steps.map((s, i) => (
-              <li key={s.title} className="flex gap-4 rounded-2xl border bg-card p-5 shadow-card">
-                <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-tint text-primary">
+              <li key={s.title} className="flex gap-4 rounded-lg border bg-card p-5">
+                <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-tint text-primary">
                   <s.icon aria-hidden className="size-5" />
                 </span>
                 <div className="space-y-1">

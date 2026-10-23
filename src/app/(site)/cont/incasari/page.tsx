@@ -84,7 +84,7 @@ export default async function PayoutsPage({ searchParams }: PageProps<"/cont/inc
         </p>
       </div>
 
-      <div className={cn("flex items-start gap-3 rounded-2xl p-4", view.tone)} role="status">
+      <div className={cn("flex items-start gap-3 rounded-lg p-4", view.tone)} role="status">
         <view.icon aria-hidden className="mt-0.5 size-5 shrink-0" />
         <div className="space-y-1">
           <p className="font-semibold">{view.text}</p>

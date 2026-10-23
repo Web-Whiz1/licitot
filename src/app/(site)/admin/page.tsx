@@ -75,12 +75,12 @@ export default async function AdminStatsPage() {
           <Link
             key={c.label}
             href={c.href}
-            className="space-y-1 rounded-2xl border bg-card p-4 hover:bg-muted"
+            className="space-y-1 rounded-lg border bg-card p-4 hover:bg-muted"
           >
             {body}
           </Link>
         ) : (
-          <div key={c.label} className="space-y-1 rounded-2xl border bg-card p-4">
+          <div key={c.label} className="space-y-1 rounded-lg border bg-card p-4">
             {body}
           </div>
         )

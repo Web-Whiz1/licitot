@@ -4,6 +4,7 @@ import Link from "next/link"
 import { notFound, permanentRedirect } from "next/navigation"
 import { getTranslations } from "next-intl/server"
 import { Suspense } from "react"
+import { HammerStamp } from "@/components/hammer-stamp"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { UserAvatar } from "@/components/user-avatar"
@@ -178,12 +179,15 @@ async function AuctionDetail({ params }: Pick<PageProps<"/licitatie/[slug]">, "p
 
       {/* Mobile order: photos → price/bid box → description. Desktop: sticky box on the right. */}
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:grid-rows-[auto_1fr]">
-        <div className="min-w-0 lg:col-start-1 lg:row-start-1">
+        <div className="relative min-w-0 lg:col-start-1 lg:row-start-1">
           <Gallery photos={a.auction_images} title={a.title} />
+          {a.status === "ended_sold" ? (
+            <HammerStamp className="top-4 right-4 px-3 text-lg md:top-5 md:right-5" />
+          ) : null}
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-24 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-start">
-          <div className="space-y-4 rounded-3xl border bg-card p-5 shadow-raised md:p-6">
+          <div className="space-y-4 rounded-lg border bg-card p-5 md:p-6">
             <div className="space-y-2">
               <div className="flex items-start justify-between gap-3">
                 <AuctionStatusBadge status={a.status} />
@@ -202,7 +206,7 @@ async function AuctionDetail({ params }: Pick<PageProps<"/licitatie/[slug]">, "p
           </div>
 
           {seller ? (
-            <div className="space-y-4 rounded-3xl border bg-card p-5 shadow-card md:p-6">
+            <div className="space-y-4 rounded-lg border bg-card p-5 md:p-6">
               <h2 className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
                 {t("detail.seller")}
               </h2>
@@ -254,7 +258,7 @@ async function AuctionDetail({ params }: Pick<PageProps<"/licitatie/[slug]">, "p
             <h2 id="details-title" className="font-display text-2xl tracking-[-0.02em]">
               {t("detail.details")}
             </h2>
-            <dl className="grid gap-x-6 gap-y-4 rounded-3xl border bg-card p-5 text-sm shadow-card sm:grid-cols-2 md:p-6">
+            <dl className="grid gap-x-6 gap-y-4 rounded-lg border bg-card p-5 text-sm sm:grid-cols-2 md:p-6">
               <Detail icon={BadgeCheck} label={t("detail.condition")}>
                 {t(`sell.conditions.${a.condition}`)}
               </Detail>
@@ -331,7 +335,7 @@ function Detail({
 }) {
   return (
     <div className="flex gap-3">
-      <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-tint text-primary">
+      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-tint text-primary">
         <Icon aria-hidden className="size-4" />
       </span>
       <div>
@@ -345,8 +349,8 @@ function Detail({
 function DetailSkeleton() {
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem]" aria-hidden>
-      <Skeleton className="aspect-[4/3] w-full rounded-3xl" />
-      <Skeleton className="h-96 w-full rounded-3xl" />
+      <Skeleton className="aspect-[4/3] w-full rounded-lg" />
+      <Skeleton className="h-96 w-full rounded-lg" />
     </div>
   )
 }

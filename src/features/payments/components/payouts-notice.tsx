@@ -11,7 +11,7 @@ export async function PayoutsNotice({ userId }: { userId: string }) {
   return (
     <div
       role="note"
-      className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl bg-warning-soft p-4 text-sm text-warning"
+      className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg bg-warning-soft p-4 text-sm text-warning"
     >
       <TriangleAlert aria-hidden className="size-5 shrink-0" />
       <p className="flex-1 font-medium">{t("sellNotice")}</p>

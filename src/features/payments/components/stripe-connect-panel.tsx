@@ -22,14 +22,14 @@ function appearance(theme: string | undefined) {
   return {
     overlays: "dialog" as const,
     variables: {
-      fontFamily: "Geist, ui-sans-serif, system-ui, sans-serif",
+      fontFamily: "'Public Sans', ui-sans-serif, system-ui, sans-serif",
       fontSizeBase: "15px",
       spacingUnit: "10px",
-      borderRadius: "12px",
-      buttonBorderRadius: "999px",
-      formBorderRadius: "12px",
-      badgeBorderRadius: "999px",
-      overlayBorderRadius: "24px",
+      borderRadius: "8px",
+      buttonBorderRadius: "6px",
+      formBorderRadius: "6px",
+      badgeBorderRadius: "6px",
+      overlayBorderRadius: "8px",
       colorPrimary: c.primary,
       colorBackground: c.card,
       colorText: c.foreground,
@@ -55,7 +55,7 @@ function appearance(theme: string | undefined) {
       badgeDangerColorText: c.destructive,
       badgeNeutralColorBackground: c.muted,
       badgeNeutralColorText: c["muted-foreground"],
-      overlayBackdropColor: "rgba(10, 26, 58, 0.4)",
+      overlayBackdropColor: "rgba(27, 25, 21, 0.45)",
     },
   }
 }
@@ -86,9 +86,9 @@ export default function StripeConnectPanel({
       appearance: appearance(resolvedTheme),
       fonts: [
         {
-          family: "Geist",
-          src: `url(${window.location.origin}/fonts/Geist-Variable.woff2)`,
-          weight: "100 900",
+          family: "Public Sans",
+          src: `url(${window.location.origin}/fonts/PublicSans-Variable.woff2)`,
+          weight: "400 800",
         },
       ],
       fetchClientSecret: async () => {
@@ -109,7 +109,7 @@ export default function StripeConnectPanel({
 
   if (failed) {
     return (
-      <p role="alert" className="rounded-2xl bg-destructive-soft p-4 text-sm text-destructive">
+      <p role="alert" className="rounded-lg bg-destructive-soft p-4 text-sm text-destructive">
         {t("embeddedError")}
       </p>
     )
@@ -118,7 +118,7 @@ export default function StripeConnectPanel({
   return (
     <ConnectComponentsProvider connectInstance={instance}>
       {mode === "onboarding" ? (
-        <div className="rounded-3xl border bg-card p-4 shadow-card md:p-6">
+        <div className="rounded-lg border bg-card p-4 md:p-6">
           <ConnectAccountOnboarding
             onExit={async () => {
               await refreshSellerAccount()
@@ -143,7 +143,7 @@ export default function StripeConnectPanel({
               <Wallet aria-hidden className="size-5 text-primary" />
               {t("balanceTitle")}
             </h3>
-            <div className="rounded-3xl border bg-card p-4 shadow-card md:p-6">
+            <div className="rounded-lg border bg-card p-4 md:p-6">
               <ConnectPayouts onLoadError={() => setFailed(true)} />
             </div>
           </section>
@@ -155,7 +155,7 @@ export default function StripeConnectPanel({
               <Landmark aria-hidden className="size-5 text-primary" />
               {t("accountTitle")}
             </h3>
-            <div className="rounded-3xl border bg-card p-4 shadow-card md:p-6">
+            <div className="rounded-lg border bg-card p-4 md:p-6">
               <ConnectAccountManagement
                 collectionOptions={{ fields: "eventually_due", futureRequirements: "include" }}
               />

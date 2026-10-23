@@ -37,7 +37,7 @@ export function AuctionListItem({
           alt=""
           sizes="96px"
           noPhotoLabel={t("noPhoto")}
-          className="size-20 rounded-xl sm:size-24"
+          className="size-20 rounded-lg sm:size-24"
         />
       </Link>
       <div className="flex min-w-0 flex-1 flex-col gap-1">

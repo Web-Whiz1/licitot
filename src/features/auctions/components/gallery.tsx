@@ -20,12 +20,12 @@ export function Gallery({ photos, title }: { photos: Photo[]; title: string }) {
   const current = photos[index]
   const go = (delta: number) => setIndex((i) => (i + delta + total) % total)
 
-  if (!current) return <div className="aspect-[4/3] rounded-3xl bg-muted" />
+  if (!current) return <div className="aspect-[4/3] rounded-lg bg-muted" />
 
   return (
     <section aria-label={t("gallery")} className="space-y-3">
       <div
-        className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-muted"
+        className="relative aspect-[4/3] overflow-hidden rounded-lg border bg-muted"
         onKeyDown={(e) => {
           if (e.key === "ArrowRight") go(1)
           if (e.key === "ArrowLeft") go(-1)
@@ -48,7 +48,7 @@ export function Gallery({ photos, title }: { photos: Photo[]; title: string }) {
               type="button"
               onClick={() => go(-1)}
               aria-label={t("showPhoto", { n: ((index - 1 + total) % total) + 1 })}
-              className="absolute top-1/2 left-2 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-card/85 shadow-raised backdrop-blur-md transition-[background-color,transform] duration-200 hover:bg-card active:scale-95"
+              className="absolute top-1/2 left-2 grid size-10 -translate-y-1/2 place-items-center rounded-md border bg-card text-foreground transition-colors duration-150 ease-out hover:border-input hover:bg-muted"
             >
               <ChevronLeft aria-hidden className="size-5" />
             </button>
@@ -56,13 +56,13 @@ export function Gallery({ photos, title }: { photos: Photo[]; title: string }) {
               type="button"
               onClick={() => go(1)}
               aria-label={t("showPhoto", { n: ((index + 1) % total) + 1 })}
-              className="absolute top-1/2 right-2 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-card/85 shadow-raised backdrop-blur-md transition-[background-color,transform] duration-200 hover:bg-card active:scale-95"
+              className="absolute top-1/2 right-2 grid size-10 -translate-y-1/2 place-items-center rounded-md border bg-card text-foreground transition-colors duration-150 ease-out hover:border-input hover:bg-muted"
             >
               <ChevronRight aria-hidden className="size-5" />
             </button>
             <span
               aria-live="polite"
-              className="absolute right-3 bottom-3 rounded-full bg-ink/75 px-2.5 py-1 text-xs font-semibold text-ink-foreground tabular-nums backdrop-blur-md"
+              className="absolute right-3 bottom-3 rounded-md bg-card px-2 py-1 text-xs font-semibold text-foreground tabular-nums"
             >
               {index + 1} / {total}
             </span>
@@ -80,10 +80,10 @@ export function Gallery({ photos, title }: { photos: Photo[]; title: string }) {
                 aria-label={t("showPhoto", { n: i + 1 })}
                 aria-current={i === index ? "true" : undefined}
                 className={cn(
-                  "relative block size-16 overflow-hidden rounded-xl border-2 transition-[border-color,opacity] duration-200 sm:size-20",
+                  "relative block size-16 overflow-hidden rounded-md border-2 transition-[border-color,opacity] duration-150 ease-out sm:size-20",
                   i === index
                     ? "border-primary"
-                    : "border-transparent opacity-80 hover:opacity-100",
+                    : "border-border opacity-80 hover:border-input hover:opacity-100",
                 )}
               >
                 <Image

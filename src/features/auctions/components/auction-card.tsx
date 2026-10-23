@@ -3,7 +3,8 @@ import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { AuctionThumb } from "@/components/auction-thumb"
 import { Countdown } from "@/components/countdown"
-import { formatRON } from "@/lib/money"
+import { HammerStamp } from "@/components/hammer-stamp"
+import { Price } from "@/components/price"
 import type { AuctionCardData } from "../listing"
 
 export const auctionHref = (a: { id: string; slug: string }) => `/licitatie/${a.id}-${a.slug}`
@@ -19,7 +20,8 @@ export function AuctionCard({
   const hasBids = auction.bid_count > 0
 
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-card shadow-card transition-[transform,box-shadow] duration-300 ease-snap hover:-translate-y-1 hover:shadow-raised">
+    // No shadow and no lift: hover darkens the border and underlines the title.
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-lg border bg-card transition-colors duration-150 ease-out hover:border-input">
       <div className="relative">
         <AuctionThumb
           path={auction.cover?.path}
@@ -28,35 +30,39 @@ export function AuctionCard({
           sizes="(min-width: 1280px) 290px, (min-width: 768px) 25vw, 50vw"
           priority={priority}
           noPhotoLabel={t("auction.noPhoto")}
-          className="aspect-[4/3] w-full"
-          imageClassName="transition-transform duration-500 ease-snap group-hover:scale-[1.04]"
+          className="aspect-[4/3] w-full border-b"
         />
         {auction.ends_at ? (
           <Countdown
             endsAt={auction.ends_at}
             compact
             variant="chip"
-            className="absolute top-2.5 left-2.5"
+            className="absolute top-2 left-2"
           />
         ) : null}
+        {auction.status === "ended_sold" ? <HammerStamp className="right-2.5 bottom-2.5" /> : null}
       </div>
-      <div className="flex flex-1 flex-col gap-3 p-3.5 md:p-4">
+      <div className="flex flex-1 flex-col gap-3 p-3 md:p-3.5">
         <h3 className="line-clamp-2 text-sm leading-snug font-medium md:text-[0.9375rem]">
           {/* Stretched link: the whole card is clickable, one tab stop. */}
           <Link
             href={auctionHref(auction)}
-            className="after:absolute after:inset-0 focus-visible:outline-none"
+            className="decoration-input underline-offset-3 group-hover:underline after:absolute after:inset-0 focus-visible:outline-none"
           >
             {auction.title}
           </Link>
         </h3>
         <div className="mt-auto space-y-2">
           <div>
-            <p className="text-[0.6875rem] font-medium tracking-[0.08em] text-muted-foreground uppercase">
-              {hasBids ? t("card.currentBid") : t("card.startingPrice")}
+            <p className="text-[0.6875rem] font-semibold tracking-[0.07em] text-muted-foreground uppercase">
+              {auction.status === "ended_sold"
+                ? t("bid.finalPrice")
+                : hasBids
+                  ? t("card.currentBid")
+                  : t("card.startingPrice")}
             </p>
-            <p className="text-lg leading-tight font-bold tracking-tight text-primary tabular-nums md:text-xl">
-              {formatRON(auction.current_price, { compact: true })}
+            <p className="text-lg leading-tight font-bold tracking-tight text-primary md:text-xl">
+              <Price bani={auction.current_price} />
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
@@ -72,7 +78,7 @@ export function AuctionCard({
         </div>
       </div>
       {/* Focus ring for the stretched link. */}
-      <span className="pointer-events-none absolute inset-0 rounded-2xl ring-ring group-has-[a:focus-visible]:ring-2" />
+      <span className="pointer-events-none absolute inset-0 rounded-lg ring-ring group-has-[a:focus-visible]:ring-2" />
     </article>
   )
 }

@@ -3,7 +3,7 @@ import { LiveDot } from "@/components/live-dot"
 import { Badge } from "@/components/ui/badge"
 import type { AuctionStatus } from "../constants"
 
-// Soft blue + red dot = live, navy = sold (the hammer fell), neutral = no winner.
+// Accent tint + bordo dot = live, ink = sold (the hammer fell), neutral = no winner.
 const VARIANT = {
   draft: "outline",
   active: "live",
@@ -16,7 +16,7 @@ export function AuctionStatusBadge({ status }: { status: AuctionStatus }) {
   const t = useTranslations("auction.status")
   return (
     <Badge variant={VARIANT[status]}>
-      {status === "active" ? <LiveDot className="size-1.5 text-live" /> : null}
+      {status === "active" ? <LiveDot className="size-1.5 text-primary" /> : null}
       {t(status)}
     </Badge>
   )

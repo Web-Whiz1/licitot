@@ -35,7 +35,7 @@ export default async function NotificationsPage() {
           </ActionButton>
         ) : null}
       </div>
-      <ul className="divide-y overflow-hidden rounded-2xl border bg-card">
+      <ul className="divide-y overflow-hidden rounded-lg border bg-card">
         {items.map((n) => {
           const { key, values } = notificationMessage(n)
           return (

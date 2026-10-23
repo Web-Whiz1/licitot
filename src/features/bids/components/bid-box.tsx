@@ -1,12 +1,14 @@
 "use client"
 
 import {
+  ArrowDown,
+  Award,
+  Check,
+  CircleDashed,
   Gavel,
   History,
-  Package,
+  Lock,
   ShoppingBag,
-  Trophy,
-  TriangleAlert,
   XCircle,
   Zap,
 } from "lucide-react"
@@ -15,7 +17,9 @@ import { usePathname, useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { useEffect, useId, useRef, useState, useTransition } from "react"
 import { toast } from "sonner"
+import { LogoMark } from "@/components/brand/logo"
 import { Countdown, useNow } from "@/components/countdown"
+import { Price } from "@/components/price"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -167,31 +171,40 @@ export function BidBox({ initial, viewer }: { initial: LiveAuction; viewer: View
   return (
     <>
       {/* ── Price ── */}
-      <div className="rounded-2xl bg-tint p-4 md:p-5" aria-live="polite">
-        <p className="text-xs font-semibold tracking-[0.12em] text-tint-foreground uppercase">
+      <div className="relative overflow-hidden rounded-lg border p-4 md:p-5" aria-live="polite">
+        {/* A new bid: the panel lights up in the accent tint and fades (opacity only). */}
+        {live.current_price !== initial.current_price ? (
+          <span
+            key={live.current_price}
+            aria-hidden
+            className="absolute inset-0 animate-flash bg-tint"
+          />
+        ) : null}
+        <p className="relative text-xs font-semibold tracking-[0.07em] text-muted-foreground uppercase">
           {live.status === "ended_sold"
             ? t("finalPrice")
             : hasBids
               ? tAll("detail.currentBid")
               : tAll("detail.startingPrice")}
         </p>
-        {/* Remounts on every new price, so a fresh bid flashes baby blue once. */}
+        {/* Remounts on every new price, so a fresh bid slides into place once. */}
         <p
           key={live.current_price}
           className={cn(
-            "-mx-1.5 mt-1 w-fit rounded-lg px-1.5 text-4xl font-bold tracking-tight text-primary tabular-nums",
+            "relative mt-1 text-4xl leading-tight font-bold tracking-tight text-primary",
             live.current_price !== initial.current_price && "animate-bump",
           )}
         >
-          {price(live.final_price ?? live.current_price)}
+          <Price bani={live.final_price ?? live.current_price} />
         </p>
-        <p className="mt-1.5 flex items-center gap-1.5 text-sm text-tint-foreground">
+        <p className="relative mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
           <Gavel aria-hidden className="size-4" />
           {hasBids ? tAll("auction.bids", { count: live.bid_count }) : tAll("detail.noBids")}
         </p>
         {live.has_reserve && isOpen ? (
-          <p className="mt-2">
+          <p className="relative mt-3">
             <Badge variant={live.reserve_met ? "success" : "warning"}>
+              {live.reserve_met ? <Check aria-hidden /> : <CircleDashed aria-hidden />}
               {live.reserve_met ? tAll("detail.reserveMet") : tAll("detail.reserveNotMet")}
             </Badge>
           </p>
@@ -200,28 +213,32 @@ export function BidBox({ initial, viewer }: { initial: LiveAuction; viewer: View
 
       {/* ── Time ── */}
       {isOpen && live.ends_at ? (
-        <div className="space-y-1 rounded-2xl border px-4 py-3.5">
-          <p className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+        <div className="space-y-1 rounded-lg border px-4 py-3.5 md:px-5">
+          <p className="text-xs font-semibold tracking-[0.07em] text-muted-foreground uppercase">
             {tAll("detail.endsIn")}
           </p>
-          <Countdown endsAt={live.ends_at} className="text-2xl font-bold tracking-tight" />
+          <Countdown
+            endsAt={live.ends_at}
+            className="gap-2 text-2xl font-bold tracking-tight [&_svg]:size-5"
+          />
           <p className="text-xs text-muted-foreground">
             {tAll("detail.endsOn", { date: formatDateTime(live.ends_at) })}
           </p>
         </div>
       ) : live.status === "active" ? (
-        <p className="rounded-xl border p-4 text-sm font-semibold">{t("closing")}</p>
+        <p className="rounded-lg border p-4 text-sm font-semibold">{t("closing")}</p>
       ) : (
         <EndedNote live={live} isWinner={userId !== null && live.winner_id === userId} />
       )}
 
       {/* ── Viewer status ── */}
       {isOpen && isSeller ? (
-        <p className="rounded-xl bg-muted p-3 text-sm">{tAll("detail.yourAuction")}</p>
+        <p className="rounded-lg bg-muted p-3 text-sm">{tAll("detail.yourAuction")}</p>
       ) : null}
       {isOpen && isLeader ? (
-        <div className="flex items-start gap-2 rounded-xl bg-success-soft p-3 text-sm text-success">
-          <Trophy aria-hidden className="mt-0.5 size-4 shrink-0" />
+        <div className="flex items-start gap-2.5 rounded-lg bg-success-soft p-3 text-sm text-success">
+          {/* Leading = your paddle is up: the brand mark doubles as the status icon. */}
+          <LogoMark variant="mono" className="mt-px size-4.5" />
           <div>
             <p className="font-semibold">{t("leading")}</p>
             {myMax !== null ? <p>{t("leadingMax", { amount: price(myMax) })}</p> : null}
@@ -229,8 +246,8 @@ export function BidBox({ initial, viewer }: { initial: LiveAuction; viewer: View
         </div>
       ) : null}
       {isOpen && !isLeader && myMax !== null ? (
-        <div className="flex items-start gap-2 rounded-xl bg-warning-soft p-3 text-sm text-warning">
-          <TriangleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
+        <div className="flex items-start gap-2.5 rounded-lg bg-destructive-soft p-3 text-sm text-destructive">
+          <ArrowDown aria-hidden className="mt-0.5 size-4 shrink-0" />
           <p className="font-semibold">{t("outbid")}</p>
         </div>
       ) : null}
@@ -326,7 +343,7 @@ export function BidBox({ initial, viewer }: { initial: LiveAuction; viewer: View
 
       {isOpen && !isSeller && live.buy_now_price !== null && !hasBids ? (
         viewer === null ? (
-          <Button asChild size="lg" variant="secondary" className="w-full">
+          <Button asChild size="lg" variant="outline" className="w-full">
             <Link href={signInHref}>
               <ShoppingBag data-icon="inline-start" />
               {tAll("detail.buyNowPrice", { price: price(live.buy_now_price) })}
@@ -335,7 +352,7 @@ export function BidBox({ initial, viewer }: { initial: LiveAuction; viewer: View
         ) : (
           <Button
             size="lg"
-            variant="secondary"
+            variant="outline"
             className="w-full"
             disabled={!canBid || pending}
             onClick={() => setConfirm("buy")}
@@ -380,8 +397,8 @@ export function BidBox({ initial, viewer }: { initial: LiveAuction; viewer: View
                 <li
                   key={b.id}
                   className={cn(
-                    "flex items-center justify-between gap-3 rounded-xl px-2.5 py-2",
-                    i === 0 && "bg-tint font-semibold text-tint-foreground",
+                    "flex items-center justify-between gap-3 rounded-md px-2.5 py-2",
+                    i === 0 && "bg-muted font-semibold",
                   )}
                 >
                   <span className="min-w-0 truncate">
@@ -421,14 +438,14 @@ export function BidBox({ initial, viewer }: { initial: LiveAuction; viewer: View
       {/* ── Mobile: sticky price + bid bar above the bottom navigation ── */}
       {isOpen ? (
         <>
-          <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 border-t border-border/70 bg-background/85 px-4 py-2.5 backdrop-blur-xl backdrop-saturate-150 lg:hidden">
+          <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-30 border-t bg-card px-4 py-2.5 lg:hidden">
             <div className="mx-auto flex max-w-xl items-center justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-xs text-muted-foreground">
                   {hasBids ? tAll("detail.currentBid") : tAll("detail.startingPrice")}
                 </p>
-                <p className="text-lg leading-tight font-extrabold text-primary tabular-nums">
-                  {price(live.current_price)}
+                <p className="text-lg leading-tight font-bold tracking-tight text-primary">
+                  <Price bani={live.current_price} />
                 </p>
               </div>
               {live.ends_at ? (
@@ -509,9 +526,9 @@ function EndedNote({ live, isWinner }: { live: LiveAuction; isWinner: boolean })
   const t = useTranslations("detail")
   const tBid = useTranslations("bid")
   return (
-    <div className="space-y-1 rounded-xl border p-4 text-sm">
+    <div className="space-y-1 rounded-lg border p-4 text-sm md:px-5">
       <p className="flex items-center gap-2 font-semibold">
-        <Package aria-hidden className="size-4" />
+        <Lock aria-hidden className="size-4" />
         {live.status === "ended_sold" && live.final_price !== null
           ? t("soldFor", { price: price(live.final_price) })
           : live.status === "cancelled"
@@ -524,8 +541,8 @@ function EndedNote({ live, isWinner }: { live: LiveAuction; isWinner: boolean })
         </p>
       ) : null}
       {isWinner ? (
-        <div className="mt-3 flex items-start gap-2 rounded-lg bg-success-soft p-3 text-success">
-          <Trophy aria-hidden className="mt-0.5 size-4 shrink-0" />
+        <div className="mt-3 flex items-start gap-2.5 rounded-lg bg-success p-3 text-success-foreground">
+          <Award aria-hidden className="mt-0.5 size-4 shrink-0" />
           <div>
             <p className="font-semibold">{tBid("won")}</p>
             <p>

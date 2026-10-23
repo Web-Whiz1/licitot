@@ -171,7 +171,8 @@
     "deleteConfirmText": "Ciorna și fotografiile ei se șterg definitiv.",
     "cancel": "Renunță",
     "deleted": "Ciorna a fost ștearsă.",
-    "noPhoto": "Fără fotografie"
+    "noPhoto": "Fără fotografie",
+    "hammer": "Adjudecat"
   },
   "browse": {
     "allAuctions": "Toate licitațiile",

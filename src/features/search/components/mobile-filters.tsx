@@ -34,7 +34,7 @@ export function MobileFilters({
           ) : null}
         </Button>
       </SheetTrigger>
-      <SheetContent side="bottom" className="max-h-[85dvh] overflow-y-auto rounded-t-2xl">
+      <SheetContent side="bottom" className="max-h-[85dvh] overflow-y-auto rounded-t-lg">
         <SheetHeader>
           <SheetTitle>{t("filters")}</SheetTitle>
           <SheetDescription className="sr-only">{t("filters")}</SheetDescription>

@@ -18,10 +18,10 @@ export const PADDLE_PATH =
 
 /** Fixed colors for static assets. In the app the mark follows the theme tokens instead. */
 export const LOGO_COLORS = {
-  paddle: "#1666D8",
-  paddleOnDark: "#5AA7F5",
-  sky: "#A9D3FA",
-  ink: "#0A1A3A",
+  paddle: "#7B2233",
+  paddleOnDark: "#E58A97",
+  ink: "#1B1915",
+  paper: "#F6F5F2",
   white: "#FFFFFF",
 } as const
 
@@ -78,7 +78,7 @@ export function fullLogoSvg(
   {
     paddle = LOGO_COLORS.paddle,
     lici = LOGO_COLORS.ink,
-    tot = LOGO_COLORS.paddle,
+    tot = LOGO_COLORS.ink,
   }: { paddle?: string; lici?: string; tot?: string } = {},
 ): string {
   return [

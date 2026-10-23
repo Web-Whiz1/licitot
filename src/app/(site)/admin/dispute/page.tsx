@@ -35,7 +35,7 @@ export default async function AdminDisputesPage() {
             const amount = price(o.item_price + o.shipping_cost)
             const reason = d?.reason as "not_received" | "not_as_described" | "other" | undefined
             return (
-              <li key={o.id} className="space-y-3 rounded-2xl border bg-card p-5">
+              <li key={o.id} className="space-y-3 rounded-lg border bg-card p-5">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <Link href={auctionHref(o.auction)} className="font-semibold hover:underline">
                     {o.auction.title}

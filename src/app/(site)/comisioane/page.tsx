@@ -28,7 +28,7 @@ export default async function FeesPage() {
         <p className="text-lg text-muted-foreground">{t("feesIntro")}</p>
       </header>
 
-      <dl className="mt-10 divide-y overflow-hidden rounded-2xl border bg-card shadow-card">
+      <dl className="mt-10 divide-y overflow-hidden rounded-lg border bg-card">
         {rows.map(([label, value]) => (
           <div key={label} className="flex items-center justify-between gap-4 px-5 py-4">
             <dt>{label}</dt>
@@ -37,7 +37,7 @@ export default async function FeesPage() {
         ))}
       </dl>
 
-      <section className="mt-10 space-y-3 rounded-2xl bg-tint p-6">
+      <section className="mt-10 space-y-3 rounded-lg bg-tint p-6">
         <h2 className="font-display text-xl tracking-tight">{t("exampleTitle")}</h2>
         <p className="text-secondary-foreground">
           {t("example", {

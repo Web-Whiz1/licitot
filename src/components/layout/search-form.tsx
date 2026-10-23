@@ -39,7 +39,7 @@ export function SearchForm({
         className={cn(
           "rounded-full",
           size === "lg"
-            ? "h-14 border-transparent bg-card pr-5 pl-13 text-base shadow-raised md:text-base"
+            ? "h-14 border-transparent bg-card pr-5 pl-13 text-base md:text-base"
             : "border-transparent bg-muted pl-10 hover:border-border focus-visible:bg-card",
         )}
       />

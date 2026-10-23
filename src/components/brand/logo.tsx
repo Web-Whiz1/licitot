@@ -2,8 +2,8 @@ import { MARK_VIEWBOX, PADDLE_PATH, PADDLE_TRANSFORM } from "@/lib/brand/logo-ge
 import { cn } from "@/lib/utils"
 
 /**
- * - `brand`: blue paddle (lighter blue in dark mode) on the page background.
- * - `inverse`: for navy (ink) bands such as the footer, in both themes.
+ * - `brand`: bordo paddle (lighter rose in dark mode) on the page background.
+ * - `inverse`: for dark (ink) bands such as the footer, in both themes.
  * - `mono`: one color (currentColor), for photos or print. The L stays a hole in every variant.
  */
 type LogoVariant = "brand" | "inverse" | "mono"
@@ -35,7 +35,7 @@ type LogoProps = {
   variant?: LogoVariant
 }
 
-/** Mark + "LiciTot" wordmark (live text, so it stays crisp and accessible). */
+/** Mark + "LiciTot" wordmark in the heading serif (live text, so it stays crisp and accessible). */
 export function Logo({
   className,
   markClassName,
@@ -47,26 +47,13 @@ export function Logo({
       <LogoMark variant={variant} className={markClassName} />
       <span
         className={cn(
-          "text-[1.4375rem] leading-none font-bold tracking-[-0.035em]",
+          "font-serif text-[1.5rem] leading-none font-semibold tracking-[-0.015em]",
+          variant === "brand" && "text-foreground",
+          variant === "inverse" && "text-ink-foreground",
           wordmarkClassName,
         )}
       >
-        <span
-          className={cn(
-            variant === "brand" && "text-foreground",
-            variant === "inverse" && "text-ink-foreground",
-          )}
-        >
-          Lici
-        </span>
-        <span
-          className={cn(
-            variant === "brand" && "text-primary",
-            variant === "inverse" && "text-ink-accent",
-          )}
-        >
-          Tot
-        </span>
+        LiciTot
       </span>
     </span>
   )

@@ -45,7 +45,7 @@ export default async function MyListingsPage() {
     <div className="space-y-4">
       <QueryToast param="publicat" value="1" message="sell.published" />
       <div className="flex justify-end">{sellButton}</div>
-      <ul className="divide-y rounded-2xl border bg-card">
+      <ul className="divide-y rounded-lg border bg-card">
         {auctions.map((a) => {
           const cover = a.auction_images[0]
           const isDraft = a.status === "draft"

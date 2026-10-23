@@ -66,7 +66,7 @@ export async function Footer() {
                   <Link
                     href={link.href}
                     prefetch={false}
-                    className="text-ink-foreground/90 underline-offset-4 transition-colors hover:text-sky hover:underline focus-visible:outline-ink-accent"
+                    className="text-ink-foreground/90 underline-offset-4 transition-colors hover:text-ink-accent hover:underline focus-visible:outline-ink-accent"
                   >
                     {link.label}
                   </Link>

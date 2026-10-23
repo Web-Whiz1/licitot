@@ -164,7 +164,7 @@ export function DisputeForm({ orderId }: { orderId: string }) {
   return (
     <form
       noValidate
-      className="space-y-4 rounded-xl border border-warning/40 bg-warning-soft/40 p-4"
+      className="space-y-4 rounded-lg border border-warning/40 bg-warning-soft/40 p-4"
       onSubmit={form.handleSubmit((values) => run(form, () => openDispute(values)))}
     >
       <div className="space-y-1">

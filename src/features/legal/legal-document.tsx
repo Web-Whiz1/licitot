@@ -66,7 +66,7 @@ export async function LegalDocument({ doc }: { doc: "terms" | "privacy" | "cooki
         ))}
       </div>
 
-      <section aria-labelledby="legal-operator" className="mt-12 rounded-2xl border bg-card p-5">
+      <section aria-labelledby="legal-operator" className="mt-12 rounded-lg border bg-card p-5">
         <h2 id="legal-operator" className="mb-3 font-semibold">
           {t("operatorTitle")}
         </h2>

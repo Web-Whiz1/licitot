@@ -18,7 +18,7 @@ export default async function ContactPage() {
       </header>
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
-        <section className="space-y-2 rounded-2xl border bg-card p-5 shadow-card">
+        <section className="space-y-2 rounded-lg border bg-card p-5">
           <Mail aria-hidden className="size-6 text-primary" />
           <h2 className="font-semibold">{t("emailLabel")}</h2>
           <a
@@ -29,7 +29,7 @@ export default async function ContactPage() {
           </a>
           <p className="text-sm text-muted-foreground">{t("orderHint")}</p>
         </section>
-        <section className="space-y-2 rounded-2xl border bg-card p-5 shadow-card">
+        <section className="space-y-2 rounded-lg border bg-card p-5">
           <Scale aria-hidden className="size-6 text-primary" />
           <h2 className="font-semibold">{t("disputesTitle")}</h2>
           <p className="text-sm text-muted-foreground">{t("disputes")}</p>

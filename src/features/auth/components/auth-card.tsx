@@ -15,7 +15,7 @@ export function AuthCard({
 }) {
   return (
     <div className="mx-auto w-full max-w-md px-4 py-10 md:py-16">
-      <div className="rounded-3xl border bg-card p-6 shadow-raised sm:p-9">
+      <div className="rounded-lg border bg-card p-6 sm:p-9">
         <div className="mb-7 space-y-3 text-center">
           <Link href="/" className="mx-auto inline-block rounded-md" aria-hidden tabIndex={-1}>
             <LogoMark className="mx-auto size-12" />

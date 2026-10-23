@@ -33,7 +33,7 @@ export default async function HomePage() {
   return (
     <>
       {/* ── Hero: a clear blue sky, with the auctions closest to the hammer on the right ── */}
-      <section className="relative isolate overflow-hidden bg-[linear-gradient(160deg,var(--hero-from)_0%,var(--hero-via)_48%,var(--hero-to)_100%)] text-hero-foreground">
+      <section className="relative isolate overflow-hidden bg-background text-foreground">
         <div
           aria-hidden
           className="pointer-events-none absolute -top-48 -right-32 -z-10 size-[44rem] rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--card)_85%,transparent)_0%,transparent_62%)] dark:bg-[radial-gradient(circle,color-mix(in_oklab,var(--primary)_30%,transparent)_0%,transparent_62%)]"
@@ -52,7 +52,7 @@ export default async function HomePage() {
                 accent: (chunks) => <span className="text-primary">{chunks}</span>,
               })}
             </h1>
-            <p className="max-w-lg animate-rise text-lg text-pretty text-hero-muted [animation-delay:80ms]">
+            <p className="max-w-lg animate-rise text-lg text-pretty text-muted-foreground [animation-delay:80ms]">
               {t("home.heroSubtitle")}
             </p>
             <div className="max-w-xl animate-rise space-y-4 [animation-delay:160ms]">
@@ -100,7 +100,7 @@ export default async function HomePage() {
 function Eyebrow({ label }: { label: string }) {
   return (
     <p className="inline-flex animate-rise items-center gap-2 rounded-full bg-card/70 px-3.5 py-1.5 text-sm font-semibold ring-1 ring-primary/15 backdrop-blur-md">
-      <LiveDot pulse className="text-live" />
+      <LiveDot pulse className="text-primary" />
       {label}
     </p>
   )
@@ -126,11 +126,11 @@ async function LiveStack() {
   if (items.length === 0) {
     return (
       <div className="relative hidden justify-center lg:flex">
-        <div className="grid w-full max-w-sm animate-rise justify-items-center gap-5 rounded-[2.5rem] bg-card/55 px-8 py-12 text-center shadow-raised ring-1 ring-card backdrop-blur-md">
+        <div className="grid w-full max-w-sm animate-rise justify-items-center gap-5 rounded-[2.5rem] bg-card/55 px-8 py-12 text-center ring-1 ring-card backdrop-blur-md">
           <LogoMark className="size-36 -rotate-3" />
           <div className="space-y-1">
             <p className="text-xl font-bold tracking-tight">{t("home.liveEmptyTitle")}</p>
-            <p className="text-sm text-hero-muted">{t("home.liveEmptyHint")}</p>
+            <p className="text-sm text-muted-foreground">{t("home.liveEmptyHint")}</p>
           </div>
         </div>
       </div>
@@ -246,7 +246,7 @@ async function TrustStrip() {
       <ul className="mx-auto grid max-w-7xl gap-x-6 gap-y-5 px-4 py-8 sm:grid-cols-2 md:px-6 lg:grid-cols-4">
         {items.map(({ icon: Icon, title, text }) => (
           <li key={title} className="flex gap-3.5">
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-tint text-primary">
+            <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-tint text-primary">
               <Icon aria-hidden className="size-5" />
             </span>
             <span className="space-y-0.5">
@@ -270,9 +270,9 @@ async function Categories() {
           <li key={c.slug}>
             <Link
               href={`/categorie/${c.slug}`}
-              className="group flex h-full flex-col items-center gap-3 rounded-2xl border bg-card px-3 py-5 text-center text-sm font-medium shadow-card transition-[transform,box-shadow,border-color] duration-300 ease-snap hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-raised"
+              className="group flex h-full flex-col items-center gap-3 rounded-lg border bg-card px-3 py-5 text-center text-sm font-medium transition-[transform,box-shadow,border-color] duration-300 ease-snap hover:-translate-y-0.5 hover:border-primary/40"
             >
-              <span className="grid size-12 place-items-center rounded-2xl bg-tint text-primary transition-[background-color,color,transform] duration-300 ease-snap group-hover:-rotate-6 group-hover:bg-primary group-hover:text-primary-foreground">
+              <span className="grid size-12 place-items-center rounded-lg bg-tint text-primary transition-[background-color,color,transform] duration-300 ease-snap group-hover:-rotate-6 group-hover:bg-primary group-hover:text-primary-foreground">
                 <CategoryIcon name={c.icon} className="size-5" />
               </span>
               {c.name}

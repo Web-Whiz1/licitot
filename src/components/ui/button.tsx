@@ -3,28 +3,28 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
 import { Slot } from "radix-ui"
 
-// LiciTot: pill buttons, 44px by default for comfortable touch targets. Hover uses a solid
-// darker token instead of opacity so text contrast never drops below AA; a press scales the
-// button down slightly (transform only, so it stays on the compositor).
+// LiciTot: 6px corners, 44px by default for comfortable touch targets. Hover changes the
+// background or border with a solid token (never opacity, never a shadow), so text contrast
+// stays AA. Focus uses the global 2px accent outline.
 const buttonVariants = cva(
-  "group/button relative inline-flex shrink-0 items-center justify-center rounded-full border border-transparent bg-clip-padding text-sm font-semibold whitespace-nowrap transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-snap outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button relative inline-flex shrink-0 items-center justify-center rounded-md border border-transparent bg-clip-padding text-sm font-semibold whitespace-nowrap transition-[background-color,border-color,color] duration-150 ease-out select-none disabled:pointer-events-none disabled:opacity-45 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow-glow hover:bg-primary-hover",
-        // White on a blue band (the seller call to action).
+        default: "bg-primary text-primary-foreground hover:bg-primary-hover",
+        // Light button on a dark (ink) band.
         inverse:
-          "bg-primary-foreground text-primary shadow-raised hover:bg-[color-mix(in_oklch,var(--primary-foreground),var(--primary)_10%)]",
+          "bg-ink-foreground text-ink hover:bg-[color-mix(in_oklch,var(--ink-foreground),var(--ink)_10%)]",
         ink: "bg-ink text-ink-foreground hover:bg-[color-mix(in_oklch,var(--ink),var(--ink-foreground)_12%)]",
         outline:
-          "border-border bg-card text-foreground hover:border-[color-mix(in_oklch,var(--border),var(--foreground)_25%)] hover:bg-muted aria-expanded:bg-muted dark:border-input/60",
+          "border-border bg-card text-foreground hover:border-input hover:bg-muted aria-expanded:border-input aria-expanded:bg-muted",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--secondary-foreground)_10%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--secondary-foreground)_8%)] aria-expanded:bg-[color-mix(in_oklch,var(--secondary),var(--secondary-foreground)_8%)]",
         ghost:
           "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground",
         destructive:
-          "bg-destructive-soft text-destructive hover:bg-[color-mix(in_oklch,var(--destructive-soft),var(--destructive)_12%)] focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
-        link: "rounded-md text-primary underline-offset-4 hover:underline active:not-aria-[haspopup]:scale-100",
+          "border-border bg-card text-destructive hover:border-destructive-soft hover:bg-destructive-soft",
+        link: "text-primary underline decoration-primary/40 decoration-1 underline-offset-4 hover:decoration-primary",
       },
       size: {
         default:

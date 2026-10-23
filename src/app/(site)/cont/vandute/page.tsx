@@ -25,7 +25,7 @@ export default async function SoldPage() {
   if (rows.length === 0) return <EmptyState icon={PackageCheck} title={t("account.empty.sold")} />
 
   return (
-    <ul className="divide-y overflow-hidden rounded-2xl border bg-card">
+    <ul className="divide-y overflow-hidden rounded-lg border bg-card">
       {rows.map((a) => (
         <AuctionListItem
           key={a.id}

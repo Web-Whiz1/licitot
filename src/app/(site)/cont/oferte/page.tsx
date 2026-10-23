@@ -39,7 +39,7 @@ export default async function MyBidsPage() {
   }
 
   return (
-    <ul className="divide-y overflow-hidden rounded-2xl border bg-card">
+    <ul className="divide-y overflow-hidden rounded-lg border bg-card">
       {rows.map(({ auction: a, max_amount }) => {
         const href = auctionHref(a)
         const active = a.status === "active"
