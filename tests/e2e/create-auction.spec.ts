@@ -25,7 +25,7 @@ test.afterEach(async () => {
 test("publish an auction with photos", async ({ page }) => {
   test.slow() // compression + real uploads
   await signIn(page, user!, "/vinde")
-  await expect(page.getByRole("heading", { name: "Pune pe licitație" })).toBeVisible()
+  await expect(page.getByRole("heading", { name: "Pune la licitație" })).toBeVisible()
 
   await page
     .getByLabel("alege din dispozitiv")

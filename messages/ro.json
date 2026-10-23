@@ -61,7 +61,7 @@
     "imagesPending": "Așteaptă să se încarce toate fotografiile."
   },
   "sell": {
-    "title": "Pune pe licitație",
+    "title": "Pune la licitație",
     "editTitle": "Editează ciorna",
     "subtitle": "Câteva detalii și fotografii bune — restul îl fac licitanții.",
     "photos": "Fotografii",
@@ -502,7 +502,7 @@
   },
   "home": {
     "heroTitle": "Totul se <accent>licitează.</accent>",
-    "heroSubtitle": "Pune pe licitație ce nu mai folosești sau găsește chilipiruri de la oameni din toată țara.",
+    "heroSubtitle": "Pune la licitație ce nu mai folosești sau găsește chilipiruri de la oameni din toată țara.",
     "heroCtaSell": "Începe să vinzi",
     "heroCtaBrowse": "Vezi licitațiile",
     "endingSoon": "Se termină curând",
@@ -540,8 +540,8 @@
     },
     "stepsMore": "Află toate detaliile",
     "sellTitle": "Ai ceva de vândut?",
-    "sellText": "Pune-l pe licitație în două minute. Listarea e gratuită, iar comisionul de {percent}% se plătește doar dacă vinzi.",
-    "sellCta": "Pune pe licitație",
+    "sellText": "Pune-l la licitație în două minute. Listarea e gratuită, iar comisionul de {percent}% se plătește doar dacă vinzi.",
+    "sellCta": "Pune la licitație",
     "liveCount": "{count, plural, one {# licitație live acum} few {# licitații live acum} other {# de licitații live acum}}"
   },
   "footer": {

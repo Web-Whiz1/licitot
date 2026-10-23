@@ -146,7 +146,7 @@ We sound like a friend who knows the ropes: clear, warm and to the point. We alw
 | Felicitări, ai câștigat! Plătește în 3 zile.         | Licitația s-a finalizat cu succes. Vă rugăm efectuați plata. |
 | Vei primi aproximativ 950 RON după comisionul de 5%. | Se aplică un comision conform termenilor.                    |
 
-- **Short sentences, verbs first:** "Licitează", "Ridică paleta", "Pune pe licitație".
+- **Short sentences, verbs first:** "Licitează", "Ridică paleta", "Pune la licitație".
 - **Be transparent about money.** Always show the fee and the final amount.
 - **Errors say what happened and what to do next.** Don't blame the user.
 - **Minimal emoji.** At most one, only in celebratory messages.
