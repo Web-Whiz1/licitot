@@ -522,7 +522,7 @@
       "feeTitle": "0% pentru cumpărători",
       "fee": "Licitezi gratuit. Vânzătorul plătește {percent}% doar dacă vinde.",
       "verifiedTitle": "Vânzători verificați",
-      "verified": "Fiecare vânzător își confirmă identitatea prin Stripe."
+      "verified": "Fiecare vânzător își confirmă identitatea."
     },
     "eyebrowFeatured": "Cele mai disputate",
     "eyebrowEndingSoon": "Ultimele ore",
