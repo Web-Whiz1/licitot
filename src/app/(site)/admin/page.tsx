@@ -62,7 +62,7 @@ export default async function AdminStatsPage() {
             <p className="text-sm text-muted-foreground">{c.label}</p>
             <p
               className={cn(
-                "text-2xl font-extrabold tracking-tight tabular-nums",
+                "text-2xl font-bold tracking-tight tabular-nums",
                 c.alert && "text-warning",
               )}
             >

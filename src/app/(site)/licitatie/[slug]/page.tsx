@@ -207,7 +207,7 @@ async function AuctionDetail({ params }: Pick<PageProps<"/licitatie/[slug]">, "p
 
           {seller ? (
             <div className="space-y-4 rounded-lg border bg-card p-5 md:p-6">
-              <h2 className="text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+              <h2 className="text-xs font-semibold tracking-[0.07em] text-muted-foreground uppercase">
                 {t("detail.seller")}
               </h2>
               <div className="flex items-center gap-3">
@@ -335,9 +335,7 @@ function Detail({
 }) {
   return (
     <div className="flex gap-3">
-      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-tint text-primary">
-        <Icon aria-hidden className="size-4" />
-      </span>
+      <Icon aria-hidden className="mt-0.5 size-4 shrink-0 text-primary" />
       <div>
         <dt className="text-muted-foreground">{label}</dt>
         <dd className="font-medium">{children}</dd>

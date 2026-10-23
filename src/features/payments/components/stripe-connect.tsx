@@ -71,12 +71,12 @@ export function SellerKindChooser() {
             disabled={pending}
             onClick={() => choose(kind)}
             className={cn(
-              "group relative flex flex-col items-start gap-3 rounded-lg border bg-card p-5 text-left transition-[border-color,box-shadow,transform] duration-200 ease-snap hover:-translate-y-0.5 hover:border-primary/50 disabled:pointer-events-none disabled:opacity-60",
+              "group relative flex flex-col items-start gap-3 rounded-lg border bg-card p-5 text-left transition-[border-color,box-shadow,transform] duration-200 ease-snap hover:border-input hover:bg-muted disabled:pointer-events-none disabled:opacity-60",
               kind === "individual" && "border-primary/40",
             )}
           >
             <span className="flex w-full items-center justify-between gap-2">
-              <span className="grid size-11 place-items-center rounded-lg bg-tint text-primary">
+              <span className="grid size-6 place-items-center text-primary">
                 {pending && picked === kind ? (
                   <LoaderCircle aria-hidden className="size-5 animate-spin" />
                 ) : (

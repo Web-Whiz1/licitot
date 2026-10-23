@@ -268,7 +268,7 @@ function SortableTile({
       </button>
 
       {index === 0 && item.status === "done" ? (
-        <span className="pointer-events-none absolute bottom-1.5 left-1.5 inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[0.6875rem] font-semibold text-primary-foreground">
+        <span className="pointer-events-none absolute bottom-1.5 left-1.5 inline-flex items-center gap-1 rounded-sm bg-primary px-1.5 py-0.5 text-[0.6875rem] font-semibold text-primary-foreground">
           <Star aria-hidden className="size-3" /> {t("photoMain")}
         </span>
       ) : null}
@@ -309,7 +309,7 @@ function SortableTile({
         type="button"
         onClick={onRemove}
         aria-label={t("photoRemove")}
-        className="absolute top-1 right-1 grid size-8 place-items-center rounded-full bg-background/90 text-foreground hover:bg-background"
+        className="absolute top-1 right-1 grid size-8 place-items-center rounded-md border bg-card text-foreground transition-colors duration-150 ease-out hover:bg-muted"
       >
         <X aria-hidden className="size-4" />
       </button>

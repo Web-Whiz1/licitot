@@ -2,13 +2,13 @@
 
 Newsreader and Public Sans are licensed under the [SIL Open Font License 1.1](https://openfontlicense.org).
 
-| File                                                         | What                                                     | Used by                          |
-| ------------------------------------------------------------ | -------------------------------------------------------- | -------------------------------- |
-| `Newsreader-Variable.woff2`                                  | [Newsreader](https://fonts.google.com/specimen/Newsreader), wght 400–700, opsz pinned at 36 | Web: headings, wordmark          |
-| `Newsreader-Italic.woff2`                                    | Newsreader Italic 500, opsz 36                           | Web: emphasis in headlines (lazy) |
-| `PublicSans-Variable.woff2`                                  | [Public Sans](https://fonts.google.com/specimen/Public+Sans), wght 400–800 | Web: all other text, prices      |
-| `public/fonts/PublicSans-Variable.woff2`                     | Same file, public URL                                    | Stripe embedded components       |
-| `public/fonts/Newsreader-SemiBold-OG.otf`, `PublicSans-*-OG.otf` | Static 600 / 700 / 500 instances, without GSUB       | OG images (Satori)               |
+| File                                                             | What                                                                                        | Used by                           |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | --------------------------------- |
+| `Newsreader-Variable.woff2`                                      | [Newsreader](https://fonts.google.com/specimen/Newsreader), wght 400–700, opsz pinned at 36 | Web: headings, wordmark           |
+| `Newsreader-Italic.woff2`                                        | Newsreader Italic 500, opsz 36                                                              | Web: emphasis in headlines (lazy) |
+| `PublicSans-Variable.woff2`                                      | [Public Sans](https://fonts.google.com/specimen/Public+Sans), wght 400–800                  | Web: all other text, prices       |
+| `public/fonts/PublicSans-Variable.woff2`                         | Same file, public URL                                                                       | Stripe embedded components        |
+| `public/fonts/Newsreader-SemiBold-OG.otf`, `PublicSans-*-OG.otf` | Static 600 / 700 / 500 instances, without GSUB                                              | OG images (Satori)                |
 
 All files come from the Google Fonts API, subset with its `text` parameter to Basic Latin,
 Latin-1, Latin Extended-A, ș ț (comma-below, U+0218–U+021B) and the punctuation the UI uses

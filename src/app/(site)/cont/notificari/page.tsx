@@ -46,7 +46,7 @@ export default async function NotificationsPage() {
               >
                 <span className="text-sm">
                   {!n.read_at ? (
-                    <span className="mr-2 rounded-full bg-primary px-1.5 py-0.5 text-[0.625rem] font-bold text-primary-foreground uppercase">
+                    <span className="mr-2 rounded-sm bg-primary px-1.5 py-0.5 text-[0.625rem] font-bold text-primary-foreground uppercase">
                       {t("new")}
                     </span>
                   ) : null}

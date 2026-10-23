@@ -565,10 +565,10 @@
   },
   "brand": {
     "title": "Identitatea vizuală LiciTot",
-    "intro": "Ghidul nostru de brand: albastru curat, de la bleu bebe la bleumarin. Luminos, aerisit și de încredere, cu roșu doar pentru momentele live.",
+    "intro": "Ghidul nostru de brand: o casă de licitații modernă. Hârtie caldă, un singur accent bordo, titluri cu serife și stări discrete, care vin mereu cu o iconiță și un text.",
     "toc": "Cuprins",
     "colors": "Culori",
-    "colorsIntro": "Albastrul LiciTot poartă tot ce se citește sau se apasă. Bleu bebe e doar pentru fundaluri și gradienturi, niciodată text. Roșul apare doar la „live” și în ultimele minute.",
+    "colorsIntro": "Bordo poartă tot ce se apasă și prețurile. Neutrele sunt piatră caldă, nu crem. Culorile de stare sunt estompate și nu apar niciodată singure: vin cu iconiță și text.",
     "contrastOnWhite": "Contrast pe fundal",
     "contrastPairs": "Perechi de contrast verificate (WCAG AA)",
     "contrastPairsIntro": "Fiecare combinație text/fundal folosită în interfață e testată automat în ambele teme.",
@@ -577,60 +577,52 @@
     "darkTheme": "Tema întunecată",
     "swatches": {
       "primary": {
-        "name": "Albastru LiciTot",
+        "name": "Bordo LiciTot",
         "usage": "Butoane, linkuri, prețuri, paleta din logo"
       },
-      "sky": {
-        "name": "Bleu bebe",
-        "usage": "Gradienturi, ilustrații, evidențieri. Niciodată text"
-      },
-      "ink": {
-        "name": "Bleumarin",
-        "usage": "Subsol, etichete „Vândută”, cronometre pe fotografii"
-      },
-      "live": {
-        "name": "Roșu live",
-        "usage": "Punctul live și ultima oră a unei licitații"
-      },
-      "background": {
-        "name": "Cer pal",
-        "usage": "Fundalul paginii"
-      },
-      "card": {
-        "name": "Alb",
-        "usage": "Carduri, câmpuri, meniuri"
-      },
       "tint": {
-        "name": "Albastru pal",
-        "usage": "Suprafețe evidențiate, iconuri, prețul curent"
+        "name": "Bordo pal",
+        "usage": "Eticheta live, clipirea unei oferte noi, selecția"
       },
       "foreground": {
-        "name": "Bleumarin text",
+        "name": "Cerneală",
         "usage": "Text principal"
       },
       "muted-foreground": {
-        "name": "Gri albăstrui",
+        "name": "Gri cald",
         "usage": "Text secundar, metadate"
+      },
+      "background": {
+        "name": "Piatră",
+        "usage": "Fundalul paginii"
+      },
+      "card": {
+        "name": "Hârtie",
+        "usage": "Carduri, câmpuri, panouri"
       },
       "border": {
         "name": "Linie",
         "usage": "Borduri, separatoare"
       },
+      "ink": {
+        "name": "Negru cald",
+        "usage": "Subsol, tooltipuri"
+      },
       "success": {
         "name": "Verde",
-        "usage": "Licitație câștigată, plată reușită"
+        "usage": "Ești pe primul loc; plin doar pentru „Câștigată”"
       },
       "warning": {
         "name": "Chihlimbar",
         "usage": "Se termină curând, preț de rezervă neatins"
       },
       "destructive": {
-        "name": "Roșu eroare",
-        "usage": "Erori, ai fost depășit, anulare"
+        "name": "Roșu cărămiziu",
+        "usage": "Ai fost depășit, erori, anulare"
       }
     },
     "typography": "Tipografie",
-    "typographyIntro": "O singură familie, Geist: greutăți mari și litere strânse pentru titluri, regular pentru text, cifre tabulare pentru prețuri și cronometre. Acoperă complet ă, â, î, ș, ț (cu virgulă, nu cu sedilă).",
+    "typographyIntro": "Două familii: Newsreader, cu serife, pentru titluri și Public Sans pentru tot restul, inclusiv prețurile, cu cifre tabulare. Ambele au ă, â, î, ș, ț cu virgulă (nu cu sedilă), verificate în fișierele fonturilor.",
     "typeSample": "Șase țânțari zburdă prin ceață",
     "logo": "Logo",
     "logoIntro": "Paleta de licitație ridicată: gestul prin care oricine spune „eu!” într-o sală de licitații. „L”-ul decupat e și acul unui ceas: fiecare licitație se întrece cu timpul.",
@@ -649,9 +641,9 @@
     "spacing": "Spațiere",
     "spacingIntro": "Grilă de 4 px. Folosim pașii 1, 2, 3, 4, 6, 8, 12, 16 din scala Tailwind.",
     "radius": "Colțuri rotunjite",
-    "radiusIntro": "Colțuri moi, ca paleta din logo. Butoanele și etichetele sunt pastile, cardurile au 20–24 px.",
+    "radiusIntro": "Colțuri de 6 px pentru butoane, câmpuri și etichete, 8 px pentru carduri și panouri. Rotund complet doar pentru avatare și puncte.",
     "shadows": "Umbre",
-    "shadowsIntro": "Umbre joase, nuanțate cu bleumarin, doar pentru a separa straturi. Strălucirea albastră e rezervată acțiunii principale.",
+    "shadowsIntro": "Cardurile nu au umbră: la hover li se schimbă marginea. Umbra e rezervată straturilor care plutesc deasupra paginii: meniuri, dialoguri, notificări.",
     "components": "Componente",
     "buttons": "Butoane",
     "inputs": "Câmpuri",
@@ -694,15 +686,21 @@
     "inputHint": "Vei primi aproximativ {payout} după comisionul de 5%.",
     "inputError": "Prețul trebuie să fie de cel puțin 1 RON.",
     "motion": "Mișcare",
-    "motionIntro": "Rapidă, hotărâtă, cu sens: mișcarea confirmă o acțiune sau semnalează ceva live. Totul se oprește dacă sistemul cere mișcare redusă.",
+    "motionIntro": "Scurtă și cu sens: mișcarea confirmă o acțiune sau o ofertă nouă. Totul se oprește dacă sistemul cere mișcare redusă.",
     "motionRules": [
-      "Durate: 120 ms (apăsare), 200 ms (hover, culori), 320–520 ms (intrări în pagină).",
-      "Curba de bază: cubic-bezier(0.2, 0.8, 0.2, 1): pornește repede, se așază lin.",
+      "Durate între 150 și 250 ms, cu ieșire lină (ease-out).",
       "Animăm doar transform și opacitate, ca să rămână fluid și pe telefoane modeste.",
-      "Prețul care crește clipește o dată în bleu; punctul roșu pulsează doar în ultimele 24 de ore."
+      "La o ofertă nouă, prețul alunecă la locul lui, iar panoul se luminează scurt în bordo pal.",
+      "Fără umbre care cresc și fără carduri care se ridică: hover-ul schimbă doar marginea sau fundalul."
     ],
     "ink": "Cerneală",
-    "live": "Live"
+    "live": "Live",
+    "shadowCard": "Card: margine, fără umbră",
+    "shadowOverlay": "Strat plutitor",
+    "statusLeading": "Ești pe primul loc",
+    "statusOutbid": "Ai fost depășit",
+    "statusClosed": "Încheiată",
+    "statusWon": "Câștigată"
   },
   "info": {
     "howTitle": "Cum funcționează LiciTot",

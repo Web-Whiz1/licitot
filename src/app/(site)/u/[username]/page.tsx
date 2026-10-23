@@ -58,7 +58,7 @@ async function Profile({ params }: Pick<PageProps<"/u/[username]">, "params">) {
 
   return (
     <>
-      <header className="flex flex-col gap-5 rounded-lg bg-tint p-6 sm:flex-row sm:items-center md:p-8">
+      <header className="flex flex-col gap-5 rounded-lg border bg-card p-6 sm:flex-row sm:items-center md:p-8">
         <UserAvatar
           name={profile.display_name}
           avatarPath={profile.avatar_path}
@@ -66,9 +66,7 @@ async function Profile({ params }: Pick<PageProps<"/u/[username]">, "params">) {
           className="size-20 text-2xl"
         />
         <div className="min-w-0 space-y-2">
-          <h1 className="font-display text-3xl tracking-tight break-words">
-            {profile.display_name}
-          </h1>
+          <h1 className="font-display text-3xl break-words">{profile.display_name}</h1>
           <p className="text-sm text-muted-foreground">@{profile.username}</p>
           <ul className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
             {location ? (
@@ -167,7 +165,7 @@ async function ProfileReviews({ profileId, username }: { profileId: string; user
 
 function ProfileSkeleton() {
   return (
-    <div className="flex items-center gap-5 rounded-lg bg-tint p-6 md:p-8" aria-hidden>
+    <div className="flex items-center gap-5 rounded-lg border bg-card p-6 md:p-8" aria-hidden>
       <Skeleton className="size-20 rounded-full" />
       <div className="space-y-2">
         <Skeleton className="h-8 w-56" />

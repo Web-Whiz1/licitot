@@ -44,13 +44,15 @@ export default async function HowItWorksPage() {
 
       {groups.map((g) => (
         <section key={g.title} className="mt-12 space-y-5">
-          <h2 className="font-display text-2xl tracking-tight">{g.title}</h2>
+          <h2 className="font-display text-2xl">{g.title}</h2>
           <ol className="grid gap-4 sm:grid-cols-2">
             {g.steps.map((s, i) => (
               <li key={s.title} className="flex gap-4 rounded-lg border bg-card p-5">
-                <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-tint text-primary">
-                  <s.icon aria-hidden className="size-5" />
-                </span>
+                <s.icon
+                  aria-hidden
+                  className="mt-0.5 size-5 shrink-0 text-primary"
+                  strokeWidth={1.75}
+                />
                 <div className="space-y-1">
                   <h3 className="font-semibold">
                     <span className="text-muted-foreground">{i + 1}. </span>

@@ -42,13 +42,13 @@ Each status color has a `-soft` background (`success-soft`, `warning-soft`, `des
 
 **Auction states** (color + icon + text, never color alone):
 
-| State        | Look                                    | Icon                |
-| ------------ | --------------------------------------- | ------------------- |
-| Leading      | `success` on `success-soft`             | the paddle (mark)   |
-| Outbid       | `destructive` on `destructive-soft`     | arrow down          |
-| Ending soon  | `warning` on `warning-soft`             | clock               |
-| Closed       | `muted-foreground` on `muted`           | lock                |
-| Won          | `success-foreground` on `success` (the only filled status) | award |
+| State       | Look                                                       | Icon              |
+| ----------- | ---------------------------------------------------------- | ----------------- |
+| Leading     | `success` on `success-soft`                                | the paddle (mark) |
+| Outbid      | `destructive` on `destructive-soft`                        | arrow down        |
+| Ending soon | `warning` on `warning-soft`                                | clock             |
+| Closed      | `muted-foreground` on `muted`                              | lock              |
+| Won         | `success-foreground` on `success` (the only filled status) | award             |
 
 **Rules**
 
@@ -62,15 +62,15 @@ Each status color has a `-soft` background (`success-soft`, `warning-soft`, `des
 subsets (Latin + Romanian) via `next/font/local`; see `src/assets/fonts/README.md`. Both were
 checked for **ș/ț with comma-below (U+0218–U+021B)**; never use the cedilla forms ş/ţ.
 
-| Style   | Tailwind                                                         | Weight             |
-| ------- | ---------------------------------------------------------------- | ------------------ |
-| Display | `font-display text-display` (fluid 40–68 px)                     | 560, −0.02em       |
-| H1      | `font-display text-3xl`                                          | 560, −0.015em      |
-| H2      | `font-display text-2xl`                                          | 560, −0.015em      |
-| H3      | `text-lg font-semibold` (sans)                                   | 600                |
-| Body    | `text-base` / `text-sm`                                          | 400, line 1.5–1.6  |
-| Eyebrow | `text-xs font-semibold tracking-[0.07em] uppercase`              | 600                |
-| Price   | `font-bold tracking-tight text-primary` + `<Price/>`             | 700, tabular       |
+| Style   | Tailwind                                             | Weight            |
+| ------- | ---------------------------------------------------- | ----------------- |
+| Display | `font-display text-display` (fluid 40–68 px)         | 560, −0.02em      |
+| H1      | `font-display text-3xl`                              | 560, −0.015em     |
+| H2      | `font-display text-2xl`                              | 560, −0.015em     |
+| H3      | `text-lg font-semibold` (sans)                       | 600               |
+| Body    | `text-base` / `text-sm`                              | 400, line 1.5–1.6 |
+| Eyebrow | `text-xs font-semibold tracking-[0.07em] uppercase`  | 600               |
+| Price   | `font-bold tracking-tight text-primary` + `<Price/>` | 700, tabular      |
 
 `font-display`/`font-heading` default to weight 560 and −0.015em (`globals.css`). Emphasis in a
 headline: `font-serif-italic italic` (loaded only where used). **Prices are never mono**: the
@@ -127,8 +127,8 @@ Favicon: `src/app/icon.svg` (lighter rose on dark browser chrome) + `favicon.ico
   (outlined, red text), `ink`/`inverse` (on dark bands), `link`. One filled button per view:
   "Licitează" is always the primary action ("Cumpără acum" is `outline`).
 - **Inputs:** 44 px, 6 px corners, card field with an `input` border (3:1); focus = accent border
-  + soft halo. Errors use `aria-invalid` plus a message in `text-destructive` linked by
-  `aria-describedby`.
+  - soft halo. Errors use `aria-invalid` plus a message in `text-destructive` linked by
+    `aria-describedby`.
 - **Auction card:** 8 px corners, border, no shadow; 4:3 photo with a solid countdown chip
   (`warning` colors in the last hour), title, uppercase price label, price in `text-primary`.
   Sold items get the **"Adjudecat"** stamp (`<HammerStamp/>`).

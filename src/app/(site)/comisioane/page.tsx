@@ -37,16 +37,16 @@ export default async function FeesPage() {
         ))}
       </dl>
 
-      <section className="mt-10 space-y-3 rounded-lg bg-tint p-6">
-        <h2 className="font-display text-xl tracking-tight">{t("exampleTitle")}</h2>
-        <p className="text-secondary-foreground">
+      <section className="mt-10 space-y-3 rounded-lg border bg-card p-6">
+        <h2 className="font-display text-xl">{t("exampleTitle")}</h2>
+        <p>
           {t("example", {
             price: formatRON(EXAMPLE_PRICE, { compact: true }),
             fee: formatRON(calcPlatformFee(EXAMPLE_PRICE), { compact: true }),
             payout: formatRON(calcSellerPayout(EXAMPLE_PRICE), { compact: true }),
           })}
         </p>
-        <p className="text-sm text-secondary-foreground">{t("shippingNote")}</p>
+        <p className="text-sm text-muted-foreground">{t("shippingNote")}</p>
       </section>
 
       <div className="mt-10">

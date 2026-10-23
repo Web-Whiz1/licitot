@@ -377,7 +377,7 @@ async function StatusPanel({
                   {t("handoverTitle")}
                 </h3>
                 <p
-                  className="text-center font-mono text-4xl font-extrabold tracking-[0.3em] text-primary"
+                  className="text-center font-mono text-4xl font-bold tracking-[0.3em] text-primary"
                   aria-label={handoverCode.split("").join(" ")}
                 >
                   {handoverCode}

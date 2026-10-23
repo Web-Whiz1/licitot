@@ -75,10 +75,10 @@ export default async function CategoryPage({
               href={`/categorie/${c.slug}`}
               aria-current={c.slug === slug ? "page" : undefined}
               className={cn(
-                "inline-block rounded-full border px-3 py-1.5 text-sm font-medium transition-colors",
+                "inline-flex h-10 items-center rounded-md border px-3.5 text-sm font-medium transition-colors duration-150 ease-out",
                 c.slug === slug
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "bg-card hover:border-primary hover:text-primary",
+                  ? "border-foreground bg-foreground text-background"
+                  : "bg-card hover:border-input hover:bg-muted",
               )}
             >
               {c.name}

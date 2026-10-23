@@ -329,7 +329,7 @@ export function AuctionForm({ auctionId: initialId, categories, defaults }: Prop
               {DURATIONS.map((d) => (
                 <label
                   key={d}
-                  className="cursor-pointer rounded-full border px-4 py-2 text-sm font-medium transition-colors has-checked:border-primary has-checked:bg-primary has-checked:text-primary-foreground has-focus-visible:outline-2 has-focus-visible:outline-ring"
+                  className="cursor-pointer rounded-md border bg-card px-4 py-2 text-sm font-medium transition-colors duration-150 ease-out hover:border-input has-checked:border-foreground has-checked:bg-foreground has-checked:text-background has-focus-visible:outline-2 has-focus-visible:outline-ring"
                 >
                   <input
                     type="radio"
@@ -417,7 +417,7 @@ export function AuctionForm({ auctionId: initialId, categories, defaults }: Prop
       {/* Summary + actions (sticky on desktop) */}
       <aside className="space-y-4 rounded-lg border bg-card p-5 lg:sticky lg:top-24">
         <h2 className="text-lg font-semibold">{t("summary")}</h2>
-        <div className="rounded-lg bg-tint p-3 text-sm text-tint-foreground">
+        <div className="rounded-md bg-muted p-3 text-sm">
           {startBani !== null && startBani >= MIN_PRICE ? (
             <>
               <p className="font-semibold">

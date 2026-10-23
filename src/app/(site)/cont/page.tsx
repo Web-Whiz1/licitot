@@ -50,37 +50,37 @@ export default async function AccountOverviewPage() {
       href: "/cont/castigate",
       icon: CreditCard,
       text: t("account.overview.toPay", { count: o.ordersToPay }),
-      tone: "bg-warning-soft text-warning",
+      tone: "text-warning",
     },
     o.ordersToShip > 0 && {
       href: "/cont/vandute",
       icon: Truck,
       text: t("account.overview.toShip", { count: o.ordersToShip }),
-      tone: "bg-tint text-primary",
+      tone: "text-primary",
     },
     o.ordersToConfirm > 0 && {
       href: "/cont/castigate",
       icon: PackageCheck,
       text: t("account.overview.toConfirm", { count: o.ordersToConfirm }),
-      tone: "bg-tint text-primary",
+      tone: "text-primary",
     },
     o.outbid > 0 && {
       href: "/cont/oferte",
       icon: TriangleAlert,
       text: t("account.overview.outbid", { count: o.outbid }),
-      tone: "bg-destructive-soft text-destructive",
+      tone: "text-destructive",
     },
     o.unreadNotifications > 0 && {
       href: "/cont/notificari",
       icon: Bell,
       text: t("account.overview.unread", { count: o.unreadNotifications }),
-      tone: "bg-muted text-foreground",
+      tone: "text-muted-foreground",
     },
     !o.payoutsActive && {
       href: "/cont/incasari",
       icon: Wallet,
       text: t("account.overview.payouts"),
-      tone: "bg-muted text-foreground",
+      tone: "text-muted-foreground",
     },
   ].filter((x): x is Todo => Boolean(x))
 
@@ -95,7 +95,7 @@ export default async function AccountOverviewPage() {
           className="size-16 text-xl md:size-20"
         />
         <div className="min-w-0 flex-1 space-y-1.5">
-          <p className="truncate text-xl font-bold tracking-tight md:text-2xl">{p.display_name}</p>
+          <p className="truncate font-display text-2xl md:text-3xl">{p.display_name}</p>
           <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
             <span>@{p.username}</span>
             <span className="inline-flex items-center gap-1">
@@ -146,13 +146,9 @@ export default async function AccountOverviewPage() {
               <li key={todo.text}>
                 <Link
                   href={todo.href}
-                  className="group flex h-full items-center gap-3 rounded-lg border bg-card p-4 transition-[border-color,box-shadow,transform] duration-200 ease-snap hover:-translate-y-0.5 hover:border-primary/40"
+                  className="group flex h-full items-center gap-3 rounded-lg border bg-card p-4 transition-colors duration-150 ease-out hover:border-input"
                 >
-                  <span
-                    className={cn("grid size-10 shrink-0 place-items-center rounded-lg", todo.tone)}
-                  >
-                    <todo.icon aria-hidden className="size-5" />
-                  </span>
+                  <todo.icon aria-hidden className={cn("size-5 shrink-0", todo.tone)} />
                   <span className="min-w-0 flex-1 text-sm font-medium">{todo.text}</span>
                   <ArrowRight
                     aria-hidden
@@ -178,7 +174,7 @@ export default async function AccountOverviewPage() {
         <div className="grid gap-4 sm:grid-cols-3">
           {ACCOUNT_NAV.filter((g) => g.group !== null).map(({ group, tabs }) => (
             <div key={group} className="rounded-lg border bg-card p-2">
-              <p className="px-3 pt-2 pb-1 text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+              <p className="px-3 pt-2 pb-1 text-xs font-semibold tracking-[0.07em] text-muted-foreground uppercase">
                 {t(`account.groups.${group!}`)}
               </p>
               <ul>
@@ -186,7 +182,7 @@ export default async function AccountOverviewPage() {
                   <li key={href}>
                     <Link
                       href={href}
-                      className="flex h-11 items-center gap-3 rounded-lg px-3 text-sm font-medium transition-colors hover:bg-muted"
+                      className="flex h-11 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors duration-150 ease-out hover:bg-muted"
                     >
                       <Icon aria-hidden className="size-4 text-primary" />
                       {t(`account.tabs.${key}`)}

@@ -8,23 +8,20 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import Link from "next/link"
-import { useTranslations } from "next-intl"
 import { getTranslations } from "next-intl/server"
 import { Suspense } from "react"
-import { AuctionThumb } from "@/components/auction-thumb"
 import { LogoMark } from "@/components/brand/logo"
-import { Countdown } from "@/components/countdown"
 import { LiveDot } from "@/components/live-dot"
 import { SearchForm } from "@/components/layout/search-form"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { AuctionGrid, auctionHref } from "@/features/auctions/components/auction-card"
+import { AuctionCard, AuctionGrid } from "@/features/auctions/components/auction-card"
 import { AuctionGridSkeleton } from "@/features/auctions/components/card-skeletons"
 import { CategoryIcon } from "@/features/auctions/components/category-icon"
-import { getHomeSections, type AuctionCardData } from "@/features/auctions/listing"
+import { getHomeSections } from "@/features/auctions/listing"
 import { getCategoryTree } from "@/features/auctions/queries"
 import { EmptyState } from "@/features/profiles/components/empty-state"
-import { formatRON, PLATFORM_FEE_PERCENT } from "@/lib/money"
+import { PLATFORM_FEE_PERCENT } from "@/lib/money"
 import { cn } from "@/lib/utils"
 
 export default async function HomePage() {
@@ -32,41 +29,30 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ── Hero: a clear blue sky, with the auctions closest to the hammer on the right ── */}
-      <section className="relative isolate overflow-hidden bg-background text-foreground">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -top-48 -right-32 -z-10 size-[44rem] rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--card)_85%,transparent)_0%,transparent_62%)] dark:bg-[radial-gradient(circle,color-mix(in_oklab,var(--primary)_30%,transparent)_0%,transparent_62%)]"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -bottom-72 -left-48 -z-10 size-[38rem] rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--primary)_16%,transparent)_0%,transparent_65%)]"
-        />
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 pt-10 pb-14 md:px-6 lg:grid-cols-[1.1fr_1fr] lg:gap-10 lg:pt-20 lg:pb-24">
-          <div className="space-y-7">
+      {/* ── Hero: the thesis in the serif, with the auctions closest to the hammer on the right ── */}
+      <section className="border-b">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 pt-10 pb-12 md:px-6 lg:grid-cols-[1.1fr_1fr] lg:gap-12 lg:pt-16 lg:pb-20">
+          <div className="space-y-6">
             <Suspense fallback={<Eyebrow label={t("home.heroEyebrow")} />}>
               <LiveEyebrow />
             </Suspense>
-            <h1 className="font-display text-[2.75rem] leading-[0.98] tracking-[-0.045em] text-balance md:text-display">
+            <h1 className="font-display text-[2.5rem] leading-[1.02] tracking-[-0.02em] text-balance md:text-display">
               {t.rich("home.heroTitle", {
-                accent: (chunks) => <span className="text-primary">{chunks}</span>,
+                accent: (chunks) => (
+                  <em className="font-serif-italic font-medium text-primary italic">{chunks}</em>
+                ),
               })}
             </h1>
-            <p className="max-w-lg animate-rise text-lg text-pretty text-muted-foreground [animation-delay:80ms]">
+            <p className="max-w-lg text-lg text-pretty text-muted-foreground">
               {t("home.heroSubtitle")}
             </p>
-            <div className="max-w-xl animate-rise space-y-4 [animation-delay:160ms]">
+            <div className="max-w-xl space-y-4">
               <SearchForm id="search-hero" size="lg" />
               <div className="flex flex-wrap items-center gap-3">
                 <Button asChild size="lg">
                   <Link href="/vinde">{t("home.heroCtaSell")}</Link>
                 </Button>
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="border-transparent bg-card/60 backdrop-blur-md hover:bg-card"
-                >
+                <Button asChild size="lg" variant="outline">
                   <Link href="/cauta">
                     {t("home.heroCtaBrowse")}
                     <ArrowRight data-icon="inline-end" />
@@ -99,8 +85,8 @@ export default async function HomePage() {
 
 function Eyebrow({ label }: { label: string }) {
   return (
-    <p className="inline-flex animate-rise items-center gap-2 rounded-full bg-card/70 px-3.5 py-1.5 text-sm font-semibold ring-1 ring-primary/15 backdrop-blur-md">
-      <LiveDot pulse className="text-primary" />
+    <p className="inline-flex items-center gap-2 text-sm font-semibold tabular-nums">
+      <LiveDot className="text-primary" />
       {label}
     </p>
   )
@@ -118,18 +104,18 @@ async function LiveEyebrow() {
   )
 }
 
-/** The two auctions closest to the hammer, as overlapping cards with live countdowns. */
+/** The two auctions closest to the hammer, straight and side by side, with live countdowns. */
 async function LiveStack() {
   const [t, sections] = await Promise.all([getTranslations(), getHomeSections()])
   const items = sections.endingSoon.slice(0, 2)
 
   if (items.length === 0) {
     return (
-      <div className="relative hidden justify-center lg:flex">
-        <div className="grid w-full max-w-sm animate-rise justify-items-center gap-5 rounded-[2.5rem] bg-card/55 px-8 py-12 text-center ring-1 ring-card backdrop-blur-md">
-          <LogoMark className="size-36 -rotate-3" />
-          <div className="space-y-1">
-            <p className="text-xl font-bold tracking-tight">{t("home.liveEmptyTitle")}</p>
+      <div className="hidden lg:block">
+        <div className="grid justify-items-center gap-5 rounded-lg border bg-card px-8 py-14 text-center">
+          <LogoMark className="size-20" />
+          <div className="space-y-1.5">
+            <p className="font-display text-2xl">{t("home.liveEmptyTitle")}</p>
             <p className="text-sm text-muted-foreground">{t("home.liveEmptyHint")}</p>
           </div>
         </div>
@@ -138,88 +124,23 @@ async function LiveStack() {
   }
 
   return (
-    <ul
-      className={cn(
-        "relative mx-auto w-full max-w-md",
-        items.length > 1 ? "h-[27rem] sm:h-[30.5rem]" : "h-auto",
-      )}
-    >
+    <ul className={cn("grid gap-4", items.length > 1 ? "grid-cols-2" : "mx-auto w-full max-w-xs")}>
       {items.map((a, i) => (
-        <li
-          key={a.id}
-          className={cn(
-            "animate-rise",
-            items.length > 1 &&
-              (i === 0
-                ? "absolute top-0 right-0 z-10 w-[78%] rotate-[4deg] [animation-delay:120ms]"
-                : "absolute top-24 left-0 z-20 w-[78%] -rotate-[5deg] [animation-delay:240ms]"),
-            items.length === 1 && "mx-auto w-[82%] -rotate-2",
-          )}
-        >
-          <StackCard auction={a} priority={i === 0} />
+        <li key={a.id}>
+          <AuctionCard auction={a} priority={i === 0} />
         </li>
       ))}
     </ul>
   )
 }
 
-function StackCard({ auction: a, priority }: { auction: AuctionCardData; priority: boolean }) {
-  const t = useTranslations()
-  const hasBids = a.bid_count > 0
-  return (
-    <Link
-      href={auctionHref(a)}
-      className="group block overflow-hidden rounded-[1.5rem] border bg-card text-card-foreground shadow-overlay transition-transform duration-300 ease-snap hover:-translate-y-1.5 hover:rotate-0"
-    >
-      <div className="relative">
-        <AuctionThumb
-          path={a.cover?.path}
-          blurDataUrl={a.cover?.blurDataUrl}
-          alt=""
-          sizes="(min-width: 1024px) 360px, 80vw"
-          priority={priority}
-          noPhotoLabel={t("auction.noPhoto")}
-          className="aspect-[4/3] w-full"
-          imageClassName="transition-transform duration-500 ease-snap group-hover:scale-[1.04]"
-        />
-        {a.ends_at ? (
-          <Countdown endsAt={a.ends_at} compact variant="chip" className="absolute top-3 left-3" />
-        ) : null}
-      </div>
-      <div className="space-y-2.5 p-4">
-        <p className="line-clamp-1 text-[0.9375rem] font-semibold">{a.title}</p>
-        <div className="flex items-end justify-between gap-3">
-          <div>
-            <p className="text-[0.6875rem] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
-              {hasBids ? t("card.currentBid") : t("card.startingPrice")}
-            </p>
-            <p className="text-2xl leading-tight font-bold tracking-tight text-primary tabular-nums">
-              {formatRON(a.current_price, { compact: true })}
-            </p>
-          </div>
-          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-            <Gavel aria-hidden className="size-3.5" />
-            {t("auction.bids", { count: a.bid_count })}
-          </span>
-        </div>
-      </div>
-    </Link>
-  )
-}
-
 function LiveStackSkeleton() {
   return (
-    <div aria-hidden className="relative mx-auto h-[27rem] w-full max-w-md sm:h-[30.5rem]">
+    <div aria-hidden className="grid grid-cols-2 gap-4">
       {[0, 1].map((i) => (
-        <div
-          key={i}
-          className={cn(
-            "absolute w-[78%] overflow-hidden rounded-[1.5rem] border bg-card shadow-overlay",
-            i === 0 ? "top-0 right-0 rotate-[4deg]" : "top-24 left-0 -rotate-[5deg]",
-          )}
-        >
+        <div key={i} className="overflow-hidden rounded-lg border bg-card">
           <Skeleton className="aspect-[4/3] rounded-none" />
-          <div className="space-y-2 p-4">
+          <div className="space-y-2 p-3.5">
             <Skeleton className="h-4 w-3/4" />
             <Skeleton className="h-6 w-1/3" />
           </div>
@@ -245,10 +166,8 @@ async function TrustStrip() {
     <section aria-label={t("trustTitle")} className="border-b bg-card">
       <ul className="mx-auto grid max-w-7xl gap-x-6 gap-y-5 px-4 py-8 sm:grid-cols-2 md:px-6 lg:grid-cols-4">
         {items.map(({ icon: Icon, title, text }) => (
-          <li key={title} className="flex gap-3.5">
-            <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-tint text-primary">
-              <Icon aria-hidden className="size-5" />
-            </span>
+          <li key={title} className="flex gap-3">
+            <Icon aria-hidden className="mt-0.5 size-5 shrink-0 text-primary" strokeWidth={1.75} />
             <span className="space-y-0.5">
               <span className="block text-sm font-semibold">{title}</span>
               <span className="block text-sm text-muted-foreground">{text}</span>
@@ -270,11 +189,9 @@ async function Categories() {
           <li key={c.slug}>
             <Link
               href={`/categorie/${c.slug}`}
-              className="group flex h-full flex-col items-center gap-3 rounded-lg border bg-card px-3 py-5 text-center text-sm font-medium transition-[transform,box-shadow,border-color] duration-300 ease-snap hover:-translate-y-0.5 hover:border-primary/40"
+              className="flex h-full flex-col items-center gap-2.5 rounded-lg border bg-card px-3 py-5 text-center text-sm font-medium transition-colors duration-150 ease-out hover:border-input hover:bg-muted"
             >
-              <span className="grid size-12 place-items-center rounded-lg bg-tint text-primary transition-[background-color,color,transform] duration-300 ease-snap group-hover:-rotate-6 group-hover:bg-primary group-hover:text-primary-foreground">
-                <CategoryIcon name={c.icon} className="size-5" />
-              </span>
+              <CategoryIcon name={c.icon} className="size-6 text-primary" />
               {c.name}
             </Link>
           </li>
@@ -351,19 +268,18 @@ async function Steps() {
   ]
   return (
     <section aria-labelledby="pasi" className="mx-auto max-w-7xl px-4 pt-20 md:px-6">
-      <div className="rounded-[2rem] bg-tint px-5 py-10 text-tint-foreground md:px-10 md:py-14">
+      <div className="rounded-lg border bg-card px-5 py-10 md:px-10 md:py-12">
         <SectionHeader
           id="pasi"
           eyebrow={t("stepsEyebrow")}
           title={t("stepsTitle")}
           href="/cum-functioneaza"
           seeAll={t("stepsMore")}
-          tone="tint"
         />
         <ol className="grid gap-8 md:grid-cols-3 md:gap-10">
           {steps.map((s, i) => (
             <li key={s.title} className="space-y-3">
-              <span className="block font-display text-5xl leading-none text-primary">
+              <span className="block font-display text-4xl leading-none text-primary tabular-nums">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <h3 className="text-lg font-semibold text-foreground">{s.title}</h3>
@@ -380,16 +296,16 @@ async function SellBand() {
   const t = await getTranslations("home")
   return (
     <section className="mx-auto max-w-7xl px-4 pt-6 md:px-6">
-      <div className="relative isolate overflow-hidden rounded-[2rem] bg-primary px-6 py-12 text-primary-foreground md:px-12 md:py-16">
+      <div className="relative isolate overflow-hidden rounded-lg bg-primary px-6 py-12 text-primary-foreground md:px-12 md:py-16 dark:bg-tint dark:text-foreground">
         <LogoMark
           variant="mono"
-          className="pointer-events-none absolute -right-10 -bottom-16 -z-10 size-72 text-primary-foreground/10 md:right-6 md:size-96"
+          className="pointer-events-none absolute -right-10 -bottom-16 -z-10 size-72 text-primary-foreground/10 md:right-6 md:size-96 dark:text-primary/15"
         />
         <div className="max-w-xl space-y-4">
-          <h2 className="font-display text-4xl leading-[1.05] tracking-[-0.025em] md:text-5xl">
+          <h2 className="font-display text-4xl leading-[1.05] tracking-[-0.02em] md:text-5xl">
             {t("sellTitle")}
           </h2>
-          <p className="text-lg text-pretty text-primary-foreground/85">
+          <p className="text-lg text-pretty text-primary-foreground/85 dark:text-foreground/80">
             {t("sellText", { percent: PLATFORM_FEE_PERCENT })}
           </p>
           <Button asChild size="lg" variant="inverse" className="mt-2">
@@ -410,30 +326,22 @@ function SectionHeader({
   title,
   href,
   seeAll,
-  tone = "default",
 }: {
   id: string
   eyebrow: string
   title: string
   href?: string
   seeAll?: string
-  tone?: "default" | "tint"
 }) {
   return (
     <div className="mb-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
       <div className="space-y-1.5">
-        <p
-          className={
-            tone === "tint"
-              ? "text-xs font-semibold tracking-[0.14em] text-tint-foreground uppercase"
-              : "text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase"
-          }
-        >
+        <p className="text-xs font-semibold tracking-[0.07em] text-muted-foreground uppercase">
           {eyebrow}
         </p>
         <h2
           id={id}
-          className="font-display text-3xl leading-tight tracking-[-0.02em] text-foreground md:text-4xl"
+          className="font-display text-[1.75rem] leading-tight text-foreground md:text-3xl"
         >
           {title}
         </h2>
@@ -441,7 +349,7 @@ function SectionHeader({
       {href && seeAll ? (
         <Link
           href={href}
-          className="group inline-flex shrink-0 items-center gap-1 rounded-full py-1 text-sm font-semibold text-primary"
+          className="group inline-flex shrink-0 items-center gap-1 rounded-md py-1 text-sm font-semibold text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
         >
           {seeAll}
           <ArrowRight
@@ -480,7 +388,7 @@ function Section({
 function SectionSkeleton({ title, count }: { title: string; count: number }) {
   return (
     <section className="mx-auto max-w-7xl px-4 pt-16 md:px-6">
-      <h2 className="mb-6 font-display text-3xl tracking-[-0.02em] md:text-4xl">{title}</h2>
+      <h2 className="mb-6 font-display text-[1.75rem] md:text-3xl">{title}</h2>
       <AuctionGridSkeleton count={count} />
     </section>
   )

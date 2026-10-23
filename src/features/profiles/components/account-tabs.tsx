@@ -44,7 +44,7 @@ export function AccountTabsNav({ pathname }: { pathname: string | null }) {
                   ref={active ? centerInNav : undefined}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "flex h-10 items-center gap-2 rounded-full px-4 text-sm font-medium whitespace-nowrap transition-[background-color,color] duration-200 ease-snap",
+                    "flex h-10 items-center gap-2 rounded-md px-3.5 text-sm font-medium whitespace-nowrap transition-colors duration-150 ease-out",
                     active
                       ? "bg-foreground text-background"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -64,7 +64,7 @@ export function AccountTabsNav({ pathname }: { pathname: string | null }) {
         {ACCOUNT_NAV.map(({ group, tabs }) => (
           <div key={group ?? "main"} className="space-y-1.5">
             {group ? (
-              <p className="px-3 text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+              <p className="px-3 text-xs font-semibold tracking-[0.07em] text-muted-foreground uppercase">
                 {t(`groups.${group}`)}
               </p>
             ) : null}
@@ -77,7 +77,7 @@ export function AccountTabsNav({ pathname }: { pathname: string | null }) {
                       href={href}
                       aria-current={active ? "page" : undefined}
                       className={cn(
-                        "flex h-10 items-center gap-3 rounded-lg px-3 text-sm transition-[background-color,color] duration-200 ease-snap",
+                        "flex h-10 items-center gap-3 rounded-md px-3 text-sm transition-colors duration-150 ease-out",
                         active
                           ? "bg-tint font-semibold text-tint-foreground"
                           : "text-muted-foreground hover:bg-muted hover:text-foreground",
