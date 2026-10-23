@@ -56,7 +56,7 @@ export async function Footer() {
 
         {columns.map((col) => (
           <nav key={col.title} aria-label={col.title}>
-            <h2 className="mb-4 text-xs font-semibold tracking-[0.14em] text-ink-muted uppercase">
+            <h2 className="mb-4 text-xs font-semibold tracking-[0.07em] text-ink-muted uppercase">
               {col.title}
             </h2>
             <ul className="space-y-2.5 text-sm">
@@ -66,7 +66,7 @@ export async function Footer() {
                   <Link
                     href={link.href}
                     prefetch={false}
-                    className="text-ink-foreground/90 underline-offset-4 transition-colors hover:text-ink-accent hover:underline focus-visible:outline-ink-accent"
+                    className="text-ink-foreground/90 decoration-ink-accent underline-offset-4 transition-colors duration-150 ease-out hover:text-ink-foreground hover:underline focus-visible:outline-ink-accent"
                   >
                     {link.label}
                   </Link>
@@ -86,7 +86,7 @@ export async function Footer() {
                 href={b.href}
                 target="_blank"
                 rel="nofollow noopener noreferrer"
-                className="rounded-lg focus-visible:outline-ink-accent"
+                className="rounded-md focus-visible:outline-ink-accent"
               >
                 <Image
                   src={b.src}

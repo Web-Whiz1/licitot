@@ -37,10 +37,9 @@ export function SearchForm({
         autoComplete="off"
         placeholder={t("placeholder")}
         className={cn(
-          "rounded-full",
           size === "lg"
-            ? "h-14 border-transparent bg-card pr-5 pl-13 text-base md:text-base"
-            : "border-transparent bg-muted pl-10 hover:border-border focus-visible:bg-card",
+            ? "h-14 bg-card pr-5 pl-13 text-base md:text-base"
+            : "h-10 border-border bg-background pl-10 hover:border-input focus-visible:bg-card",
         )}
       />
     </Form>
