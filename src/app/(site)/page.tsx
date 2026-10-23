@@ -1,12 +1,4 @@
-import {
-  ArrowRight,
-  BadgeCheck,
-  BadgePercent,
-  Gavel,
-  KeyRound,
-  ShieldCheck,
-  type LucideIcon,
-} from "lucide-react"
+import { ArrowRight, Gavel } from "lucide-react"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
 import { Suspense } from "react"
@@ -14,8 +6,7 @@ import { LogoMark } from "@/components/brand/logo"
 import { LiveDot } from "@/components/live-dot"
 import { SearchForm } from "@/components/layout/search-form"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
-import { AuctionCard, AuctionGrid } from "@/features/auctions/components/auction-card"
+import { AuctionGrid } from "@/features/auctions/components/auction-card"
 import { AuctionGridSkeleton } from "@/features/auctions/components/card-skeletons"
 import { CategoryIcon } from "@/features/auctions/components/category-icon"
 import { getHomeSections } from "@/features/auctions/listing"
@@ -29,7 +20,7 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ── Hero: the thesis in the serif, with the auctions closest to the hammer on the right ── */}
+      {/* ── Hero: the thesis in the serif; on the right, the guarantees as a trail from the paddle ── */}
       <section className="border-b">
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 pt-10 pb-12 md:px-6 lg:grid-cols-[1.1fr_1fr] lg:gap-12 lg:pt-16 lg:pb-20">
           <div className="space-y-6">
@@ -62,13 +53,9 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <Suspense fallback={<LiveStackSkeleton />}>
-            <LiveStack />
-          </Suspense>
+          <TrustTrail />
         </div>
       </section>
-
-      <TrustStrip />
 
       <Categories />
 
@@ -104,78 +91,77 @@ async function LiveEyebrow() {
   )
 }
 
-/** The two auctions closest to the hammer, straight and side by side, with live countdowns. */
-async function LiveStack() {
-  const [t, sections] = await Promise.all([getTranslations(), getHomeSections()])
-  const items = sections.endingSoon.slice(0, 2)
+/**
+ * The trail on desktop: a fixed 420×560 box, so the dotted SVG path and the stops line up
+ * exactly. It starts under the paddle and winds right, left, right through the four stops
+ * (top-left corners below). The path runs behind the stop markers, which mask it.
+ */
+const TRAIL_STOPS = [
+  { x: 12, y: 120, side: "left" },
+  { x: 60, y: 250, side: "right" },
+  { x: 12, y: 380, side: "left" },
+  { x: 60, y: 510, side: "right" },
+] as const
+// S-curves (a slalom) between the stop centers (32,140) → (388,270) → (32,400) → (388,530);
+// the control points keep every curve clear of the text blocks next to the stops.
+const TRAIL_PATH =
+  "M32 66 V140 C32 280 388 160 388 270 C388 410 32 290 32 400 C32 540 388 420 388 530"
 
-  if (items.length === 0) {
-    return (
-      <div className="hidden lg:block">
-        <div className="grid justify-items-center gap-5 rounded-lg border bg-card px-8 py-14 text-center">
-          <LogoMark className="size-20" />
-          <div className="space-y-1.5">
-            <p className="font-display text-2xl">{t("home.liveEmptyTitle")}</p>
-            <p className="text-sm text-muted-foreground">{t("home.liveEmptyHint")}</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <ul className={cn("grid gap-4", items.length > 1 ? "grid-cols-2" : "mx-auto w-full max-w-xs")}>
-      {items.map((a, i) => (
-        <li key={a.id}>
-          <AuctionCard auction={a} priority={i === 0} />
-        </li>
-      ))}
-    </ul>
-  )
-}
-
-function LiveStackSkeleton() {
-  return (
-    <div aria-hidden className="grid grid-cols-2 gap-4">
-      {[0, 1].map((i) => (
-        <div key={i} className="overflow-hidden rounded-lg border bg-card">
-          <Skeleton className="aspect-[4/3] rounded-none" />
-          <div className="space-y-2 p-3.5">
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-6 w-1/3" />
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-async function TrustStrip() {
+/** The four guarantees as numbered stops on a dotted trail that starts at the paddle. */
+async function TrustTrail() {
   const t = await getTranslations("home")
-  const items: { icon: LucideIcon; title: string; text: string }[] = [
-    { icon: ShieldCheck, title: t("trust.escrowTitle"), text: t("trust.escrow") },
-    { icon: KeyRound, title: t("trust.codeTitle"), text: t("trust.code") },
-    {
-      icon: BadgePercent,
-      title: t("trust.feeTitle"),
-      text: t("trust.fee", { percent: PLATFORM_FEE_PERCENT }),
-    },
-    { icon: BadgeCheck, title: t("trust.verifiedTitle"), text: t("trust.verified") },
+  const stops = [
+    { title: t("trust.escrowTitle"), text: t("trust.escrow") },
+    { title: t("trust.codeTitle"), text: t("trust.code") },
+    { title: t("trust.feeTitle"), text: t("trust.fee", { percent: PLATFORM_FEE_PERCENT }) },
+    { title: t("trust.verifiedTitle"), text: t("trust.verified") },
   ]
   return (
-    <section aria-label={t("trustTitle")} className="border-b bg-card">
-      <ul className="mx-auto grid max-w-7xl gap-x-6 gap-y-5 px-4 py-8 sm:grid-cols-2 md:px-6 lg:grid-cols-4">
-        {items.map(({ icon: Icon, title, text }) => (
-          <li key={title} className="flex gap-3">
-            <Icon aria-hidden className="mt-0.5 size-5 shrink-0 text-primary" strokeWidth={1.75} />
-            <span className="space-y-0.5">
-              <span className="block text-sm font-semibold">{title}</span>
-              <span className="block text-sm text-muted-foreground">{text}</span>
-            </span>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <div className="relative lg:mx-auto lg:h-[560px] lg:w-[420px]">
+      <LogoMark className="absolute top-0 left-0 hidden size-16 lg:block" />
+      <svg
+        aria-hidden
+        viewBox="0 0 420 560"
+        className="absolute inset-0 hidden size-full text-primary/45 lg:block"
+      >
+        <path
+          d={TRAIL_PATH}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={3}
+          strokeLinecap="round"
+          strokeDasharray="0 10"
+        />
+      </svg>
+      <ol aria-label={t("trustTitle")} className="flex flex-col gap-3 lg:block">
+        {stops.map((s, i) => {
+          const pos = TRAIL_STOPS[i]!
+          return (
+            <li
+              key={s.title}
+              style={{ "--x": `${pos.x}px`, "--y": `${pos.y}px` } as React.CSSProperties}
+              className={cn(
+                // Phones: a straight dotted trail from one marker to the next.
+                "relative flex gap-4 not-last:before:absolute not-last:before:top-11 not-last:before:-bottom-2 not-last:before:left-[19px] not-last:before:border-l-2 not-last:before:border-dotted not-last:before:border-primary/45",
+                "lg:absolute lg:top-(--y) lg:left-(--x) lg:w-[348px] lg:before:hidden",
+                pos.side === "right" && "lg:flex-row-reverse lg:text-right",
+              )}
+            >
+              <span
+                aria-hidden
+                className="relative z-10 grid size-10 shrink-0 place-items-center rounded-full border-2 border-primary bg-background font-display text-lg leading-none text-primary"
+              >
+                {i + 1}
+              </span>
+              <div className="pt-2.5">
+                <p className="leading-5 font-semibold">{s.title}</p>
+                <p className="mt-1 text-sm leading-5 text-pretty text-muted-foreground">{s.text}</p>
+              </div>
+            </li>
+          )
+        })}
+      </ol>
+    </div>
   )
 }
 
