@@ -53,7 +53,7 @@ export async function getWonAuctions(userId: string) {
   return data.map(({ auction_images, ...a }) => ({ ...a, cover: cover(auction_images) }))
 }
 
-/** The user's sold auctions, newest first, with the buyer. */
+/** The user's sold auctions, newest first, with the buyer and the payout breakdown. */
 export async function getSoldAuctions(userId: string) {
   const supabase = await createClient()
   const { data, error } = await supabase
@@ -61,7 +61,7 @@ export async function getSoldAuctions(userId: string) {
     .select(
       `id, slug, title, final_price, ends_at, bid_count,
        winner:profiles!auctions_winner_id_fkey(username, display_name),
-       order:orders(id, status, payment_due_at),
+       order:orders(id, status, payment_due_at, item_price, shipping_cost, platform_fee, released_at),
        auction_images(path, blur_data_url, position)`,
     )
     .eq("seller_id", userId)

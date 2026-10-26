@@ -435,7 +435,9 @@
       "buyer": "Cumpărător: {name}",
       "on": "pe {date}",
       "viewBuyer": "Profilul cumpărătorului",
-      "details": "Detalii comandă"
+      "details": "Detalii comandă",
+      "payout": "Primești {payout} · comision LiciTot {percent}%: {fee}",
+      "paidOut": "Ai primit {payout} · comision LiciTot {percent}%: {fee}"
     },
     "groups": {
       "buying": "Cumpărături",
@@ -912,7 +914,8 @@
     "balanceTitle": "Sold și transferuri în cont",
     "accountTitle": "Datele tale și contul bancar",
     "embeddedError": "Panoul de plăți nu s-a putut încărca. Reîncarcă pagina sau folosește site-ul Stripe (linkul de mai jos).",
-    "fallbackIntro": "Preferi site-ul Stripe?"
+    "fallbackIntro": "Preferi site-ul Stripe?",
+    "transferDescription": "LiciTot · {title} · preț {item}{hasShipping, select, yes { · livrare {shipping}} other {}} · comision LiciTot {percent}%: −{fee} · primești {payout}"
   },
   "legal": {
     "updated": "Ultima actualizare: {date}",

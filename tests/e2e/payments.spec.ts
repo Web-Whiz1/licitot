@@ -165,9 +165,31 @@ test("buy now, pay on Stripe Checkout, ship", async ({ page, browser }, info) =>
   expect(done?.stripe_transfer_id).toMatch(/^tr_/)
   const transfer = await stripe.transfers.retrieve(done!.stripe_transfer_id!)
   expect(transfer).toMatchObject({ amount: 31_000, destination: accountId })
+  // The fee breakdown travels with the payout: on our transfer and on the payment the seller
+  // sees in their own Stripe account.
+  expect(transfer.metadata).toMatchObject({
+    order_id: orderId,
+    item_price: "30000",
+    shipping_cost: "2500",
+    platform_fee: "1500",
+    payout: "31000",
+  })
+  expect(transfer.description).toMatch(
+    /preț 300\sRON · livrare 25\sRON · comision LiciTot 5%: −15\sRON · primești 310\sRON$/,
+  )
+  const sellerPayment = await stripe.charges.retrieve(
+    transfer.destination_payment as string,
+    {},
+    { stripeAccount: accountId! },
+  )
+  expect(sellerPayment.description).toBe(transfer.description)
 
   await sellerPage.reload()
   await expect(sellerPage.getByText(/Ai primit 310\sRON în contul tău Stripe/)).toBeVisible()
+  await sellerPage.goto("/cont/vandute")
+  await expect(
+    sellerPage.getByText(/Ai primit 310\sRON · comision LiciTot 5%: 15\sRON/),
+  ).toBeVisible()
   await sellerContext.close()
 
   // The buyer rates the seller; the rating shows on the seller's public profile.

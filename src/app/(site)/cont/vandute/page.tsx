@@ -10,7 +10,7 @@ import { requireUser } from "@/features/auth/session"
 import { getSoldAuctions } from "@/features/bids/queries"
 import { EmptyState } from "@/features/profiles/components/empty-state"
 import { formatDate } from "@/lib/dates"
-import { formatRON } from "@/lib/money"
+import { formatRON, PLATFORM_FEE_PERCENT } from "@/lib/money"
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("account.tabs")
@@ -68,6 +68,18 @@ export default async function SoldPage() {
           {a.winner ? (
             <p className="text-sm text-muted-foreground">
               {t("account.sold.buyer", { name: a.winner.display_name })}
+            </p>
+          ) : null}
+          {a.order && a.order.status !== "cancelled" ? (
+            <p className="text-sm text-muted-foreground tabular-nums">
+              {t(a.order.released_at ? "account.sold.paidOut" : "account.sold.payout", {
+                payout: formatRON(
+                  a.order.item_price + a.order.shipping_cost - a.order.platform_fee,
+                  { compact: true },
+                ),
+                fee: formatRON(a.order.platform_fee, { compact: true }),
+                percent: PLATFORM_FEE_PERCENT,
+              })}
             </p>
           ) : null}
         </AuctionListItem>

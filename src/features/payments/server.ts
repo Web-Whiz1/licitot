@@ -1,6 +1,8 @@
 import "server-only"
 import { headers } from "next/headers"
+import { getTranslations } from "next-intl/server"
 import type Stripe from "stripe"
+import { formatRON, PLATFORM_FEE_PERCENT } from "@/lib/money"
 import { SITE_URL } from "@/lib/site"
 import { stripe } from "@/lib/stripe.server"
 import { createAdminClient } from "@/lib/supabase/admin"
@@ -82,7 +84,9 @@ export type SettleResult = { released: number; refunded: number; failed: number 
 
 /**
  * Moves held money (idempotent; safe to run from several places at once):
- * - completed orders not yet paid out → transfer item + shipping − 5% fee to the seller;
+ * - completed orders not yet paid out → transfer item + shipping − 5% fee to the seller, with
+ *   the breakdown (price, shipping, fee, payout) as description and metadata on the transfer
+ *   and on the payment the seller sees in their own Stripe account;
  * - cancelled orders that were paid but not refunded → full refund to the buyer.
  * Runs on the order page, after order actions, and from the scheduled job (/api/cron/orders).
  */
@@ -98,9 +102,45 @@ export async function settleOrders(orderId?: string): Promise<SettleResult> {
     orderId ? { p_order_id: orderId } : {},
   )
 
-  for (const o of releases ?? []) {
+  const due = releases ?? []
+  // The fee breakdown travels with each payout, so the seller sees it in Stripe too.
+  const { data: details } = due.length
+    ? await db
+        .from("orders")
+        .select("id, item_price, shipping_cost, platform_fee, auction:auctions(title)")
+        .in(
+          "id",
+          due.map((o) => o.id),
+        )
+    : { data: [] }
+  const detailsById = new Map((details ?? []).map((d) => [d.id, d]))
+  const t = due.length ? await getTranslations({ locale: "ro", namespace: "payouts" }) : null
+
+  for (const o of due) {
     try {
       if (!o.stripe_account_id) throw new Error("seller has no Stripe account")
+      const d = detailsById.get(o.id)
+      const ron = (bani: number) => formatRON(bani, { compact: true })
+      const breakdown: Record<string, string> = d
+        ? {
+            item_price: String(d.item_price),
+            shipping_cost: String(d.shipping_cost),
+            platform_fee: String(d.platform_fee),
+            payout: String(o.amount),
+          }
+        : {}
+      const description =
+        d && t
+          ? t("transferDescription", {
+              title: (d.auction?.title ?? "").slice(0, 80),
+              item: ron(d.item_price),
+              hasShipping: d.shipping_cost > 0 ? "yes" : "no",
+              shipping: ron(d.shipping_cost),
+              percent: PLATFORM_FEE_PERCENT,
+              fee: ron(d.platform_fee),
+              payout: ron(o.amount),
+            })
+          : undefined
       const transfer = await stripe().transfers.create(
         {
           amount: o.amount,
@@ -108,8 +148,10 @@ export async function settleOrders(orderId?: string): Promise<SettleResult> {
           destination: o.stripe_account_id,
           source_transaction: o.stripe_charge_id,
           transfer_group: o.id,
-          metadata: { order_id: o.id },
+          description,
+          metadata: { order_id: o.id, ...breakdown },
         },
+        // Same key as before: a retry must never create a second transfer.
         { idempotencyKey: `release-${o.id}` },
       )
       const { error } = await db.rpc("order_mark_released", {
@@ -118,6 +160,17 @@ export async function settleOrders(orderId?: string): Promise<SettleResult> {
       })
       if (error) throw new Error(error.message)
       result.released++
+      // The seller's Stripe shows the payment created in their account, not our transfer:
+      // label that payment with the same breakdown (best effort, the money already moved).
+      if (description && typeof transfer.destination_payment === "string") {
+        await stripe()
+          .charges.update(
+            transfer.destination_payment,
+            { description, metadata: { order_id: o.id, ...breakdown } },
+            { stripeAccount: o.stripe_account_id },
+          )
+          .catch((e: unknown) => console.error("[settle.label]", o.id, e))
+      }
     } catch (e) {
       console.error("[settle.release]", o.id, e)
       result.failed++
