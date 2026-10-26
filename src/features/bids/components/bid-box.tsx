@@ -11,7 +11,7 @@ import {
   ShoppingBag,
   XCircle,
   Zap,
-} from "lucide-react"
+} from "@/components/icons"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"

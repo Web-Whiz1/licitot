@@ -13,8 +13,8 @@ import {
   TriangleAlert,
   Truck,
   Wallet,
-  type LucideIcon,
-} from "lucide-react"
+  type IconComponent,
+} from "@/components/icons"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
@@ -37,7 +37,7 @@ const memberSince = new Intl.DateTimeFormat(APP_LOCALE, {
   year: "numeric",
 })
 
-type Todo = { href: string; icon: LucideIcon; text: string; tone: string }
+type Todo = { href: string; icon: IconComponent; text: string; tone: string }
 
 /** The account hub: who you are, what needs your attention, and every section in one place. */
 export default async function AccountOverviewPage() {

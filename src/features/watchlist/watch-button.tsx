@@ -1,6 +1,6 @@
 "use client"
 
-import { Heart } from "lucide-react"
+import { Heart } from "@/components/icons"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTranslations } from "next-intl"
@@ -29,7 +29,8 @@ export function WatchButton({
   const icon = (
     <Heart
       aria-hidden
-      className={cn("size-5", optimistic && "fill-destructive text-destructive")}
+      weight={optimistic ? "fill" : "light"}
+      className={cn("size-5", optimistic && "text-destructive")}
     />
   )
 

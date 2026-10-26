@@ -1,4 +1,4 @@
-import { ExternalLink, KeyRound, LogOut } from "lucide-react"
+import { ExternalLink, KeyRound, LogOut } from "@/components/icons"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"

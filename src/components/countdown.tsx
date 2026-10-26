@@ -1,6 +1,6 @@
 "use client"
 
-import { Clock } from "lucide-react"
+import { Clock } from "@/components/icons"
 import { useTranslations } from "next-intl"
 import { useSyncExternalStore } from "react"
 import { formatDateTime, formatDayTime, timeLeft } from "@/lib/dates"

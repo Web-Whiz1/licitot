@@ -3,7 +3,7 @@
 import * as React from "react"
 import { cn } from "cn"
 import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui"
-import { CheckIcon, ChevronRightIcon } from "lucide-react"
+import { CheckIcon, ChevronRightIcon } from "@/components/icons"
 
 // LiciTot: menus are non-modal by default. A modal menu locks page scrolling, which hides the
 // scrollbar and makes the page jump sideways each time a header menu opens.

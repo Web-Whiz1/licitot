@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronRight, Gavel, Hand, LogOut, Scale, Settings, Wallet } from "lucide-react"
+import { ChevronRight, Gavel, Hand, LogOut, Scale, Settings, Wallet } from "@/components/icons"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { UserAvatar } from "@/components/user-avatar"

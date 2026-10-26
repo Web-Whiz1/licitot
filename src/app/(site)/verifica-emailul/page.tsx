@@ -1,4 +1,4 @@
-import { MailCheck } from "lucide-react"
+import { MailCheck } from "@/components/icons"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
@@ -22,7 +22,7 @@ export default async function CheckEmailPage({ searchParams }: PageProps<"/verif
       }
     >
       <div className="space-y-4 text-center">
-        <MailCheck aria-hidden className="mx-auto size-9 text-primary" strokeWidth={1.5} />
+        <MailCheck aria-hidden className="mx-auto size-9 text-primary" />
         <Suspense fallback={<p className="text-sm">{t("checkEmailGeneric")}</p>}>
           <Message searchParams={searchParams} />
         </Suspense>

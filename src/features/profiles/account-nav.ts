@@ -9,8 +9,8 @@ import {
   Settings,
   Trophy,
   Wallet,
-  type LucideIcon,
-} from "lucide-react"
+  type IconComponent,
+} from "@/components/icons"
 
 export type TabKey =
   | "overview"
@@ -23,7 +23,7 @@ export type TabKey =
   | "notifications"
   | "settings"
 
-type Tab = { href: string; key: TabKey; icon: LucideIcon }
+type Tab = { href: string; key: TabKey; icon: IconComponent }
 
 /** The whole account area, grouped the way people think about it: buying, selling, account. */
 export const ACCOUNT_NAV: { group: "buying" | "selling" | "account" | null; tabs: Tab[] }[] = [

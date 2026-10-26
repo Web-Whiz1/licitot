@@ -1,4 +1,4 @@
-import { ArrowDown, Award, Check, Clock, Heart, Lock, X } from "lucide-react"
+import { ArrowDown, Award, Check, Clock, Heart, Lock, X } from "@/components/icons"
 import type { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 import { Logo, LogoMark } from "@/components/brand/logo"

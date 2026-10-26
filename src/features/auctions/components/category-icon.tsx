@@ -8,11 +8,11 @@ import {
   Shirt,
   Tag,
   ToyBrick,
-  type LucideIcon,
-} from "lucide-react"
+  type IconComponent,
+} from "@/components/icons"
 
-// categories.icon (set in the foundation migration) → lucide icon.
-const ICONS: Record<string, LucideIcon> = {
+// categories.icon (set in the foundation migration) → icon (components/icons).
+const ICONS: Record<string, IconComponent> = {
   laptop: Laptop,
   car: Car,
   home: Home,

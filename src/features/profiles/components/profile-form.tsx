@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { BadgeCheck } from "lucide-react"
+import { BadgeCheck } from "@/components/icons"
 import { useTranslations } from "next-intl"
 import { useState, useTransition } from "react"
 import { useForm, useWatch } from "react-hook-form"

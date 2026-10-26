@@ -1,4 +1,4 @@
-import { ArrowRight, Gavel } from "lucide-react"
+import { ArrowRight, Gavel } from "@/components/icons"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
 import { Suspense } from "react"

@@ -1,4 +1,4 @@
-import { BadgeCheck, CalendarDays, MapPin, Star, Tag, Truck } from "lucide-react"
+import { BadgeCheck, CalendarDays, MapPin, Star, Tag, Truck } from "@/components/icons"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound, permanentRedirect } from "next/navigation"

@@ -214,6 +214,15 @@
   h3 {
     text-wrap: balance;
   }
+  /* Icons (Phosphor Light, components/icons.tsx): a fixed hairline stroke on top of the outline,
+     in screen pixels, so small icons (14–16px) gain proportionally more weight than large ones
+     and never look faint on 1x screens. */
+  .icon[data-weight="light"] path {
+    stroke: currentColor;
+    stroke-width: 0.35px;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
   ::selection {
     background-color: var(--tint);
     color: var(--tint-foreground);

@@ -1,4 +1,4 @@
-import { CircleCheck, CircleDashed, ExternalLink, Hourglass, Wallet } from "lucide-react"
+import { CircleCheck, CircleDashed, ExternalLink, Hourglass, Wallet } from "@/components/icons"
 import type { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 import { ActionButton } from "@/components/action-button"

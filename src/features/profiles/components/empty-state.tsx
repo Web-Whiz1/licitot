@@ -1,4 +1,4 @@
-import type { LucideIcon } from "lucide-react"
+import type { IconComponent } from "@/components/icons"
 
 export function EmptyState({
   icon: Icon,
@@ -6,14 +6,14 @@ export function EmptyState({
   hint,
   action,
 }: {
-  icon: LucideIcon
+  icon: IconComponent
   title: string
   hint?: string
   action?: React.ReactNode
 }) {
   return (
     <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed bg-card/60 px-6 py-16 text-center">
-      <Icon aria-hidden className="size-8 text-muted-foreground" strokeWidth={1.5} />
+      <Icon aria-hidden className="size-8 text-muted-foreground" />
       <p className="max-w-sm font-display text-xl">{title}</p>
       {hint ? <p className="text-sm text-muted-foreground">{hint}</p> : null}
       {action}

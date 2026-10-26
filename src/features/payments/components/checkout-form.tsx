@@ -1,6 +1,6 @@
 "use client"
 
-import { CreditCard, MapPin, Truck } from "lucide-react"
+import { CreditCard, MapPin, Truck } from "@/components/icons"
 import { useTranslations } from "next-intl"
 import { useState, useTransition } from "react"
 import { toast } from "sonner"

@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Flag } from "lucide-react"
+import { Flag } from "@/components/icons"
 import { useTranslations } from "next-intl"
 import { useState, useTransition } from "react"
 import { useForm } from "react-hook-form"

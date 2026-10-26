@@ -1,4 +1,4 @@
-import { Star } from "lucide-react"
+import { Star } from "@/components/icons"
 import { cn } from "@/lib/utils"
 
 /** 1–5 stars, read-only. `label` is the accessible text (e.g. "4 stele"). */
@@ -17,9 +17,10 @@ export function Stars({
         <Star
           key={i}
           aria-hidden
+          weight={i <= Math.round(rating) ? "fill" : "light"}
           className={cn(
             "size-4",
-            i <= Math.round(rating) ? "fill-warning text-warning" : "text-muted-foreground/40",
+            i <= Math.round(rating) ? "text-warning" : "text-muted-foreground/40",
           )}
         />
       ))}

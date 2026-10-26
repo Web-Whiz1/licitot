@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { CircleAlert, Info, Send } from "lucide-react"
+import { CircleAlert, Info, Send } from "@/components/icons"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { useCallback, useState, useSyncExternalStore, useTransition } from "react"

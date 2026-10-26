@@ -1,4 +1,4 @@
-import { Mail, Scale } from "lucide-react"
+import { Mail, Scale } from "@/components/icons"
 import type { Metadata } from "next"
 import { getTranslations } from "next-intl/server"
 import { OPERATOR } from "@/lib/legal"

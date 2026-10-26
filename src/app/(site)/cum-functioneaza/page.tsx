@@ -1,4 +1,13 @@
-import { Camera, Eye, Gavel, Percent, Search, SlidersHorizontal, Timer, Trophy } from "lucide-react"
+import {
+  Camera,
+  Eye,
+  Gavel,
+  Percent,
+  Search,
+  SlidersHorizontal,
+  Timer,
+  Trophy,
+} from "@/components/icons"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
@@ -48,11 +57,7 @@ export default async function HowItWorksPage() {
           <ol className="grid gap-4 sm:grid-cols-2">
             {g.steps.map((s, i) => (
               <li key={s.title} className="flex gap-4 rounded-lg border bg-card p-5">
-                <s.icon
-                  aria-hidden
-                  className="mt-0.5 size-5 shrink-0 text-primary"
-                  strokeWidth={1.75}
-                />
+                <s.icon aria-hidden className="mt-0.5 size-5 shrink-0 text-primary" />
                 <div className="space-y-1">
                   <h3 className="font-semibold">
                     <span className="text-muted-foreground">{i + 1}. </span>

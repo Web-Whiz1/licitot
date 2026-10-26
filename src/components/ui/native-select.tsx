@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react"
+import { ChevronDown } from "@/components/icons"
 import { cn } from "@/lib/utils"
 
 /** Styled native <select>: best on mobile (system picker) and for long lists like counties. */

@@ -1,4 +1,4 @@
-import { Flag } from "lucide-react"
+import { Flag } from "@/components/icons"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"

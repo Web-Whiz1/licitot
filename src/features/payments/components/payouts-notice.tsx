@@ -1,4 +1,4 @@
-import { TriangleAlert } from "lucide-react"
+import { TriangleAlert } from "@/components/icons"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
 import { getPayoutStatus } from "../queries"

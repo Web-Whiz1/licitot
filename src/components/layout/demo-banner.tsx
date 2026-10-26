@@ -1,4 +1,4 @@
-import { FlaskConical } from "lucide-react"
+import { FlaskConical } from "@/components/icons"
 import { useTranslations } from "next-intl"
 import { isPaymentsTestMode } from "@/lib/env"
 

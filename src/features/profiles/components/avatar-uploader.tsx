@@ -1,6 +1,6 @@
 "use client"
 
-import { Camera, Loader2, Trash2 } from "lucide-react"
+import { Camera, Loader2, Trash2 } from "@/components/icons"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { useId, useState, useTransition } from "react"

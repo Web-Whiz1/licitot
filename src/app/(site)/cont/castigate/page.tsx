@@ -1,4 +1,4 @@
-import { Trophy } from "lucide-react"
+import { Trophy } from "@/components/icons"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"

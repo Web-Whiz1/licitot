@@ -1,4 +1,4 @@
-import { ImageOff } from "lucide-react"
+import { ImageOff } from "@/components/icons"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { CircleAlert } from "lucide-react"
+import { CircleAlert } from "@/components/icons"
 import { useTranslations } from "next-intl"
 import type { MessageKey } from "@/i18n/keys"
 import { cn } from "@/lib/utils"

@@ -1,4 +1,4 @@
-import { UserRound } from "lucide-react"
+import { UserRound } from "@/components/icons"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
 import { Button } from "@/components/ui/button"

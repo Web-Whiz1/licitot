@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Star } from "lucide-react"
+import { Star } from "@/components/icons"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { useTransition } from "react"
@@ -69,9 +69,10 @@ export function ReviewForm({ orderId, role }: { orderId: string; role: "buyer" |
               />
               <Star
                 aria-hidden
+                weight={n <= rating ? "fill" : "light"}
                 className={cn(
                   "size-8 transition-colors",
-                  n <= rating ? "fill-warning text-warning" : "text-muted-foreground/40",
+                  n <= rating ? "text-warning" : "text-muted-foreground/40",
                 )}
               />
             </label>

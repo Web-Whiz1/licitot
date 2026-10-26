@@ -1,4 +1,4 @@
-import { Search } from "lucide-react"
+import { Search } from "@/components/icons"
 import Form from "next/form"
 import { useTranslations } from "next-intl"
 import { Input } from "@/components/ui/input"

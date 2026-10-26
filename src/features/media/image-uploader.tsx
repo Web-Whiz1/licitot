@@ -18,7 +18,7 @@ import {
   useSortable,
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { ImagePlus, Loader2, RotateCcw, Star, X } from "lucide-react"
+import { ImagePlus, Loader2, RotateCcw, Star, X } from "@/components/icons"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
 import { useCallback, useEffect, useId, useRef, useState } from "react"

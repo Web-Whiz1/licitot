@@ -1,12 +1,12 @@
 "use client"
 
-import { BarChart3, Flag, Scale, type LucideIcon } from "lucide-react"
+import { BarChart3, Flag, Scale, type IconComponent } from "@/components/icons"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 
-const TABS: { href: string; key: "stats" | "reports" | "disputes"; icon: LucideIcon }[] = [
+const TABS: { href: string; key: "stats" | "reports" | "disputes"; icon: IconComponent }[] = [
   { href: "/admin", key: "stats", icon: BarChart3 },
   { href: "/admin/rapoarte", key: "reports", icon: Flag },
   { href: "/admin/dispute", key: "disputes", icon: Scale },

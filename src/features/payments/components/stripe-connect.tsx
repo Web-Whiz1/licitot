@@ -1,6 +1,6 @@
 "use client"
 
-import { Building2, LoaderCircle, UserRound, type LucideIcon } from "lucide-react"
+import { Building2, LoaderCircle, UserRound, type IconComponent } from "@/components/icons"
 import dynamic from "next/dynamic"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
@@ -24,7 +24,7 @@ export const StripeConnect = dynamic(() => import("./stripe-connect-panel"), {
   ),
 })
 
-const KINDS: { kind: SellerKind; icon: LucideIcon; title: MessageKey; hint: MessageKey }[] = [
+const KINDS: { kind: SellerKind; icon: IconComponent; title: MessageKey; hint: MessageKey }[] = [
   {
     kind: "individual",
     icon: UserRound,

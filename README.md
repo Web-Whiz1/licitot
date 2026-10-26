@@ -23,13 +23,14 @@ cp .env.example .env.local   # fill in values as phases need them
 pnpm dev                     # http://localhost:3000
 ```
 
-| Command      | What it does                                 |
-| ------------ | -------------------------------------------- |
-| `pnpm dev`   | Dev server (Turbopack)                       |
-| `pnpm build` | Production build                             |
-| `pnpm check` | Lint + typecheck + unit tests                |
-| `pnpm test`  | Vitest (money, dates, phone, brand contrast) |
-| `pnpm icons` | Regenerate logo files, favicon and PWA icons |
+| Command         | What it does                                 |
+| --------------- | -------------------------------------------- |
+| `pnpm dev`      | Dev server (Turbopack)                       |
+| `pnpm build`    | Production build                             |
+| `pnpm check`    | Lint + typecheck + unit tests                |
+| `pnpm test`     | Vitest (money, dates, phone, brand contrast) |
+| `pnpm icons`    | Regenerate logo files, favicon and PWA icons |
+| `pnpm icons:ui` | Regenerate the UI icon set (Phosphor)        |
 
 ### External services (added in later phases)
 

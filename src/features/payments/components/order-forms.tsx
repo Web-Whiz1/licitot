@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { KeyRound, Send, Truck, TriangleAlert } from "lucide-react"
+import { KeyRound, Send, Truck, TriangleAlert } from "@/components/icons"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { useState, useTransition } from "react"

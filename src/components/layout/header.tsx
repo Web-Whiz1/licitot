@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react"
+import { Plus } from "@/components/icons"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { Suspense } from "react"

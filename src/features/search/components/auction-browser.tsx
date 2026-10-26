@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, SearchX, X } from "lucide-react"
+import { ChevronLeft, ChevronRight, SearchX, X } from "@/components/icons"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"
 import { Button } from "@/components/ui/button"

@@ -1,6 +1,6 @@
 "use client"
 
-import { Bell } from "lucide-react"
+import { Bell } from "@/components/icons"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"

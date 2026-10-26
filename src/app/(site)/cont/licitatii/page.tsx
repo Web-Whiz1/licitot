@@ -1,4 +1,4 @@
-import { Gavel, Pencil, Plus } from "lucide-react"
+import { Gavel, Pencil, Plus } from "@/components/icons"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"

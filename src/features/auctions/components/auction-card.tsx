@@ -1,4 +1,4 @@
-import { Gavel, MapPin } from "lucide-react"
+import { Gavel, MapPin } from "@/components/icons"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { AuctionThumb } from "@/components/auction-thumb"

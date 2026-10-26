@@ -1,6 +1,6 @@
 "use client"
 
-import { Heart, Home, Plus, Search, UserRound, type LucideIcon } from "lucide-react"
+import { Heart, Home, Plus, Search, UserRound, type IconComponent } from "@/components/icons"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTranslations } from "next-intl"
@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 type Item = {
   href: string
   label: "home" | "search" | "sell" | "favorites" | "account"
-  icon: LucideIcon
+  icon: IconComponent
 }
 
 const ITEMS: Item[] = [
@@ -64,7 +64,7 @@ export function MobileNavBar({ pathname }: { pathname: string | null }) {
                   // "Vinde" stands out as the one filled (bordo) button, kept inside the bar so
                   // it never covers the sticky bid bar on auction pages.
                   <span className="grid size-10 place-items-center rounded-md bg-primary text-primary-foreground transition-colors duration-150 ease-out group-hover:bg-primary-hover">
-                    <Icon aria-hidden className="size-5" strokeWidth={2.5} />
+                    <Icon aria-hidden weight="bold" className="size-5" />
                   </span>
                 ) : (
                   <span
@@ -76,7 +76,7 @@ export function MobileNavBar({ pathname }: { pathname: string | null }) {
                     <Icon
                       aria-hidden
                       className="size-[1.375rem]"
-                      strokeWidth={active ? 2.25 : 1.75}
+                      weight={active ? "fill" : "light"}
                     />
                   </span>
                 )}

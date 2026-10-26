@@ -1,6 +1,6 @@
 "use client"
 
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff } from "@/components/icons"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"

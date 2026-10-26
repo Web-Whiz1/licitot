@@ -1,4 +1,4 @@
-import { Scale } from "lucide-react"
+import { Scale } from "@/components/icons"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { getTranslations } from "next-intl/server"

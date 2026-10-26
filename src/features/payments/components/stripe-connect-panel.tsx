@@ -8,7 +8,7 @@ import {
   ConnectNotificationBanner,
   ConnectPayouts,
 } from "@stripe/react-connect-js"
-import { Landmark, Wallet } from "lucide-react"
+import { Landmark, Wallet } from "@/components/icons"
 import { useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { useTheme } from "next-themes"
