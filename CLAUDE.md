@@ -167,7 +167,7 @@ scripts/               gen-icons.ts (no seed/demo data: the DB holds only real u
 - **Layout**: every page container is `container-page` (globals.css: 1440px, 16/32/40px
   margins). The header has two rows on desktop (search + actions; categories from
   `getCategoryTree()` + "Cum funcționează"/"Comisioane"). The body sits on `paper-grain`; dark
-  bands (home hero, "Cine suntem?") use the `dark` class on the section, so tokens flip locally.
+  bands ("Cine suntem?") use the `dark` class on the section, so tokens flip locally.
 - **First-visit intro** (`features/intro`): a full-screen three.js stage shown once per browser
   (`localStorage` `licitot-intro`). Bordo velvet curtains part, the bordo lacquer paddle rises,
   holds 5 s, sinks back, the curtains close and the overlay fades. No gold or metal, calm light,

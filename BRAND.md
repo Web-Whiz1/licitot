@@ -110,8 +110,7 @@ Favicon: `src/app/icon.svg` (lighter rose on dark browser chrome) + `favicon.ico
 ## Surfaces
 
 The page is warm paper with a fine grain (`paper-grain`); cards sit on it as plain white sheets.
-Two dark "rooms" break the home page: the hero (a warm spotlight from above, a bordo glow below)
-and "Cine suntem?".
+The hero sits on the plain paper; one dark "room" breaks the home page: "Cine suntem?".
 
 On the first visit the site opens like a show: bordo velvet curtains with a bordo silk fringe
 part, the bordo lacquer paddle rises into a soft spotlight with the wordmark in ivory, stays for

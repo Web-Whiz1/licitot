@@ -21,8 +21,7 @@ export default async function HomePage() {
   return (
     <>
       {/* ── Hero: the thesis in the serif; on the right, the guarantees as a trail from the paddle ── */}
-      <section className="dark relative isolate overflow-hidden bg-background text-foreground">
-        <HeroBackdrop />
+      <section className="border-b">
         <div className="container-page grid items-center gap-12 pt-12 pb-14 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:pt-24 lg:pb-28">
           <div className="space-y-6">
             <Suspense fallback={<Eyebrow label={t("home.heroEyebrow")} />}>
@@ -70,16 +69,6 @@ export default async function HomePage() {
 
       <SellBand />
     </>
-  )
-}
-
-/** The hero is a dark room: a warm spotlight from above right and a bordo glow below left. */
-function HeroBackdrop() {
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 paper-grain">
-      <div className="absolute top-[-30%] right-[8%] h-[140%] w-[44rem] rotate-[18deg] bg-[radial-gradient(ellipse_at_top,color-mix(in_oklab,var(--warning)_28%,transparent),transparent_65%)]" />
-      <div className="absolute -bottom-40 -left-40 size-[40rem] rounded-full bg-primary opacity-15 blur-3xl" />
-    </div>
   )
 }
 
