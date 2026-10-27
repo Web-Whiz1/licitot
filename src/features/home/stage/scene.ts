@@ -50,6 +50,8 @@ const FOLDS = 9
 const PADDLE_Y = 2.3
 const PADDLE_Z = -0.35
 const PADDLE_START_Y = -1.9
+const REST_YAW = -0.3
+const REST_PITCH = 0.08
 
 // The paddle as one outline (head + handle) with the "L" as a hole, on the 64-unit logo grid.
 const PADDLE_OUTLINE =
@@ -422,7 +424,7 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
     clearcoat: 1,
     clearcoatRoughness: 0.04,
     envMap: reflections,
-    envMapIntensity: 0.55,
+    envMapIntensity: 0.35,
   })
 
   // Floor and apron
@@ -693,22 +695,25 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
 
     paddleRig.position.y = THREE.MathUtils.lerp(PADDLE_START_Y, PADDLE_Y, rise)
     const idle = reduced ? 0 : 1
+    // Never quite face-on: a flat lacquer face would mirror the front lights and wash out.
     paddleRig.rotation.y =
+      REST_YAW +
       (1 - rise) * Math.PI * 0.9 +
       idle * (1 - hover) * Math.sin(time * 0.45) * 0.22 +
-      hover * pointerSmooth.x * 0.5
-    paddleRig.rotation.x = hover * -pointerSmooth.y * 0.22 + idle * Math.sin(time * 0.7) * 0.025
+      idle * hover * pointerSmooth.x * 0.5
+    paddleRig.rotation.x =
+      REST_PITCH + idle * (hover * -pointerSmooth.y * 0.22 + Math.sin(time * 0.7) * 0.025)
     paddleRig.position.y += idle * Math.sin(time * 0.9) * 0.035 * rise
 
-    key.intensity = lights * (85 + hover * 35)
+    key.intensity = lights * (85 + hover * 25)
     front.intensity = lights * 16
-    beam.uniforms.uIntensity.value = lights * (0.1 + hover * 0.14)
-    dustMat.opacity = lights * (0.45 + hover * 0.4)
-    for (const rim of rims) rim.intensity = lights * (45 + hover * 110)
+    beam.uniforms.uIntensity.value = lights * (0.1 + hover * 0.045)
+    dustMat.opacity = lights * (0.45 + hover * 0.35)
+    for (const rim of rims) rim.intensity = lights * (45 + hover * 65)
     for (const wash of washes) wash.intensity = 30 + lights * 12
     foot.intensity = 3 + lights * 2
-    gold.envMapIntensity = 0.9 + hover * 0.9
-    bloom.strength = 0.3 + hover * 0.25
+    gold.envMapIntensity = 0.9 + hover * 0.6
+    bloom.strength = 0.3 + hover * 0.16
 
     // The camera leans gently with the pointer.
     camera.position.x = pointerSmooth.x * 0.35 * idle
@@ -735,7 +740,8 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
 
   function renderFrame(dt: number) {
     update(dt)
-    film.uniforms.uTime!.value = time
+    // Reduced motion: the grain stays still too.
+    film.uniforms.uTime!.value = reduced ? 0 : time
     composer.render(dt)
     if (!firstFrame) {
       firstFrame = true
@@ -761,7 +767,9 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
   }
 
   function start() {
-    if (raf || reduced || !compiled) return
+    // Reduced motion still runs the loop (the stage is already open and nothing moves), so
+    // hovering can fade the lights up and down.
+    if (raf || !compiled) return
     last = performance.now()
     raf = requestAnimationFrame(loop)
   }
@@ -780,7 +788,6 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
     raycaster.setFromCamera(pointer, camera)
     hoverTarget = raycaster.intersectObject(paddle, false).length > 0 ? 1 : 0
     canvas.style.cursor = hoverTarget ? "pointer" : ""
-    if (reduced) renderFrame(0)
   }
   // Touch: a tap on the paddle lights it up for a moment.
   let tapTimer = 0
@@ -791,7 +798,6 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
     window.clearTimeout(tapTimer)
     tapTimer = window.setTimeout(() => {
       hoverTarget = 0
-      if (reduced) renderFrame(0)
     }, 2600)
   }
   function onPointerLeave(e: PointerEvent) {
@@ -799,7 +805,6 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
     hoverTarget = 0
     pointer.set(0, 0)
     canvas.style.cursor = ""
-    if (reduced) renderFrame(0)
   }
   canvas.addEventListener("pointermove", onPointerMove)
   canvas.addEventListener("pointerdown", onPointerDown)
