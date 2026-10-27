@@ -111,9 +111,9 @@ Favicon: `src/app/icon.svg` (lighter rose on dark browser chrome) + `favicon.ico
 
 The page is warm paper with a fine grain (`paper-grain`); cards sit on it as plain white sheets.
 Two dark "rooms" break the page: the home hero (a warm spotlight from above, a bordo glow below)
-and "Cine suntem?", where the logo appears on a stage: bordo velvet curtains with gold fringe
-part, and the paddle (bordo enamel set in gold) rises into the spotlight. Gold appears only in
-that scene, never in the UI.
+and "Cine suntem?", where the logo appears on a stage: bordo velvet curtains with a bordo silk
+fringe part, and the bordo lacquer paddle rises into a soft spotlight, with the wordmark in ivory.
+No gold or metal, and the light stays low: the stage is calm, not flashy.
 
 ## Icons
 

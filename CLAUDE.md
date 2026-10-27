@@ -169,7 +169,8 @@ scripts/               gen-icons.ts (no seed/demo data: the DB holds only real u
   `getCategoryTree()` + "Cum funcționează"/"Comisioane"). The body sits on `paper-grain`; dark
   bands (home hero, "Cine suntem?") use the `dark` class on the section, so tokens flip locally.
 - **"Cine suntem?" stage** (home): a real-time three.js scene in `features/home/stage/scene.ts`
-  (velvet curtains part, the paddle rises; hover/tap lights it). `components/curtain-stage.tsx`
+  (bordo velvet curtains part, the bordo lacquer paddle rises; hover/tap lights it; no gold or
+  metal, calm light). `components/curtain-stage.tsx`
   imports it only near the viewport, renders only while visible, and shows the stills
   `public/brand/stage-{closed,open}.webp` before load, without WebGL and for reduced motion.
   After changing the scene, re-render the stills (2400×1200) from the closed and open states.

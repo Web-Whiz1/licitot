@@ -1,5 +1,5 @@
 // "Cine suntem?" stage: a real-time WebGL scene. Velvet curtains part, and the LiciTot paddle
-// (bordo enamel set in gold) rises through a stage trap into the spotlight. Hovering the paddle
+// (bordo enamel) rises through a stage trap into the spotlight. Hovering the paddle
 // turns the lights up and the paddle towards the cursor. Browser-only: loaded lazily by
 // components/curtain-stage.tsx when the section comes near the viewport.
 import * as THREE from "three"
@@ -37,8 +37,8 @@ const VELVET = 0x420714
 const VELVET_SHEEN = 0xc94a64
 const BACKDROP = 0x1d070d
 const ENAMEL = 0x4a0b1a
-const GOLD = 0xd9a64e
-const WARM = 0xffd9a8
+const WARM = 0xfff0e0
+const IVORY = 0xe9e1d3
 
 // ── Stage dimensions (world units ≈ meters) ────────────────────────────────────────────────
 const CURTAIN_W = 4.45 // one half, closed
@@ -255,8 +255,8 @@ function layoutCurtain(c: Curtain, open: number, sway: number, time: number) {
   c.mesh.geometry.computeVertexNormals()
 }
 
-/** The valance across the top: a pleated band with scalloped swags and gold fringe. */
-function makeValance(velvet: THREE.MeshPhysicalMaterial, gold: THREE.MeshPhysicalMaterial) {
+/** The valance across the top: a pleated band with scalloped swags, a rope and a fringe. */
+function makeValance(velvet: THREE.MeshPhysicalMaterial, trim: THREE.MeshPhysicalMaterial) {
   const group = new THREE.Group()
   const width = 11
   const top = CURTAIN_H + 0.95
@@ -287,7 +287,7 @@ function makeValance(velvet: THREE.MeshPhysicalMaterial, gold: THREE.MeshPhysica
   const band = new THREE.Mesh(geo, velvet)
   group.add(band)
 
-  // Gold rope along the scalloped hem, and the fringe hanging from it.
+  // A silk rope along the scalloped hem, and the fringe hanging from it.
   const pts: THREE.Vector3[] = []
   for (let i = 0; i <= 440; i++) {
     const x = (i / 440 - 0.5) * width
@@ -295,13 +295,13 @@ function makeValance(velvet: THREE.MeshPhysicalMaterial, gold: THREE.MeshPhysica
   }
   const rope = new THREE.Mesh(
     new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 600, 0.026, 10),
-    gold,
+    trim,
   )
   group.add(rope)
   const strand = new THREE.CylinderGeometry(0.006, 0.004, 0.14, 5)
   strand.translate(0, -0.07, 0)
   const count = Math.round(width / 0.022)
-  const fringe = new THREE.InstancedMesh(strand, gold, count)
+  const fringe = new THREE.InstancedMesh(strand, trim, count)
   const m = new THREE.Matrix4()
   const r = rng(5)
   for (let i = 0; i < count; i++) {
@@ -375,7 +375,7 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
   renderer.setPixelRatio(pixelRatio)
   renderer.outputColorSpace = THREE.SRGBColorSpace
   renderer.toneMapping = THREE.ACESFilmicToneMapping
-  renderer.toneMappingExposure = 1.05
+  renderer.toneMappingExposure = 0.92
   renderer.shadowMap.enabled = true
   renderer.shadowMap.type = THREE.PCFShadowMap
   RectAreaLightUniformsLib.init()
@@ -411,13 +411,26 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
   backdropVelvet.color = new THREE.Color(BACKDROP)
   backdropVelvet.sheenColor = new THREE.Color(0x8a2a3c)
   backdropVelvet.normalScale = new THREE.Vector2(0.12, 0.12)
-  const gold = new THREE.MeshPhysicalMaterial({
-    color: GOLD,
-    metalness: 1,
-    roughness: 0.2,
-    envMap: reflections,
-    envMapIntensity: 0.9,
+  const lacquer = (color: number, roughness: number) =>
+    new THREE.MeshPhysicalMaterial({
+      color,
+      roughness,
+      clearcoat: 0.8,
+      clearcoatRoughness: 0.12,
+      envMap: reflections,
+      envMapIntensity: 0.3,
+    })
+  // No metal anywhere: trims in deep bordo silk, the paddle rim in darker lacquer, the
+  // wordmark in ivory.
+  const trim = new THREE.MeshPhysicalMaterial({
+    color: 0x4a0d19,
+    roughness: 0.6,
+    sheen: 1,
+    sheenColor: new THREE.Color(0xb04257),
+    sheenRoughness: 0.5,
   })
+  const paddleSide = lacquer(0x3a0812, 0.4)
+  const wordMat = lacquer(IVORY, 0.35)
   const enamel = new THREE.MeshPhysicalMaterial({
     color: ENAMEL,
     roughness: 0.32,
@@ -451,7 +464,7 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
   )
   apron.position.set(0, -0.35, 3)
   scene.add(apron)
-  const lip = new THREE.Mesh(new THREE.BoxGeometry(16, 0.035, 0.05), gold)
+  const lip = new THREE.Mesh(new THREE.BoxGeometry(16, 0.035, 0.05), trim)
   lip.position.set(0, -0.012, 3.1)
   scene.add(lip)
 
@@ -478,7 +491,7 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
     const pillar = new THREE.Mesh(new THREE.BoxGeometry(2.4, 8, 0.6), pillarMat)
     pillar.position.set(side * (CURTAIN_W + 1.32), 3.6, CURTAIN_Z + 0.55)
     scene.add(pillar)
-    const edge = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 8, 12), gold)
+    const edge = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 8, 12), trim)
     edge.position.set(side * (CURTAIN_W + 0.14), 3.6, CURTAIN_Z + 0.86)
     scene.add(edge)
   }
@@ -490,9 +503,9 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
     c.mesh.position.z = CURTAIN_Z
     scene.add(c.mesh)
   }
-  scene.add(makeValance(velvet, gold))
+  scene.add(makeValance(velvet, trim))
 
-  // The paddle: enamel faces, gold sides (ExtrudeGeometry group 0 = caps, 1 = sides).
+  // The paddle: enamel faces, trim-colored sides (ExtrudeGeometry group 0 = caps, 1 = sides).
   const paddleGeo = new THREE.ExtrudeGeometry(svgShapes(PADDLE_OUTLINE, 32, 34), {
     depth: 3.2,
     bevelEnabled: true,
@@ -502,7 +515,7 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
     curveSegments: 48,
   })
   paddleGeo.translate(0, 0, -1.6)
-  const paddle = new THREE.Mesh(paddleGeo, [enamel, gold])
+  const paddle = new THREE.Mesh(paddleGeo, [enamel, paddleSide])
   paddle.castShadow = true
   paddle.receiveShadow = true
   const paddleScale = 0.05
@@ -513,12 +526,12 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
   paddleRig.position.set(0, PADDLE_START_Y, PADDLE_Z)
   scene.add(paddleRig)
 
-  // The wordmark in gold letters standing at the front of the stage.
+  // The wordmark in ivory letters standing at the front of the stage.
   const wordGeo = new THREE.ExtrudeGeometry(
     [...svgShapes(WORDMARK_LICI_PATH, 134.5, 46), ...svgShapes(WORDMARK_TOT_PATH, 134.5, 46)],
     { depth: 2.4, bevelEnabled: true, bevelThickness: 0.35, bevelSize: 0.22, bevelSegments: 4 },
   )
-  const word = new THREE.Mesh(wordGeo, gold)
+  const word = new THREE.Mesh(wordGeo, wordMat)
   word.scale.setScalar(0.014)
   word.position.set(0, 0.002, 0.3)
   word.castShadow = true
@@ -542,7 +555,7 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
   scene.add(beam.mesh)
 
   const rims = [-1, 1].map((side) => {
-    const rim = new THREE.SpotLight(0xffc8b0, 0, 16, 0.32, 0.7, 1.4)
+    const rim = new THREE.SpotLight(0xfff0e6, 0, 16, 0.32, 0.7, 1.4)
     rim.position.set(side * 3.4, 6.4, -2.8)
     rim.target.position.set(0, PADDLE_Y, PADDLE_Z)
     scene.add(rim, rim.target)
@@ -551,7 +564,7 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
 
   // Washes that rake across the curtains from the wings, so the folds read.
   const washes = [-1, 1].map((side) => {
-    const wash = new THREE.SpotLight(0xffb48a, 0, 20, 0.55, 0.9, 1.3)
+    const wash = new THREE.SpotLight(0xffd9c4, 0, 20, 0.55, 0.9, 1.3)
     wash.position.set(side * 7.5, 6.5, 5.5)
     wash.target.position.set(side * 2.2, 2.4, CURTAIN_Z)
     scene.add(wash, wash.target)
@@ -559,13 +572,13 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
   })
 
   // Front of house: a soft, narrow light from the audience on the wordmark and the paddle.
-  const front = new THREE.SpotLight(0xffe4c4, 0, 24, 0.13, 0.9, 1)
+  const front = new THREE.SpotLight(0xfff2e6, 0, 24, 0.13, 0.9, 1)
   front.position.set(-3.5, 4.8, 11)
   front.target.position.set(0, 1.3, 0)
   scene.add(front, front.target)
 
   // Footlights: a soft strip at the edge of the stage, pointing up at the curtains.
-  const foot = new THREE.RectAreaLight(0xffb070, 0, 9.5, 0.12)
+  const foot = new THREE.RectAreaLight(0xffd2a8, 0, 9.5, 0.12)
   foot.position.set(0, 0.06, 2.75)
   foot.lookAt(0, 3.2, CURTAIN_Z)
   scene.add(foot)
@@ -590,7 +603,7 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
   dustGeo.setAttribute("position", new THREE.BufferAttribute(dustPos, 3))
   const dustMat = new THREE.PointsMaterial({
     map: dustSprite(),
-    color: 0xffe2b8,
+    color: 0xfff2e4,
     size: 0.03,
     transparent: true,
     opacity: 0,
@@ -601,7 +614,7 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
   scene.add(dust)
   const dustBase = dustPos.slice()
 
-  // Post: bloom only catches the brightest highlights (gold glints, the beam core).
+  // Post: a faint bloom on the brightest highlights only.
   const size = new THREE.Vector2()
   const target = new THREE.WebGLRenderTarget(1, 1, {
     type: THREE.HalfFloatType,
@@ -609,7 +622,7 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
   })
   const composer = new EffectComposer(renderer, target)
   composer.addPass(new RenderPass(scene, camera))
-  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.32, 0.55, 0.82)
+  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.12, 0.5, 0.9)
   composer.addPass(bloom)
   composer.addPass(new OutputPass())
   // A lens look: soft vignette and fine film grain, after tone mapping.
@@ -705,15 +718,15 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
       REST_PITCH + idle * (hover * -pointerSmooth.y * 0.22 + Math.sin(time * 0.7) * 0.025)
     paddleRig.position.y += idle * Math.sin(time * 0.9) * 0.035 * rise
 
-    key.intensity = lights * (85 + hover * 25)
-    front.intensity = lights * 16
-    beam.uniforms.uIntensity.value = lights * (0.1 + hover * 0.045)
-    dustMat.opacity = lights * (0.45 + hover * 0.35)
-    for (const rim of rims) rim.intensity = lights * (45 + hover * 65)
-    for (const wash of washes) wash.intensity = 30 + lights * 12
-    foot.intensity = 3 + lights * 2
-    gold.envMapIntensity = 0.9 + hover * 0.6
-    bloom.strength = 0.3 + hover * 0.16
+    key.intensity = lights * (55 + hover * 30)
+    front.intensity = lights * 9
+    beam.uniforms.uIntensity.value = lights * (0.045 + hover * 0.03)
+    dustMat.opacity = lights * (0.22 + hover * 0.2)
+    for (const rim of rims) rim.intensity = lights * (28 + hover * 45)
+    for (const wash of washes) wash.intensity = 20 + lights * 8
+    foot.intensity = 1.8 + lights * 1.2
+    for (const m of [paddleSide, wordMat]) m.envMapIntensity = 0.3 + hover * 0.4
+    bloom.strength = 0.12 + hover * 0.1
 
     // The camera leans gently with the pointer.
     camera.position.x = pointerSmooth.x * 0.35 * idle
