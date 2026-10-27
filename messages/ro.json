@@ -557,7 +557,8 @@
       "p2": "Plata rămâne la noi până primești obiectul. Abia apoi ajunge la vânzător, minus comisionul de {percent}%.",
       "p3Title": "Reguli de casă de licitații",
       "p3": "Prețul de rezervă rămâne secret, ofertele din ultimele 2 minute prelungesc licitația, iar fiecare vânzător își confirmă identitatea."
-    }
+    },
+    "categoryExplore": "Explorează"
   },
   "footer": {
     "about": "LiciTot e locul unde orice lucru își găsește un nou proprietar — prin licitație, la prețul corect.",

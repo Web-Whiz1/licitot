@@ -171,7 +171,13 @@ async function Categories() {
   const [t, tree] = await Promise.all([getTranslations("home"), getCategoryTree()])
   return (
     <section aria-labelledby="categorii" className="container-page pt-20">
-      <SectionHeader id="categorii" eyebrow={t("eyebrowCategories")} title={t("categories")} />
+      <SectionHeader
+        id="categorii"
+        eyebrow={t("eyebrowCategories")}
+        title={t("categories")}
+        href="/cauta"
+        seeAll={t("seeAll")}
+      />
       <CategoryCards tree={tree} />
     </section>
   )

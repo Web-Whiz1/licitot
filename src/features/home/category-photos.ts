@@ -19,3 +19,8 @@ export const CATEGORY_PHOTOS: Record<string, StaticImageData> = {
   copii,
   carti,
 }
+
+/** Where to anchor the crop, for photos whose subject is off-centre (CSS object-position). */
+export const CATEGORY_PHOTO_FOCUS: Record<string, string> = {
+  "casa-gradina": "50% 42%",
+}
