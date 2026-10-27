@@ -8,9 +8,9 @@ import { SearchForm } from "@/components/layout/search-form"
 import { Button } from "@/components/ui/button"
 import { AuctionGrid } from "@/features/auctions/components/auction-card"
 import { AuctionGridSkeleton } from "@/features/auctions/components/card-skeletons"
-import { CategoryIcon } from "@/features/auctions/components/category-icon"
 import { getHomeSections } from "@/features/auctions/listing"
 import { getCategoryTree } from "@/features/auctions/queries"
+import { CategoryCards } from "@/features/home/components/category-cards"
 import { EmptyState } from "@/features/profiles/components/empty-state"
 import { PLATFORM_FEE_PERCENT } from "@/lib/money"
 import { cn } from "@/lib/utils"
@@ -172,35 +172,7 @@ async function Categories() {
   return (
     <section aria-labelledby="categorii" className="container-page pt-20">
       <SectionHeader id="categorii" eyebrow={t("eyebrowCategories")} title={t("categories")} />
-      <ul className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
-        {tree.map((c) => (
-          <li key={c.slug}>
-            <Link
-              href={`/categorie/${c.slug}`}
-              className="group flex h-full items-start gap-4 rounded-lg border bg-card p-4 transition-colors duration-150 ease-out hover:border-input md:p-5"
-            >
-              <span className="grid size-11 shrink-0 place-items-center rounded-md bg-tint text-primary md:size-12">
-                <CategoryIcon name={c.icon} className="size-6 md:size-7" />
-              </span>
-              <span className="min-w-0 space-y-1 pt-0.5">
-                <span className="flex items-center gap-1 font-semibold text-foreground">
-                  {c.name}
-                  <ArrowRight
-                    aria-hidden
-                    className="size-4 -translate-x-1 text-primary opacity-0 transition duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100"
-                  />
-                </span>
-                <span className="line-clamp-2 hidden text-sm text-muted-foreground sm:block">
-                  {c.children
-                    .slice(0, 3)
-                    .map((s) => s.name)
-                    .join(" · ")}
-                </span>
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <CategoryCards tree={tree} />
     </section>
   )
 }
