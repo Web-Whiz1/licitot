@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { AuctionGrid } from "@/features/auctions/components/auction-card"
 import { AuctionGridSkeleton } from "@/features/auctions/components/card-skeletons"
 import { CategoryIcon } from "@/features/auctions/components/category-icon"
+import { CurtainStage } from "@/features/home/components/curtain-stage"
 import { getHomeSections } from "@/features/auctions/listing"
 import { getCategoryTree } from "@/features/auctions/queries"
 import { EmptyState } from "@/features/profiles/components/empty-state"
@@ -21,8 +22,9 @@ export default async function HomePage() {
   return (
     <>
       {/* ── Hero: the thesis in the serif; on the right, the guarantees as a trail from the paddle ── */}
-      <section className="border-b">
-        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 pt-10 pb-12 md:px-6 lg:grid-cols-[1.1fr_1fr] lg:gap-12 lg:pt-16 lg:pb-20">
+      <section className="dark relative isolate overflow-hidden bg-background text-foreground">
+        <HeroBackdrop />
+        <div className="container-page grid items-center gap-12 pt-12 pb-14 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:pt-24 lg:pb-28">
           <div className="space-y-6">
             <Suspense fallback={<Eyebrow label={t("home.heroEyebrow")} />}>
               <LiveEyebrow />
@@ -63,10 +65,22 @@ export default async function HomePage() {
         <Sections />
       </Suspense>
 
+      <About />
+
       <Steps />
 
       <SellBand />
     </>
+  )
+}
+
+/** The hero is a dark room: a warm spotlight from above right and a bordo glow below left. */
+function HeroBackdrop() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 paper-grain">
+      <div className="absolute top-[-30%] right-[8%] h-[140%] w-[44rem] rotate-[18deg] bg-[radial-gradient(ellipse_at_top,color-mix(in_oklab,var(--warning)_28%,transparent),transparent_65%)]" />
+      <div className="absolute -bottom-40 -left-40 size-[40rem] rounded-full bg-primary opacity-15 blur-3xl" />
+    </div>
   )
 }
 
@@ -168,17 +182,33 @@ async function TrustTrail() {
 async function Categories() {
   const [t, tree] = await Promise.all([getTranslations("home"), getCategoryTree()])
   return (
-    <section aria-labelledby="categorii" className="mx-auto max-w-7xl px-4 pt-16 md:px-6">
+    <section aria-labelledby="categorii" className="container-page pt-20">
       <SectionHeader id="categorii" eyebrow={t("eyebrowCategories")} title={t("categories")} />
-      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-8">
+      <ul className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4">
         {tree.map((c) => (
           <li key={c.slug}>
             <Link
               href={`/categorie/${c.slug}`}
-              className="flex h-full flex-col items-center gap-2.5 rounded-lg border bg-card px-3 py-5 text-center text-sm font-medium transition-colors duration-150 ease-out hover:border-input hover:bg-muted"
+              className="group flex h-full items-start gap-4 rounded-lg border bg-card p-4 transition-colors duration-150 ease-out hover:border-input md:p-5"
             >
-              <CategoryIcon name={c.icon} className="size-6 text-primary" />
-              {c.name}
+              <span className="grid size-11 shrink-0 place-items-center rounded-md bg-tint text-primary md:size-12">
+                <CategoryIcon name={c.icon} className="size-6 md:size-7" />
+              </span>
+              <span className="min-w-0 space-y-1 pt-0.5">
+                <span className="flex items-center gap-1 font-semibold text-foreground">
+                  {c.name}
+                  <ArrowRight
+                    aria-hidden
+                    className="size-4 -translate-x-1 text-primary opacity-0 transition duration-200 ease-out group-hover:translate-x-0 group-hover:opacity-100"
+                  />
+                </span>
+                <span className="line-clamp-2 hidden text-sm text-muted-foreground sm:block">
+                  {c.children
+                    .slice(0, 3)
+                    .map((s) => s.name)
+                    .join(" · ")}
+                </span>
+              </span>
             </Link>
           </li>
         ))}
@@ -192,7 +222,7 @@ async function Sections() {
   const featured = sections.featured.filter((a) => a.bid_count > 0)
   if (sections.endingSoon.length === 0) {
     return (
-      <section className="mx-auto max-w-7xl px-4 pt-16 md:px-6">
+      <section className="container-page pt-20">
         <EmptyState
           icon={Gavel}
           title={t("emptyTitle")}
@@ -245,6 +275,73 @@ async function Sections() {
   )
 }
 
+/**
+ * "Cine suntem?": a dark band with the 3D stage (curtains part, the paddle rises into the
+ * spotlight) and the three things the house stands for.
+ */
+async function About() {
+  const t = await getTranslations("home.about")
+  const pillars = [
+    { title: t("p1Title"), text: t("p1") },
+    { title: t("p2Title"), text: t("p2", { percent: PLATFORM_FEE_PERCENT }) },
+    { title: t("p3Title"), text: t("p3") },
+  ]
+  return (
+    <section
+      aria-labelledby="cine-suntem"
+      className="dark mt-24 bg-background text-foreground md:mt-32"
+    >
+      <div className="container-page pt-16 text-center md:pt-24">
+        <p className="text-xs font-semibold tracking-[0.07em] text-muted-foreground uppercase">
+          {t("eyebrow")}
+        </p>
+        <h2
+          id="cine-suntem"
+          className="mt-3 font-display text-[2.75rem] leading-none tracking-[-0.02em] md:text-7xl"
+        >
+          {t("title")}
+        </h2>
+        <p className="mx-auto mt-5 max-w-2xl text-lg text-pretty text-muted-foreground md:text-xl">
+          {t("lead")}
+        </p>
+      </div>
+
+      <div className="relative mx-auto mt-10 max-w-[100rem] md:mt-14">
+        <CurtainStage
+          posterClosed="/brand/stage-closed.webp"
+          posterOpen="/brand/stage-open.webp"
+          className="aspect-[4/5] w-full sm:aspect-[16/10] lg:aspect-[2/1]"
+        />
+        {/* Melt the stage edges into the band. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-linear-to-b from-background"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-background"
+        />
+      </div>
+      <p className="mt-2 text-center text-sm text-muted-foreground">
+        <span className="hidden [@media(hover:hover)]:inline">{t("hint")}</span>
+        <span className="[@media(hover:hover)]:hidden">{t("hintTouch")}</span>
+      </p>
+
+      <ol className="container-page grid gap-10 pt-14 pb-20 md:grid-cols-3 md:gap-12 md:pb-28">
+        {pillars.map((p, i) => (
+          <li key={p.title} className="border-t border-ink-accent/40 pt-6">
+            <span className="font-display text-sm text-ink-accent tabular-nums">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <h3 className="mt-2 font-display text-2xl">{p.title}</h3>
+            <p className="mt-2 leading-relaxed text-pretty text-muted-foreground">{p.text}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
+
 async function Steps() {
   const t = await getTranslations("home")
   const steps = [
@@ -253,7 +350,7 @@ async function Steps() {
     { title: t("steps.s3t"), text: t("steps.s3") },
   ]
   return (
-    <section aria-labelledby="pasi" className="mx-auto max-w-7xl px-4 pt-20 md:px-6">
+    <section aria-labelledby="pasi" className="container-page pt-24">
       <div className="rounded-lg border bg-card px-5 py-10 md:px-10 md:py-12">
         <SectionHeader
           id="pasi"
@@ -281,7 +378,7 @@ async function Steps() {
 async function SellBand() {
   const t = await getTranslations("home")
   return (
-    <section className="mx-auto max-w-7xl px-4 pt-6 md:px-6">
+    <section className="container-page pt-8">
       <div className="relative isolate overflow-hidden rounded-lg bg-primary px-6 py-12 text-primary-foreground md:px-12 md:py-16 dark:bg-tint dark:text-foreground">
         <LogoMark
           variant="mono"
@@ -364,7 +461,7 @@ function Section({
   children: React.ReactNode
 }) {
   return (
-    <section aria-labelledby={id} className="mx-auto max-w-7xl px-4 pt-16 md:px-6">
+    <section aria-labelledby={id} className="container-page pt-20">
       <SectionHeader id={id} eyebrow={eyebrow} title={title} href={href} seeAll={seeAll} />
       {children}
     </section>
@@ -373,7 +470,7 @@ function Section({
 
 function SectionSkeleton({ title, count }: { title: string; count: number }) {
   return (
-    <section className="mx-auto max-w-7xl px-4 pt-16 md:px-6">
+    <section className="container-page pt-20">
       <h2 className="mb-6 font-display text-[1.75rem] md:text-3xl">{title}</h2>
       <AuctionGridSkeleton count={count} />
     </section>

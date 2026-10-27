@@ -111,6 +111,26 @@
   }
 }
 
+/* Page container: one width for header, pages and footer (1440px), generous side margins. */
+@utility container-page {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 90rem;
+  padding-inline: 1rem;
+  @media (width >= 48rem) {
+    padding-inline: 2rem;
+  }
+  @media (width >= 80rem) {
+    padding-inline: 2.5rem;
+  }
+}
+
+/* Fine paper grain (static SVG noise), laid over a surface without touching its color. */
+@utility paper-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.11 0 0 0 0 0.09 0 0 0 0 0.08 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.09'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
+}
+
 :root {
   --radius: 0.5rem;
 
@@ -201,7 +221,7 @@
     scrollbar-gutter: stable;
   }
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background paper-grain text-foreground antialiased;
   }
   /* Headings: Newsreader, medium weight, slightly tight (a font-* or tracking-* utility overrides). */
   .font-display,

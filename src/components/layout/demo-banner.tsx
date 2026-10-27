@@ -9,7 +9,7 @@ export function DemoBanner() {
 
   return (
     <div role="note" className="bg-warning-soft text-warning">
-      <p className="mx-auto flex max-w-7xl items-center justify-center gap-2 px-4 py-1.5 text-center text-xs font-medium md:px-6">
+      <p className="container-page flex items-center justify-center gap-2 py-1.5 text-center text-xs font-medium md:px-6">
         <FlaskConical aria-hidden className="size-3.5 shrink-0" />
         {t("banner")}
       </p>

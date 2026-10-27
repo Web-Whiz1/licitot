@@ -26,7 +26,9 @@
     "signUp": "Creează cont",
     "categories": "Categorii",
     "explore": "Explorează",
-    "howItWorks": "Cum funcționează"
+    "howItWorks": "Cum funcționează",
+    "allAuctions": "Toate licitațiile",
+    "fees": "Comisioane"
   },
   "validation": {
     "required": "Câmpul e obligatoriu.",
@@ -544,7 +546,20 @@
     "sellTitle": "Ai ceva de vândut?",
     "sellText": "Pune-l la licitație în două minute. Listarea e gratuită, iar comisionul de {percent}% se plătește doar dacă vinzi.",
     "sellCta": "Pune la licitație",
-    "liveCount": "{count, plural, one {# licitație live acum} few {# licitații live acum} other {# de licitații live acum}}"
+    "liveCount": "{count, plural, one {# licitație live acum} few {# licitații live acum} other {# de licitații live acum}}",
+    "about": {
+      "eyebrow": "Cine suntem",
+      "title": "Cine suntem?",
+      "lead": "LiciTot e o casă de licitații online, făcută în România. Aici orice lucru își găsește un nou proprietar, la prețul pe care îl stabilesc licitanții.",
+      "hint": "Treci cu mouse-ul peste paletă",
+      "hintTouch": "Atinge paleta",
+      "p1Title": "Sala e a tuturor",
+      "p1": "Vinzi și licitezi din același cont. Nu ai nevoie de magazin, de abonament sau de experiență.",
+      "p2Title": "Banii stau la păstrare",
+      "p2": "Plata rămâne la noi până primești obiectul. Abia apoi ajunge la vânzător, minus comisionul de {percent}%.",
+      "p3Title": "Reguli de casă de licitații",
+      "p3": "Prețul de rezervă rămâne secret, ofertele din ultimele 2 minute prelungesc licitația, iar fiecare vânzător își confirmă identitatea."
+    }
   },
   "footer": {
     "about": "LiciTot e locul unde orice lucru își găsește un nou proprietar — prin licitație, la prețul corect.",

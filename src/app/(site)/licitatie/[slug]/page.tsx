@@ -78,7 +78,7 @@ export async function generateMetadata({
 
 export default function AuctionPage({ params }: PageProps<"/licitatie/[slug]">) {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-10">
+    <div className="container-page py-6 md:py-10">
       <Suspense fallback={<DetailSkeleton />}>
         <AuctionDetail params={params} />
       </Suspense>

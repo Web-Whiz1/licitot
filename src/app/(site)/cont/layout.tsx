@@ -7,7 +7,7 @@ import { AccountSkeleton } from "@/features/profiles/components/account-skeleton
 export default async function AccountLayout({ children }: LayoutProps<"/cont">) {
   const t = await getTranslations("account")
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
+    <div className="container-page py-8 md:py-10">
       <h1 className="mb-6 font-display text-3xl md:text-4xl">{t("title")}</h1>
       <div className="lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-10">
         <Suspense fallback={<AccountTabsNav pathname={null} />}>

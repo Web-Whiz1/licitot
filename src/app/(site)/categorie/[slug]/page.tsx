@@ -49,7 +49,7 @@ export default async function CategoryPage({
   const t = await getTranslations()
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
+    <div className="container-page py-8 md:py-10">
       <nav aria-label={t("detail.breadcrumb")} className="mb-2 text-sm text-muted-foreground">
         <Link href="/" className="hover:underline">
           {t("detail.home")}

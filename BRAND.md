@@ -107,6 +107,14 @@ Favicon: `src/app/icon.svg` (lighter rose on dark browser chrome) + `favicon.ico
 - Use `inverse` on ink bands, `mono` on photos or saturated backgrounds.
 - Don't straighten the paddle, stretch, recolor, outline or add shadows to the logo.
 
+## Surfaces
+
+The page is warm paper with a fine grain (`paper-grain`); cards sit on it as plain white sheets.
+Two dark "rooms" break the page: the home hero (a warm spotlight from above, a bordo glow below)
+and "Cine suntem?", where the logo appears on a stage: bordo velvet curtains with gold fringe
+part, and the paddle (bordo enamel set in gold) rises into the spotlight. Gold appears only in
+that scene, never in the UI.
+
 ## Icons
 
 **Phosphor Light** (MIT): thin, even lines that sit well next to Newsreader, like the marks in an

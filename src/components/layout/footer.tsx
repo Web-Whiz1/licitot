@@ -55,7 +55,7 @@ export async function Footer() {
 
   return (
     <footer className="mt-24 bg-ink text-ink-foreground">
-      <div className="mx-auto max-w-7xl px-4 md:px-6">
+      <div className="container-page">
         {/* ── The brand line, closing the page like the home headline opens it ── */}
         <p className="border-b border-ink-foreground/10 py-12 font-display text-[2.5rem] leading-[1.02] tracking-[-0.02em] text-balance md:py-16 md:text-6xl">
           {t.rich("home.heroTitle", {

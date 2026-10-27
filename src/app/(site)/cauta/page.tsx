@@ -19,7 +19,7 @@ export async function generateMetadata({ searchParams }: PageProps<"/cauta">): P
 
 export default function SearchPage({ searchParams }: PageProps<"/cauta">) {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 md:px-6 md:py-10">
+    <div className="container-page py-8 md:py-10">
       <Suspense fallback={<AuctionGridSkeleton />}>
         <Results searchParams={searchParams} />
       </Suspense>
