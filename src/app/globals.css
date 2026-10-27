@@ -243,6 +243,16 @@
     stroke-linejoin: round;
     vector-effect: non-scaling-stroke;
   }
+  /* First-visit intro (features/intro): hidden unless the boot script marked <html>. */
+  .site-intro {
+    display: none;
+  }
+  html[data-intro] {
+    overflow: hidden;
+  }
+  html[data-intro] .site-intro {
+    display: block;
+  }
   ::selection {
     background-color: var(--tint);
     color: var(--tint-foreground);

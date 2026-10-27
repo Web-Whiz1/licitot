@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button"
 import { AuctionGrid } from "@/features/auctions/components/auction-card"
 import { AuctionGridSkeleton } from "@/features/auctions/components/card-skeletons"
 import { CategoryIcon } from "@/features/auctions/components/category-icon"
-import { CurtainStage } from "@/features/home/components/curtain-stage"
 import { getHomeSections } from "@/features/auctions/listing"
 import { getCategoryTree } from "@/features/auctions/queries"
 import { EmptyState } from "@/features/profiles/components/empty-state"
@@ -275,10 +274,7 @@ async function Sections() {
   )
 }
 
-/**
- * "Cine suntem?": a dark band with the 3D stage (curtains part, the paddle rises into the
- * spotlight) and the three things the house stands for.
- */
+/** "Cine suntem?": a dark band with who we are and the three things the house stands for. */
 async function About() {
   const t = await getTranslations("home.about")
   const pillars = [
@@ -305,27 +301,6 @@ async function About() {
           {t("lead")}
         </p>
       </div>
-
-      <div className="relative mx-auto mt-10 max-w-[100rem] md:mt-14">
-        <CurtainStage
-          posterClosed="/brand/stage-closed.webp"
-          posterOpen="/brand/stage-open.webp"
-          className="aspect-[4/5] w-full sm:aspect-[16/10] lg:aspect-[2/1]"
-        />
-        {/* Melt the stage edges into the band. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-linear-to-b from-background"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-background"
-        />
-      </div>
-      <p className="mt-2 text-center text-sm text-muted-foreground">
-        <span className="hidden [@media(hover:hover)]:inline">{t("hint")}</span>
-        <span className="[@media(hover:hover)]:hidden">{t("hintTouch")}</span>
-      </p>
 
       <ol className="container-page grid gap-10 pt-14 pb-20 md:grid-cols-3 md:gap-12 md:pb-28">
         {pillars.map((p, i) => (

@@ -551,8 +551,6 @@
       "eyebrow": "Cine suntem",
       "title": "Cine suntem?",
       "lead": "LiciTot e o casă de licitații online, făcută în România. Aici orice lucru își găsește un nou proprietar, la prețul pe care îl stabilesc licitanții.",
-      "hint": "Treci cu mouse-ul peste paletă",
-      "hintTouch": "Atinge paleta",
       "p1Title": "Sala e a tuturor",
       "p1": "Vinzi și licitezi din același cont. Nu ai nevoie de magazin, de abonament sau de experiență.",
       "p2Title": "Banii stau la păstrare",
@@ -1204,5 +1202,8 @@
   "email": {
     "open": "Deschide în LiciTot",
     "footer": "Primești acest email pentru că ai un cont pe LiciTot."
+  },
+  "intro": {
+    "skip": "Intră pe site"
   }
 }

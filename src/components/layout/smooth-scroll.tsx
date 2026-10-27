@@ -25,7 +25,10 @@ export function SmoothScroll() {
         // A click on an internal link stops any running glide, so the new page starts at the top.
         stopInertiaOnNavigate: true,
         // Open menus and dialogs lock the page (Radix marks <body>): leave the wheel to them.
-        virtualScroll: () => !document.body.hasAttribute("data-scroll-locked"),
+        // No wheel scrolling while a dialog or the first-visit intro covers the page.
+        virtualScroll: () =>
+          !document.body.hasAttribute("data-scroll-locked") &&
+          !document.documentElement.hasAttribute("data-intro"),
       })
     })
     return () => {

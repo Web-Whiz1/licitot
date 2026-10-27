@@ -1,7 +1,6 @@
-// "Cine suntem?" stage: a real-time WebGL scene. Velvet curtains part, and the LiciTot paddle
-// (bordo enamel) rises through a stage trap into the spotlight. Hovering the paddle
-// turns the lights up and the paddle towards the cursor. Browser-only: loaded lazily by
-// components/curtain-stage.tsx when the section comes near the viewport.
+// The site intro: a real-time WebGL stage. Bordo velvet curtains part, the LiciTot paddle (bordo
+// lacquer) rises through a stage trap into a soft spotlight, holds, then sinks back and the
+// curtains close. Browser-only: loaded by components/site-intro.tsx on the first visit.
 import * as THREE from "three"
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js"
 import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js"
@@ -10,22 +9,20 @@ import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js"
 import { OutputPass } from "three/addons/postprocessing/OutputPass.js"
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js"
 import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js"
-import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js"
 import { WORDMARK_LICI_PATH, WORDMARK_TOT_PATH } from "@/lib/brand/wordmark"
 
 export type StageState = "closed" | "open"
 
 export type StageOptions = {
-  /** No animation: the scene is drawn once in its final state (and again on resize/hover). */
-  reducedMotion?: boolean
-  /** Start in this state without animating (used for the poster images). */
+  /** Start in this state without animating (used for the still image). */
   initial?: StageState
   onFirstFrame?: () => void
 }
 
 export type Stage = {
-  /** Parts the curtains and raises the paddle (once). */
-  open: () => void
+  /** Opens the curtains and raises the paddle, holds for `hold` seconds, then lowers the
+   * paddle and closes the curtains; calls `onDone` once they are shut. */
+  play: (show: { hold: number; onDone: () => void }) => void
   /** Pauses rendering while the section is off screen. */
   setActive: (active: boolean) => void
   resize: () => void
@@ -64,8 +61,6 @@ const easeOutBack = (t: number) => {
   return 1 + (c + 1) * (t - 1) ** 3 + c * (t - 1) ** 2
 }
 const clamp01 = (t: number) => Math.min(1, Math.max(0, t))
-const damp = (from: number, to: number, rate: number, dt: number) =>
-  from + (to - from) * (1 - Math.exp(-rate * dt))
 
 /** Deterministic noise so the curtains look the same on every visit. */
 function rng(seed: number) {
@@ -364,7 +359,6 @@ function makeBeam(from: THREE.Vector3, to: THREE.Vector3, radius: number) {
 // ── The scene ──────────────────────────────────────────────────────────────────────────────
 
 export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {}): Stage {
-  const reduced = options.reducedMotion ?? false
   const renderer = new THREE.WebGLRenderer({
     canvas,
     antialias: false,
@@ -382,12 +376,12 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
 
   const scene = new THREE.Scene()
   scene.background = new THREE.Color(0x060404)
-  scene.fog = new THREE.Fog(0x060404, 14, 30)
+  const fog = new THREE.Fog(0x060404, 14, 30)
+  scene.fog = fog
+  // A soft studio reflection: it gives the velvet its sheen and the lacquer its gloss.
   const pmrem = new THREE.PMREMGenerator(renderer)
   const envRT = pmrem.fromScene(new RoomEnvironment(), 0.04)
   scene.environment = envRT.texture
-  // Metal and lacquer get their own, brighter reflections than the rest of the room.
-  const reflections = envRT.texture
   scene.environmentIntensity = 0.35
 
   const camera = new THREE.PerspectiveCamera(26, 16 / 9, 0.1, 60)
@@ -417,7 +411,7 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
       roughness,
       clearcoat: 0.8,
       clearcoatRoughness: 0.12,
-      envMap: reflections,
+      envMap: envRT.texture,
       envMapIntensity: 0.3,
     })
   // No metal anywhere: trims in deep bordo silk, the paddle rim in darker lacquer, the
@@ -436,7 +430,7 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
     roughness: 0.32,
     clearcoat: 1,
     clearcoatRoughness: 0.04,
-    envMap: reflections,
+    envMap: envRT.texture,
     envMapIntensity: 0.35,
   })
 
@@ -451,7 +445,6 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
       roughnessMap,
       roughness: 1,
       metalness: 0,
-      envMapIntensity: 0.6,
     }),
   )
   floor.rotation.x = -Math.PI / 2
@@ -614,16 +607,13 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
   scene.add(dust)
   const dustBase = dustPos.slice()
 
-  // Post: a faint bloom on the brightest highlights only.
-  const size = new THREE.Vector2()
+  // Post: multisampled render, then tone mapping and a lens look (no bloom: the light is low).
   const target = new THREE.WebGLRenderTarget(1, 1, {
     type: THREE.HalfFloatType,
     samples: 4,
   })
   const composer = new EffectComposer(renderer, target)
   composer.addPass(new RenderPass(scene, camera))
-  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.12, 0.5, 0.9)
-  composer.addPass(bloom)
   composer.addPass(new OutputPass())
   // A lens look: soft vignette and fine film grain, after tone mapping.
   const film = new ShaderPass({
@@ -651,13 +641,12 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
   composer.addPass(film)
 
   // ── State ──
-  const startOpen = options.initial === "open" || reduced
-  let openT = startOpen ? 1 : 0 // animation clock of the opening, 0…1
-  let opening = false
-  let hover = 0
-  let hoverTarget = 0
-  const pointer = new THREE.Vector2(0, 0)
-  const pointerSmooth = new THREE.Vector2(0, 0)
+  // One clock drives the show: 0 = closed, 1 = open with the paddle up. It runs forward to
+  // open, holds, then runs back (the paddle sinks first, then the curtains close).
+  let openT = options.initial === "open" ? 1 : 0
+  let direction: 1 | 0 | -1 = 0
+  let holdLeft = 0
+  let onClosed: (() => void) | undefined
   let active = false
   let raf = 0
   let last = performance.now()
@@ -665,7 +654,7 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
   let firstFrame = false
   let compiled = false
   let frameTimes: number[] = []
-  const raycaster = new THREE.Raycaster()
+  let framesOut = 0
 
   function resize() {
     const w = canvas.clientWidth
@@ -675,86 +664,83 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
     renderer.setSize(w, h, false)
     composer.setPixelRatio(pixelRatio)
     composer.setSize(w, h)
-    renderer.getDrawingBufferSize(size)
-    bloom.resolution.set(size.x, size.y)
     camera.aspect = w / h
     // Keep the whole opening in view on narrow screens; frame tighter on wide ones.
-    const wanted = camera.aspect < 1 ? 6.4 : 9.4
+    const wanted = camera.aspect < 1 ? 5.8 : 9.4
     const halfV = THREE.MathUtils.degToRad(camera.fov / 2)
     const distForWidth = wanted / 2 / (Math.tan(halfV) * camera.aspect)
     const distForHeight = 7.3 / 2 / Math.tan(halfV)
     const dist = Math.max(distForWidth, distForHeight)
     camera.position.set(0, 2.95, dist)
+    // The same haze on the stage wherever the camera stands (it stands far back on phones).
+    fog.near = dist - 2
+    fog.far = dist + 14
+    camera.lookAt(lookAt)
     camera.updateProjectionMatrix()
     if (!raf && compiled) renderFrame(0)
   }
 
   function update(dt: number) {
     time += dt
-    if (opening && openT < 1) openT = Math.min(1, openT + dt / 3.5)
-    hover = damp(hover, hoverTarget, 6, dt)
-    pointerSmooth.x = damp(pointerSmooth.x, pointer.x, 4, dt)
-    pointerSmooth.y = damp(pointerSmooth.y, pointer.y, 4, dt)
+    framesOut++
+    if (framesOut < 6) {
+      // Let the first frames (and any late shader compiles) pass before the show moves.
+    } else if (direction === 1) {
+      openT = Math.min(1, openT + dt / 3.5)
+      if (openT === 1) direction = 0
+    } else if (direction === 0 && holdLeft > 0 && openT === 1) {
+      holdLeft -= dt
+      if (holdLeft <= 0) direction = -1
+    } else if (direction === -1) {
+      openT = Math.max(0, openT - dt / 3)
+      if (openT === 0) {
+        direction = 0
+        const done = onClosed
+        onClosed = undefined
+        done?.()
+      }
+    }
 
     const curtainOpen = easeInOut(clamp01(openT / 0.75))
     const rise = easeOutBack(clamp01((openT - 0.28) / 0.6))
     const lights = clamp01((openT - 0.18) / 0.5)
-    const sway = reduced
-      ? 0
-      : 0.35 + (opening && openT < 1 ? 0.65 * Math.sin(Math.PI * curtainOpen) : 0)
+    const moving = direction !== 0 && openT > 0 && openT < 1
+    const sway = 0.35 + (moving ? 0.65 * Math.sin(Math.PI * curtainOpen) : 0)
 
     layoutCurtain(right, curtainOpen, sway, time)
     layoutCurtain(left, curtainOpen, sway, time + 1.7)
 
-    paddleRig.position.y = THREE.MathUtils.lerp(PADDLE_START_Y, PADDLE_Y, rise)
-    const idle = reduced ? 0 : 1
-    // Never quite face-on: a flat lacquer face would mirror the front lights and wash out.
-    paddleRig.rotation.y =
-      REST_YAW +
-      (1 - rise) * Math.PI * 0.9 +
-      idle * (1 - hover) * Math.sin(time * 0.45) * 0.22 +
-      idle * hover * pointerSmooth.x * 0.5
-    paddleRig.rotation.x =
-      REST_PITCH + idle * (hover * -pointerSmooth.y * 0.22 + Math.sin(time * 0.7) * 0.025)
-    paddleRig.position.y += idle * Math.sin(time * 0.9) * 0.035 * rise
+    // The paddle turns as it rises and settles at a slight angle (never quite face-on: a flat
+    // lacquer face would mirror the front lights), with a slow idle sway of its own.
+    paddleRig.position.y =
+      THREE.MathUtils.lerp(PADDLE_START_Y, PADDLE_Y, rise) + Math.sin(time * 0.9) * 0.035 * rise
+    paddleRig.rotation.y = REST_YAW + (1 - rise) * Math.PI * 0.9 + Math.sin(time * 0.45) * 0.18
+    paddleRig.rotation.x = REST_PITCH + Math.sin(time * 0.7) * 0.025
 
-    key.intensity = lights * (55 + hover * 30)
+    key.intensity = lights * 55
     front.intensity = lights * 9
-    beam.uniforms.uIntensity.value = lights * (0.045 + hover * 0.03)
-    dustMat.opacity = lights * (0.22 + hover * 0.2)
-    for (const rim of rims) rim.intensity = lights * (28 + hover * 45)
+    beam.uniforms.uIntensity.value = lights * 0.045
+    dustMat.opacity = lights * 0.22
+    for (const rim of rims) rim.intensity = lights * 28
     for (const wash of washes) wash.intensity = 20 + lights * 8
     foot.intensity = 1.8 + lights * 1.2
-    for (const m of [paddleSide, wordMat]) m.envMapIntensity = 0.3 + hover * 0.4
-    bloom.strength = 0.12 + hover * 0.1
 
-    // The camera leans gently with the pointer.
-    camera.position.x = pointerSmooth.x * 0.35 * idle
-    camera.lookAt(
-      lookAt.x + pointerSmooth.x * 0.1 * idle,
-      lookAt.y + pointerSmooth.y * 0.06 * idle,
-      0,
-    )
-
-    if (!reduced) {
-      const pos = dustGeo.attributes.position!
-      for (let i = 0; i < dustCount; i++) {
-        const s = dustSeed[i]!
-        pos.setXYZ(
-          i,
-          dustBase[i * 3]! + Math.sin(time * 0.21 + s) * 0.12,
-          dustBase[i * 3 + 1]! + Math.sin(time * 0.17 + s * 1.3) * 0.18,
-          dustBase[i * 3 + 2]! + Math.cos(time * 0.19 + s) * 0.12,
-        )
-      }
-      pos.needsUpdate = true
+    const pos = dustGeo.attributes.position!
+    for (let i = 0; i < dustCount; i++) {
+      const s = dustSeed[i]!
+      pos.setXYZ(
+        i,
+        dustBase[i * 3]! + Math.sin(time * 0.21 + s) * 0.12,
+        dustBase[i * 3 + 1]! + Math.sin(time * 0.17 + s * 1.3) * 0.18,
+        dustBase[i * 3 + 2]! + Math.cos(time * 0.19 + s) * 0.12,
+      )
     }
+    pos.needsUpdate = true
   }
 
   function renderFrame(dt: number) {
     update(dt)
-    // Reduced motion: the grain stays still too.
-    film.uniforms.uTime!.value = reduced ? 0 : time
+    film.uniforms.uTime!.value = time
     composer.render(dt)
     if (!firstFrame) {
       firstFrame = true
@@ -780,8 +766,6 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
   }
 
   function start() {
-    // Reduced motion still runs the loop (the stage is already open and nothing moves), so
-    // hovering can fade the lights up and down.
     if (raf || !compiled) return
     last = performance.now()
     raf = requestAnimationFrame(loop)
@@ -791,40 +775,12 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
     raf = 0
   }
 
-  function onPointerMove(e: PointerEvent) {
-    if (e.type === "pointermove" && e.pointerType !== "mouse") return
-    const rect = canvas.getBoundingClientRect()
-    pointer.set(
-      ((e.clientX - rect.left) / rect.width) * 2 - 1,
-      -((e.clientY - rect.top) / rect.height) * 2 + 1,
-    )
-    raycaster.setFromCamera(pointer, camera)
-    hoverTarget = raycaster.intersectObject(paddle, false).length > 0 ? 1 : 0
-    canvas.style.cursor = hoverTarget ? "pointer" : ""
-  }
-  // Touch: a tap on the paddle lights it up for a moment.
-  let tapTimer = 0
-  function onPointerDown(e: PointerEvent) {
-    if (e.pointerType === "mouse") return
-    onPointerMove(e)
-    if (!hoverTarget) return
-    window.clearTimeout(tapTimer)
-    tapTimer = window.setTimeout(() => {
-      hoverTarget = 0
-    }, 2600)
-  }
-  function onPointerLeave(e: PointerEvent) {
-    if (e.pointerType !== "mouse") return
-    hoverTarget = 0
-    pointer.set(0, 0)
-    canvas.style.cursor = ""
-  }
-  canvas.addEventListener("pointermove", onPointerMove)
-  canvas.addEventListener("pointerdown", onPointerDown)
-  canvas.addEventListener("pointerleave", onPointerLeave)
-
-  // Compile every shader off the main path first, so the opening never stutters.
+  // Compile every shader off the main path first, so the opening never stutters. The scene is
+  // drawn into the composer's buffer (linear, tone mapped later), so compile for that target:
+  // compiling for the canvas would build different programs and compile them all again.
+  renderer.setRenderTarget(composer.readBuffer)
   void renderer.compileAsync(scene, camera).then(() => {
+    renderer.setRenderTarget(null)
     compiled = true
     resize()
     renderFrame(0)
@@ -832,9 +788,10 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
   })
 
   return {
-    open() {
-      if (openT >= 1) return
-      opening = true
+    play({ hold, onDone }) {
+      holdLeft = hold
+      onClosed = onDone
+      direction = 1
     },
     setActive(next) {
       active = next
@@ -844,10 +801,6 @@ export function createStage(canvas: HTMLCanvasElement, options: StageOptions = {
     resize,
     dispose() {
       stop()
-      window.clearTimeout(tapTimer)
-      canvas.removeEventListener("pointermove", onPointerMove)
-      canvas.removeEventListener("pointerdown", onPointerDown)
-      canvas.removeEventListener("pointerleave", onPointerLeave)
       scene.traverse((o) => {
         if (o instanceof THREE.Mesh || o instanceof THREE.Points) {
           o.geometry.dispose()

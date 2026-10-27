@@ -3,6 +3,8 @@ import { DemoBanner } from "@/components/layout/demo-banner"
 import { Footer } from "@/components/layout/footer"
 import { Header } from "@/components/layout/header"
 import { MobileNav, MobileNavBar } from "@/components/layout/mobile-nav"
+import { INTRO_BOOT_SCRIPT } from "@/features/intro/boot"
+import { SiteIntro } from "@/features/intro/components/site-intro"
 import { Suspense } from "react"
 
 export default function SiteLayout({ children }: LayoutProps<"/">) {
@@ -10,6 +12,9 @@ export default function SiteLayout({ children }: LayoutProps<"/">) {
 
   return (
     <>
+      {/* First visit: decides before paint whether the curtain intro covers the page. */}
+      <script dangerouslySetInnerHTML={{ __html: INTRO_BOOT_SCRIPT }} />
+      <SiteIntro />
       <a
         href="#continut"
         className="sr-only z-50 rounded-md bg-primary px-4 py-2 font-semibold text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
