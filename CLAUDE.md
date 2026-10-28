@@ -156,8 +156,8 @@ scripts/               gen-icons.ts (no seed/demo data: the DB holds only real u
   profile link, "De rezolvat" counters from `getAccountOverview()`); sections are grouped
   Cumpărături / Vânzări / Cont in `account-nav.ts` (sidebar on desktop, pill row on phones). The
   avatar menu links to `/cont` plus shortcuts; there is no separate "Profilul meu" entry.
-- **Brand** ("Casa de licitații", chosen by the owner Oct 2026; see BRAND.md): barely warm stone
-  neutrals, one bordo accent `primary` (buttons, links, prices, focus), `tint` = accent tint,
+- **Brand** ("Casa de licitații", chosen by the owner Oct 2026; see BRAND.md), **Pergament** palette:
+  warm parchment page, cream cards, walnut text, one oxblood accent `primary` (buttons, links, prices, focus), `tint` = accent tint,
   `ink` = dark band (footer, tooltips). Muted statuses, always icon + label: `success` leading
   (filled `success` + `success-foreground` only for won), `destructive` outbid/errors, `warning`
   ending soon, `muted` closed. No blue, no lime/neon, no glass (backdrop blur). Fonts (self-hosted

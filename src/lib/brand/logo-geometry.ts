@@ -18,10 +18,10 @@ export const PADDLE_PATH =
 
 /** Fixed colors for static assets. In the app the mark follows the theme tokens instead. */
 export const LOGO_COLORS = {
-  paddle: "#7B2233",
-  paddleOnDark: "#E58A97",
-  ink: "#1B1915",
-  paper: "#F6F5F2",
+  paddle: "#7A2A22",
+  paddleOnDark: "#D97A6C",
+  ink: "#241A12",
+  paper: "#EDE5D6",
   white: "#FFFFFF",
 } as const
 

@@ -17,26 +17,29 @@ flourish is the **"Adjudecat"** stamp on sold items.
 
 ## Colors
 
+**Pergament** (Oct 2026): the palette follows the photographs — warm parchment, cream cards, walnut
+text, one oxblood accent. Dark mode is a warm espresso room, not an inversion.
+
 Source of truth: `src/lib/brand/tokens.ts` (mirrored in `src/app/globals.css`). `pnpm test` fails if
 the two drift or if any pair the UI uses drops under WCAG AA.
 
-| Token              | Light     | Dark      | Use                                                         |
-| ------------------ | --------- | --------- | ----------------------------------------------------------- |
-| `primary`          | `#7B2233` | `#E58A97` | Bordo: primary button, links, prices, the paddle, focus     |
-| `primary-hover`    | `#651B2A` | `#EFA4AE` | Button hover (solid, not opacity)                           |
-| `tint`             | `#F4E6E8` | `#2C1A1D` | Accent tint: live badge, new-bid flash, selection           |
-| `background`       | `#F6F5F2` | `#141311` | Page                                                        |
-| `card`             | `#FFFFFF` | `#1C1A17` | Cards, fields, panels                                       |
-| `popover`          | `#FFFFFF` | `#22201C` | Menus, dialogs, toasts (the only layers with a shadow)      |
-| `muted`            | `#EFEDE8` | `#25231F` | Subtle surfaces, hover backgrounds, the "closed" state      |
-| `foreground`       | `#1B1915` | `#EEEBE4` | Text                                                        |
-| `muted-foreground` | `#5D584F` | `#ADA79C` | Secondary text                                              |
-| `border`           | `#E2DFD8` | `#36332D` | Dividers, card borders                                      |
-| `input`            | `#8C867B` | `#7F796E` | Form borders (≥3:1) and the hover border of cards           |
-| `ink`              | `#1B1915` | `#0E0D0B` | Footer band, tooltips (`ink-accent` = light bordo on it)    |
-| `success`          | `#2B6648` | `#8FD0AE` | Leading bid; filled (`success-foreground`) only for **won** |
-| `warning`          | `#86520C` | `#E8B86A` | Ending soon, reserve not met, test-mode banner              |
-| `destructive`      | `#9E3B2B` | `#F0A08F` | Outbid, errors, cancel                                      |
+| Token              | Light     | Dark      | Use                                                                 |
+| ------------------ | --------- | --------- | ------------------------------------------------------------------- |
+| `primary`          | `#7A2A22` | `#D97A6C` | Oxblood: primary button, links, prices, the paddle, focus           |
+| `primary-hover`    | `#63211B` | `#E6917F` | Button hover (solid, not opacity)                                   |
+| `tint`             | `#F0DDD2` | `#3A201B` | Accent tint: live badge, new-bid flash, selection                   |
+| `background`       | `#EDE5D6` | `#17110D` | Page: warm parchment (with `paper-grain`)                           |
+| `card`             | `#F8F2E7` | `#211913` | Cards, fields, panels: cream                                        |
+| `popover`          | `#FBF7EF` | `#2A2019` | Menus, dialogs, toasts (the only layers with a shadow)              |
+| `muted`            | `#E4D9C6` | `#2B2119` | Subtle surfaces, hover backgrounds, the "closed" state              |
+| `foreground`       | `#241A12` | `#EFE5D6` | Text: walnut                                                        |
+| `muted-foreground` | `#66563F` | `#B4A48D` | Secondary text                                                      |
+| `border`           | `#D9CBB4` | `#3B2E23` | Dividers, card borders                                              |
+| `input`            | `#8A785D` | `#80705B` | Form borders (≥3:1) and the hover border of cards                   |
+| `ink`              | `#1F1610` | `#0F0A07` | Footer band, photo-tile shade, tooltips (`ink-accent` on it)        |
+| `success`          | `#46693A` | `#9CC48A` | Leading bid (olive); filled (`success-foreground`) only for **won** |
+| `warning`          | `#87570F` | `#E2AA60` | Ending soon, reserve not met, test-mode banner                      |
+| `destructive`      | `#9B3A27` | `#EE9A84` | Outbid, errors, cancel                                              |
 
 Each status color has a `-soft` background (`success-soft`, `warning-soft`, `destructive-soft`).
 
