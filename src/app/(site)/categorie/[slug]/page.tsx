@@ -1,4 +1,6 @@
 import type { Metadata } from "next"
+import { PhotoTile } from "@/components/photo-tile"
+import { CATEGORY_PHOTO_FOCUS, CATEGORY_PHOTOS } from "@/features/home/category-photos"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { getTranslations } from "next-intl/server"
@@ -39,6 +41,28 @@ export async function generateMetadata({
   }
 }
 
+/** The group's photo in a mounted tile; categories without a photo get a plain ink panel. */
+function CategoryBanner({ slug, children }: { slug: string; children: React.ReactNode }) {
+  const photo = CATEGORY_PHOTOS[slug]
+  if (!photo) {
+    return (
+      <div className="relative size-full overflow-hidden rounded-lg bg-ink text-ink-foreground">
+        {children}
+      </div>
+    )
+  }
+  return (
+    <PhotoTile
+      src={photo}
+      focus={CATEGORY_PHOTO_FOCUS[slug]}
+      priority
+      sizes="(min-width: 1440px) 1360px, 100vw"
+    >
+      {children}
+    </PhotoTile>
+  )
+}
+
 export default async function CategoryPage({
   params,
   searchParams,
@@ -50,20 +74,29 @@ export default async function CategoryPage({
 
   return (
     <div className="container-page py-8 md:py-10">
-      <nav aria-label={t("detail.breadcrumb")} className="mb-2 text-sm text-muted-foreground">
-        <Link href="/" className="hover:underline">
-          {t("detail.home")}
-        </Link>
-        {category.isParent ? null : (
-          <>
-            {" / "}
-            <Link href={`/categorie/${category.group.slug}`} className="hover:underline">
-              {category.group.name}
-            </Link>
-          </>
-        )}
-      </nav>
-      <h1 className="mb-4 font-display text-3xl tracking-tight">{category.name}</h1>
+      {/* The category's photograph as a banner, the name set on it (as on the home tiles). */}
+      <div className="mb-5 h-44 md:h-60">
+        <CategoryBanner slug={category.group.slug}>
+          <div className="absolute inset-x-0 bottom-0 p-5 md:p-8">
+            <nav aria-label={t("detail.breadcrumb")} className="text-sm text-ink-foreground/75">
+              <Link href="/" className="hover:underline">
+                {t("detail.home")}
+              </Link>
+              {category.isParent ? null : (
+                <>
+                  {" / "}
+                  <Link href={`/categorie/${category.group.slug}`} className="hover:underline">
+                    {category.group.name}
+                  </Link>
+                </>
+              )}
+            </nav>
+            <h1 className="mt-1 font-display text-4xl leading-none tracking-[-0.015em] md:text-5xl">
+              {category.name}
+            </h1>
+          </div>
+        </CategoryBanner>
+      </div>
 
       <ul aria-label={t("browse.subcategories")} className="mb-6 flex flex-wrap gap-2">
         {[

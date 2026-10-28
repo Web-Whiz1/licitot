@@ -117,6 +117,15 @@ part, the bordo lacquer paddle rises into a soft spotlight with the wordmark in 
 five seconds, sinks back, and the curtains close on the site. No gold or metal, and the light
 stays low: calm, not flashy.
 
+## Photography
+
+Real photographs of objects carry the site: warm, close, a little worn, the way things look in an
+auction room. They sit in **photo tiles**: the picture fills a rounded panel, a dark shade rises
+under the text, a hairline mount runs inside the edge like a passe-partout, and the type is the
+serif, set on the photo. Hover zooms the picture slowly. Layouts are magazine-like (a lead tile,
+smaller tiles, a wide one). Auction cards keep their plain body but share the mount and the zoom,
+and their titles are in the serif. Icons stay small and functional.
+
 ## Icons
 
 **Phosphor Light** (MIT): thin, even lines that sit well next to Newsreader, like the marks in an

@@ -168,6 +168,13 @@ scripts/               gen-icons.ts (no seed/demo data: the DB holds only real u
   margins). The header has two rows on desktop (search + actions; categories from
   `getCategoryTree()` + "Cum funcționează"/"Comisioane"). The body sits on `paper-grain`; dark
   bands ("Cine suntem?") use the `dark` class on the section, so tokens flip locally.
+- **Photography** is the site's main visual: `<PhotoTile>` (`components/photo-tile.tsx`) = a photo
+  filling a rounded-lg panel, a dark ink shade under the text, a hairline "mount" inside the edge,
+  serif type set on it in `ink-foreground`, slow zoom on hover (`group`). Used by the home page
+  (hero, steps, empty state, "Cine suntem?", sell band), category banners and "Cum funcționează";
+  category cards and auction cards share the mount and zoom. Photos are CC0 (StockSnap via
+  Openverse), static imports from `src/assets/{categories,home}` (credits in each README).
+  Prefer a photo to an icon for any large visual.
 - **First-visit intro** (`features/intro`): a full-screen three.js stage shown once per browser
   (`localStorage` `licitot-intro`). Bordo velvet curtains part, the bordo lacquer paddle rises,
   holds 5 s, sinks back, the curtains close and the overlay fades. No gold or metal, calm light,

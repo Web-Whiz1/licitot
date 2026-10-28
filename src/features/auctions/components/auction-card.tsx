@@ -31,6 +31,12 @@ export function AuctionCard({
           priority={priority}
           noPhotoLabel={t("auction.noPhoto")}
           className="aspect-[4/3] w-full border-b"
+          imageClassName="transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+        />
+        {/* The hairline mount of the site's photo tiles. */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-2 rounded-md border border-ink-foreground/20 transition-colors duration-300 ease-out group-hover:border-ink-foreground/45"
         />
         {auction.ends_at ? (
           <Countdown
@@ -43,7 +49,7 @@ export function AuctionCard({
         {auction.status === "ended_sold" ? <HammerStamp className="right-2.5 bottom-2.5" /> : null}
       </div>
       <div className="flex flex-1 flex-col gap-3 p-3 md:p-3.5">
-        <h3 className="line-clamp-2 text-sm leading-snug font-medium md:text-[0.9375rem]">
+        <h3 className="line-clamp-2 font-display text-[1.0625rem] leading-snug md:text-lg">
           {/* Stretched link: the whole card is clickable, one tab stop. */}
           <Link
             href={auctionHref(auction)}
