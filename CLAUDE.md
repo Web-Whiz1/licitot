@@ -166,7 +166,8 @@ scripts/               gen-icons.ts (no seed/demo data: the DB holds only real u
   `<Price/>` ("12.500 RON", currency smaller and muted). Sold items: `<HammerStamp/>` ("Adjudecat").
 - **Layout**: every page container is `container-page` (globals.css: 1440px, 16/32/40px
   margins). The header has two rows on desktop (search + actions; categories from
-  `getCategoryTree()` + "Cum funcționează"/"Comisioane"). The body sits on `paper-grain`; dark
+  `getCategoryTree()` + "Cum funcționează"/"Comisioane"). The page sits on cotton paper under warm light (`page-paper` + `page-light`, fixed
+  `body::before/::after` layers in globals.css, opacity per theme); dark
   bands ("Cine suntem?") use the `dark` class on the section, so tokens flip locally.
 - **Photography** is the site's main visual: `<PhotoTile>` (`components/photo-tile.tsx`) = a photo
   filling a rounded-lg panel, a dark ink shade under the text, a hairline "mount" inside the edge,

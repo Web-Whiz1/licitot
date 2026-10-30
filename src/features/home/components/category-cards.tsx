@@ -1,7 +1,5 @@
-import { ArrowRight } from "@/components/icons"
 import Image from "next/image"
 import Link from "next/link"
-import { getTranslations } from "next-intl/server"
 import { CategoryIcon } from "@/features/auctions/components/category-icon"
 import type { CategoryGroup } from "@/features/auctions/queries"
 import { cn } from "@/lib/utils"
@@ -24,8 +22,7 @@ const TILE = [
 ] as const
 
 /** Home page categories: full-bleed photos with the name set on them, as a magazine mosaic. */
-export async function CategoryCards({ tree }: { tree: CategoryGroup[] }) {
-  const t = await getTranslations("home")
+export function CategoryCards({ tree }: { tree: CategoryGroup[] }) {
   return (
     <ul className="grid auto-rows-[10.5rem] grid-cols-2 gap-3 sm:auto-rows-[13rem] md:gap-4 lg:auto-rows-[14.5rem] lg:grid-cols-4">
       {tree.map((c, i) => {
@@ -91,15 +88,6 @@ export async function CategoryCards({ tree }: { tree: CategoryGroup[] }) {
                     .slice(0, lead ? 5 : 3)
                     .map((s) => s.name)
                     .join(" · ")}
-                </span>
-                <span className="mt-2 hidden items-center gap-1.5 text-sm font-semibold text-ink-foreground sm:flex">
-                  <span className="relative after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 after:ease-out group-hover:after:scale-x-100">
-                    {t("categoryExplore")}
-                  </span>
-                  <ArrowRight
-                    aria-hidden
-                    className="size-4 transition-transform duration-300 ease-out group-hover:translate-x-1"
-                  />
                 </span>
               </span>
             </Link>

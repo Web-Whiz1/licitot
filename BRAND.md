@@ -112,7 +112,9 @@ Favicon: `src/app/icon.svg` (lighter rose on dark browser chrome) + `favicon.ico
 
 ## Surfaces
 
-The page is warm paper with a fine grain (`paper-grain`); cards sit on it as plain white sheets.
+The page is thick cotton paper under warm light: soft mottling, faint fibres and fine grain,
+lit from the top corners and a little darker at the edges (`page-paper` + `page-light`, fixed
+behind the content). Cards sit on it as cream sheets.
 The hero sits on the plain paper; one dark "room" breaks the home page: "Cine suntem?".
 
 On the first visit the site opens like a show: bordo velvet curtains with a bordo silk fringe

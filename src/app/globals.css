@@ -125,10 +125,19 @@
   }
 }
 
-/* Fine paper grain (static SVG noise), laid over a surface without touching its color. */
-@utility paper-grain {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.11 0 0 0 0 0.09 0 0 0 0 0.08 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.09'/%3E%3C/svg%3E");
-  background-size: 220px 220px;
+/* The page: thick cotton paper (soft mottling, faint fibres, fine grain) under warm light from
+   the top corners, a little darker at the edges. Two fixed layers behind the content (paper,
+   then light), so the light stays put as the page scrolls; the body colour shows through. */
+@utility page-light {
+  background-image:
+    radial-gradient(1100px 700px at 12% -5%, var(--page-glow), transparent 62%),
+    radial-gradient(900px 700px at 100% 35%, var(--page-glow-soft), transparent 60%),
+    radial-gradient(ellipse 120% 90% at 50% 40%, transparent 55%, var(--page-vignette));
+}
+@utility page-paper {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='480'%3E%3Cfilter id='m' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.008333' numOctaves='3' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.31 0 0 0 0 0.2 0 0 0 0.9 -0.3'/%3E%3C/filter%3E%3Cfilter id='f' x='0' y='0' width='100%25' height='100%25'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0125 0.416667' numOctaves='2' seed='9' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.25 0 0 0 0 0.15 0 0 0 1.4 -0.8'/%3E%3C/filter%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.11 0 0 0 0 0.09 0 0 0 0 0.08 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)' opacity='0.38'/%3E%3Crect width='100%25' height='100%25' filter='url(%23f)' opacity='0.14'/%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='0.09'/%3E%3C/svg%3E");
+  background-size: 480px 480px;
+  opacity: var(--page-paper-opacity);
 }
 
 :root {
@@ -165,6 +174,12 @@
   --success-soft: #e3e8d4;
   --warning: #87570f;
   --warning-soft: #f1e3c8;
+
+  /* Page light (see page-paper). */
+  --page-glow: rgb(255 251 242 / 0.85);
+  --page-glow-soft: rgb(255 249 238 / 0.55);
+  --page-vignette: rgb(70 45 25 / 0.14);
+  --page-paper-opacity: 1;
 
   /* Floating layers only. Warm, soft, low. */
   --elevation-overlay: 0 12px 32px -12px rgb(36 26 18 / 0.28), 0 2px 6px rgb(36 26 18 / 0.06);
@@ -205,6 +220,11 @@
   --warning: #e2aa60;
   --warning-soft: #30230f;
 
+  --page-glow: rgb(255 214 180 / 0.05);
+  --page-glow-soft: rgb(217 122 108 / 0.04);
+  --page-vignette: rgb(0 0 0 / 0.45);
+  --page-paper-opacity: 0.3;
+
   --elevation-overlay: 0 14px 36px -12px rgb(0 0 0 / 0.75), 0 0 0 1px rgb(239 229 214 / 0.06);
 }
 
@@ -221,7 +241,21 @@
     scrollbar-gutter: stable;
   }
   body {
-    @apply bg-background paper-grain text-foreground antialiased;
+    @apply bg-background text-foreground antialiased;
+  }
+  body::before,
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+  body::before {
+    @apply page-paper;
+  }
+  body::after {
+    @apply page-light;
   }
   /* Headings: Newsreader, medium weight, slightly tight (a font-* or tracking-* utility overrides). */
   .font-display,
