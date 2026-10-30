@@ -3,16 +3,15 @@
 import { useTranslations } from "next-intl"
 import { useEffect, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
-import { INTRO_STORAGE_KEY } from "../boot"
 import type { Stage } from "../scene"
 
 const HOLD_SECONDS = 5
 
 /**
- * The first-visit intro: the curtains part, the paddle rises and stays for five seconds, then it
- * sinks back, the curtains close and the overlay fades away. Shown once per browser; "Intră pe
- * site" or Escape skips it. Until the 3D scene is ready, the overlay shows a still of the
- * closed curtains.
+ * The home page intro: the curtains part, the paddle rises and stays for five seconds, then it
+ * sinks back, the curtains close and the overlay fades away. It plays on every full load of the
+ * home page (see boot.ts); "Intră pe site" or Escape skips it. Until the 3D scene is ready, the
+ * overlay shows a still of the closed curtains.
  */
 export function SiteIntro() {
   const t = useTranslations("intro")
@@ -29,11 +28,6 @@ export function SiteIntro() {
 
     let stage: Stage | undefined
     let done = false
-    try {
-      localStorage.setItem(INTRO_STORAGE_KEY, "1")
-    } catch {
-      // Private mode: the intro may show again next time; nothing else depends on it.
-    }
 
     const finish = () => {
       if (done) return

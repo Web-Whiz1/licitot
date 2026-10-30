@@ -283,6 +283,8 @@
   }
   html[data-intro] {
     overflow: hidden;
+    /* The reserved scrollbar gutter stays dark too, not a strip of paper beside the stage. */
+    background-color: black;
   }
   html[data-intro] .site-intro {
     display: block;

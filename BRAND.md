@@ -117,7 +117,7 @@ lit from the top corners and a little darker at the edges (`page-paper` + `page-
 behind the content). Cards sit on it as cream sheets.
 The hero sits on the plain paper; one dark "room" breaks the home page: "Cine suntem?".
 
-On the first visit the site opens like a show: bordo velvet curtains with a bordo silk fringe
+Every time the home page loads, the site opens like a show: bordo velvet curtains with a bordo silk fringe
 part, the bordo lacquer paddle rises into a soft spotlight with the wordmark in ivory, stays for
 five seconds, sinks back, and the curtains close on the site. No gold or metal, and the light
 stays low: calm, not flashy.

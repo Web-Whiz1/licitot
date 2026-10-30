@@ -176,8 +176,8 @@ scripts/               gen-icons.ts (no seed/demo data: the DB holds only real u
   category cards and auction cards share the mount and zoom. Photos are CC0 (StockSnap via
   Openverse), static imports from `src/assets/{categories,home}` (credits in each README).
   Prefer a photo to an icon for any large visual.
-- **First-visit intro** (`features/intro`): a full-screen three.js stage shown once per browser
-  (`localStorage` `licitot-intro`). Bordo velvet curtains part, the bordo lacquer paddle rises,
+- **Home intro** (`features/intro`): a full-screen three.js stage on every full load of the home
+  page (arriving or refreshing; never on client-side navigation or other pages). Bordo velvet curtains part, the bordo lacquer paddle rises,
   holds 5 s, sinks back, the curtains close and the overlay fades. No gold or metal, calm light,
   no pointer-driven motion. `INTRO_BOOT_SCRIPT` (inline in the site layout) marks `<html
 data-intro>` before paint, which shows the overlay and locks scrolling; it is skipped for

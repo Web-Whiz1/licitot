@@ -1,6 +1,6 @@
-// The site intro: a real-time WebGL stage. Bordo velvet curtains part, the LiciTot paddle (bordo
+// The home page intro: a real-time WebGL stage. Bordo velvet curtains part, the LiciTot paddle (bordo
 // lacquer) rises through a stage trap into a soft spotlight, holds, then sinks back and the
-// curtains close. Browser-only: loaded by components/site-intro.tsx on the first visit.
+// curtains close. Browser-only: loaded by components/site-intro.tsx.
 import * as THREE from "three"
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js"
 import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js"
@@ -45,7 +45,8 @@ const OVERLAP = 0.12
 const GATHER = 1.15 // width of the bunched fabric when fully open
 const FOLDS = 9
 const PADDLE_Y = 2.3
-const PADDLE_Z = -0.35
+// Far enough behind the wordmark that the paddle never cuts through the letters as it turns.
+const PADDLE_Z = -1.05
 const PADDLE_START_Y = -1.9
 const REST_YAW = -0.3
 const REST_PITCH = 0.08
