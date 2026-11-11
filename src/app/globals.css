@@ -126,8 +126,8 @@
 }
 
 /* The page: thick cotton paper (soft mottling, faint fibres, fine grain) under warm light from
-   the top corners, a little darker at the edges. Two fixed layers behind the content (paper,
-   then light), so the light stays put as the page scrolls; the body colour shows through. */
+   the top corners, a little darker at the edges. Both are layers of <AmbientBackground/>, above
+   its drifting colour blobs: the grain also hides banding in their gradients. */
 @utility page-light {
   background-image:
     radial-gradient(1100px 700px at 12% -5%, var(--page-glow), transparent 62%),
@@ -175,6 +175,13 @@
   --warning: #87570f;
   --warning-soft: #f1e3c8;
 
+  /* Blob colours of the animated page background. */
+  --ambient-rose: #e9c9bd;
+  --ambient-amber: #ebd3a4;
+  --ambient-olive: #d3dcbc;
+  --ambient-blush: #e9cfc6;
+  --ambient-glow: #fcf6ea;
+
   /* Page light (see page-paper). */
   --page-glow: rgb(255 251 242 / 0.85);
   --page-glow-soft: rgb(255 249 238 / 0.55);
@@ -219,6 +226,11 @@
   --success-soft: #1c2617;
   --warning: #e2aa60;
   --warning-soft: #30230f;
+  --ambient-rose: #4a1e1b;
+  --ambient-amber: #40260e;
+  --ambient-olive: #232e1a;
+  --ambient-blush: #3a1a21;
+  --ambient-glow: #2c2017;
 
   --page-glow: rgb(255 214 180 / 0.05);
   --page-glow-soft: rgb(217 122 108 / 0.04);
@@ -242,20 +254,6 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-  }
-  body::before,
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-  }
-  body::before {
-    @apply page-paper;
-  }
-  body::after {
-    @apply page-light;
   }
   /* Headings: Newsreader, medium weight, slightly tight (a font-* or tracking-* utility overrides). */
   .font-display,

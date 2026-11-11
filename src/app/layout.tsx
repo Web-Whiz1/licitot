@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import localFont from "next/font/local"
 import { NextIntlClientProvider } from "next-intl"
 import { getTranslations } from "next-intl/server"
+import { AmbientBackground } from "@/components/layout/ambient-background"
 import { SmoothScroll } from "@/components/layout/smooth-scroll"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
@@ -70,6 +71,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body className="flex min-h-dvh flex-col">
+        <AmbientBackground />
         <NextIntlClientProvider>
           <ThemeProvider>
             <TooltipProvider>

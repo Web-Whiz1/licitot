@@ -114,7 +114,7 @@ Favicon: `src/app/icon.svg` (lighter rose on dark browser chrome) + `favicon.ico
 
 The page is thick cotton paper under warm light: soft mottling, faint fibres and fine grain,
 lit from the top corners and a little darker at the edges (`page-paper` + `page-light`, fixed
-behind the content). Cards sit on it as cream sheets.
+behind the content). Under the paper, soft blobs of the palette (rose, amber, olive, blush, cream) drift slowly, change with scroll and lean a little with the mouse. Cards sit on it as cream sheets.
 The hero sits on the plain paper; one dark "room" breaks the home page: "Cine suntem?".
 
 Every time the home page loads, the site opens like a show: bordo velvet curtains with a bordo silk fringe
